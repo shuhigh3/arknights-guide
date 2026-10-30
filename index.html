@@ -389,6 +389,9 @@ html[data-view-cur="growth-plan"] .subnav-row,
 html[data-view-cur="growth-pull"] .subnav-row{display:flex}
 .sub-nav{display:flex;align-items:center;gap:8px;flex-wrap:wrap;width:100%;padding:8px;border:1px solid var(--line);border-radius:var(--radius);background:linear-gradient(180deg,rgba(var(--panel-rgb),.7),rgba(var(--bg-soft-rgb),.58));backdrop-filter:blur(6px) saturate(1.12);-webkit-backdrop-filter:blur(6px) saturate(1.12)}
 @media (max-width:900px){.nvb .nvb-s{display:none}.view-crumb{display:none}}
+/* 技能 Wiki「模组」专用配色令牌：独立于被全站语义状态复用的 --ok，并与天赋色 --second 明显拉开色相 */
+html{--mod:#c3a0ff;--mod-rgb:195,160,255}
+html[data-mode="light"]{--mod:#6a3fc0;--mod-rgb:106,63,192}
 /* ---------- 技能 Wiki（干员技能 / 天赋 / 模组）：筛选 + 搜索 + 分页 ---------- */
 .wiki-bar{display:flex;flex-direction:column;gap:10px;padding:12px 16px;border-bottom:1px solid var(--line-soft);background:var(--wash-2)}
 .wiki-srow{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
@@ -397,6 +400,8 @@ html[data-view-cur="growth-pull"] .subnav-row{display:flex}
 .wiki-count b{color:var(--accent);font-family:var(--mono);font-weight:700}
 .wiki-fl{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .wiki-fl .wiki-lb{flex:0 0 auto;font-size:15px;color:var(--txt-mute)}
+/* 筛选行容器：星级 / 职业 / 位置 / 词缀 / 模组 各路一行，行间留出空隙，避免黏连 */
+#wiki-chips{display:flex;flex-direction:column;gap:12px}
 .wiki-focus{display:none;align-items:center;gap:10px;padding:9px 16px;border-bottom:1px solid var(--line-soft);
   background:rgba(var(--accent-rgb),.08);font-size:15px;color:var(--txt-dim)}
 .wiki-focus.on{display:flex}
@@ -419,23 +424,23 @@ html[data-view-cur="growth-pull"] .subnav-row{display:flex}
 .wiki-pos{flex:0 0 auto;font-size:15px;padding:2px 9px;border-radius:999px;border:1px solid var(--line);color:var(--txt-dim)}
 .wiki-tagx{flex:0 0 auto;font-size:15px;padding:2px 9px;border-radius:999px;border:1px solid var(--line);color:var(--txt-mute)}
 .wiki-modb{flex:0 0 auto;font-size:15px;font-weight:700;padding:2px 9px;border-radius:999px;
-  border:1px solid rgba(var(--ok-rgb),.55);color:var(--ok);background:rgba(var(--ok-rgb),.1)}
+  border:1px solid rgba(var(--mod-rgb),.55);color:var(--mod);background:rgba(var(--mod-rgb),.1)}
 .wiki-op-tg{flex:0 0 auto;display:inline-flex;align-items:center;gap:5px;font-size:15px;color:var(--txt-mute)}
 .wiki-op-h:hover .wiki-op-tg{color:var(--accent)}
 .wiki-op-tgi{font-size:15px;line-height:1}
 .wiki-sk-list{margin:0;padding:0;list-style:none}
 .wiki-sk{padding:10px 12px;border-top:1px solid var(--line-soft);border-left:3px solid transparent}
 .wiki-sk:first-child{border-top:0}
-/* 三类内容各用独立左边框 + 同色系文字 / 标签色：技能=accent，天赋=second，模组=ok */
+/* 三类内容各用独立左边框 + 同色系文字 / 标签色：技能=accent，天赋=second，模组=mod */
 .wiki-sk--k0{border-left-color:rgba(var(--accent-rgb),.85);background:linear-gradient(90deg,rgba(var(--accent-rgb),.09),rgba(var(--accent-rgb),0) 58%)}
 .wiki-sk--k1{border-left-color:rgba(var(--second-rgb),.85);background:linear-gradient(90deg,rgba(var(--second-rgb),.09),rgba(var(--second-rgb),0) 58%)}
-.wiki-sk--k2{border-left-color:rgba(var(--ok-rgb),.85);background:linear-gradient(90deg,rgba(var(--ok-rgb),.09),rgba(var(--ok-rgb),0) 58%)}
+.wiki-sk--k2{border-left-color:rgba(var(--mod-rgb),.85);background:linear-gradient(90deg,rgba(var(--mod-rgb),.09),rgba(var(--mod-rgb),0) 58%)}
 .wiki-sk--k0 .wiki-kb{border-color:rgba(var(--accent-rgb),.55);color:var(--accent)}
 .wiki-sk--k1 .wiki-kb{border-color:rgba(var(--second-rgb),.55);color:var(--second)}
-.wiki-sk--k2 .wiki-kb{border-color:rgba(var(--ok-rgb),.55);color:var(--ok)}
+.wiki-sk--k2 .wiki-kb{border-color:rgba(var(--mod-rgb),.55);color:var(--mod)}
 .wiki-sk--k0 .wiki-sk-n{color:var(--accent)}
 .wiki-sk--k1 .wiki-sk-n{color:var(--second)}
-.wiki-sk--k2 .wiki-sk-n{color:var(--ok)}
+.wiki-sk--k2 .wiki-sk-n{color:var(--mod)}
 .wiki-sk-h{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .wiki-sk-n{font-size:17px;font-weight:700;color:var(--txt)}
 .wiki-sk-r{font-size:15px;color:var(--txt-mute)}
@@ -1069,7 +1074,19 @@ body::after{
 .gf-row .chip{padding:3px 9px}
 .gf-row .gf-reset{margin-left:auto}
 .gf-row .gf-reset[disabled]{opacity:.45;cursor:default}
-/* 区块 */
+/* 养成推荐搜索框：静态区（不随数据区重绘），输入时不丢焦点；无数据时随空态隐藏 */
+.growth-qbar{display:flex;align-items:center;gap:9px;flex-wrap:wrap;border:1px solid var(--line);border-radius:10px;background:var(--wash-2);padding:10px 11px;margin-bottom:13px}
+.growth-qbar[hidden]{display:none}
+.growth-qbar .gf-lb{flex:0 0 40px;font-size:15px;color:var(--txt-mute)}
+.growth-qbar input{flex:1 1 220px;min-width:0;font-size:16px;line-height:1.6;padding:7px 11px;border-radius:8px;border:1px solid var(--line);background:var(--panel-2);color:var(--txt)}
+.growth-qbar input::placeholder{color:var(--txt-mute)}
+.growth-qbar input:focus{outline:none;border-color:rgba(var(--accent-rgb),.62)}
+.growth-qbar .gf-qn{font-size:15px;color:var(--txt-mute);white-space:nowrap}
+.growth-qbar .gf-qn b{color:var(--txt-dim);font-family:var(--mono);font-weight:700}
+/* 干员名 = prts.wiki 外链；整条干员条目可点击跳转同一地址 */
+.growth-grid .gl,.growth-cards li{cursor:pointer}
+a.gl-nm,a.g-nm{color:var(--txt)}
+a.gl-nm:hover,a.g-nm:hover,a.gl-nm:focus-visible,a.g-nm:focus-visible{color:var(--accent);text-decoration:underline}/* 区块 */
 .growth-block{margin-top:17px}
 .growth-block>h3{margin:0 0 12px;font-size:18px;font-weight:650;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
 .growth-block>h3 .pn{width:26px;height:26px;flex:0 0 26px;display:grid;place-items:center;font:700 16px/1 var(--mono);background:rgba(var(--accent-rgb),.2);color:var(--accent);border:1px solid rgba(var(--accent-rgb),.5);clip-path:polygon(24% 0,100% 0,100% 76%,76% 100%,0 100%,0 24%)}
@@ -1441,11 +1458,19 @@ html[data-mode="light"] #fx{--fx-rgb:0,150,190}
       <div class="panel-b">
         <!-- 未登录空态：明确引导去「登录」页；凭据只存本机 -->
         <div class="empty" id="growth-gate">
-          <div class="growth-gate-t">需要先登录森空岛</div>
-          <p class="sub growth-gate-p">养成推荐要读你账号里<b>实际拥有的干员与练度</b>才能给出，请先在「登录」页用森空岛 App 扫码，或粘贴凭证导入。凭据只保存在本机浏览器，代理脚本仅转发、不留存。</p>
+          <div class="growth-gate-t">还没有可用的练度数据</div>
+          <p class="sub growth-gate-p">养成推荐读取的是本机 <b>BOX</b> 里的干员与练度：<b>登录森空岛</b>可在「登录」页扫码或粘贴凭证，再点「读取并写入 BOX」自动同步；<b>不登录</b>也能在「主页 · 我的干员与练度」手动添加干员（或点「载入示例 BOX」），之后无需登录即可看到练度总览。凭据只保存在本机浏览器，代理脚本仅转发、不留存。</p>
           <div class="btn-row growth-gate-a">
             <button class="btn btn-primary" id="growth-go-login" type="button">去登录森空岛</button>
+            <button class="btn btn-sm" id="growth-go-box" type="button">去主页添加干员</button>
           </div>
+        </div>
+        <!-- 养成推荐：角色搜索框（静态区，不随数据区重绘；无数据时随空态隐藏） -->
+        <div class="growth-qbar" id="growth-qbar" hidden>
+          <label class="gf-lb" for="growth-q">搜索</label>
+          <input type="text" id="growth-q" autocomplete="off" spellcheck="false" placeholder="输入干员名筛选，如 能天使 / 银灰" aria-label="按干员名搜索干员">
+          <button class="btn btn-sm btn-ghost" id="growth-qclear" type="button" title="清空搜索词">清空</button>
+          <span class="gf-qn" id="growth-qn" aria-live="polite"></span>
         </div>
         <!-- 数据区：登录后由 growthRender() 填充（练度总览 / 养成推荐 / 抽取推荐） -->
         <div id="growth-body" hidden></div>
@@ -5320,7 +5345,7 @@ function viewInit() {
 /* 入口：导航「养成推荐」。未登录 → 空态引导去登录；已登录 → 展示账号练度与养成 / 抽取优先级。
    数据只来自本机 BOX（由森空岛账号同步而来）与站内既有干员分类名单，不引入外部评级。
    筛选（星级 / 达标 / 分类）三档可组合，状态只存内存（不落 localStorage）。 */
-const growthFilter = { star: "all", state: "all", cat: "all" };
+const growthFilter = { star: "all", state: "all", cat: "all", q: "" };
 const GF_STAR = [["all", "全部"], ["6", "6★"], ["5", "5★"], ["4", "4★"], ["lo", "3★及以下"]];
 const GF_STATE = [["all", "全部"], ["lack", "未达标"], ["ok", "已达合格线"]];
 const GF_CAT = [["all", "全部"], ["common", "常用"], ["afk", "挂机"], ["perm", "永续"], ["none", "未分类"]];
@@ -5340,13 +5365,24 @@ function growthCatHit(n, v) {
   if (v === "none") return opClasses(n).length === 0;
   return !!(CAT_SETS[v] && CAT_SETS[v].has(n));
 }
+/* 关键词命中：干员名 / charId / 职业，任一命中即可（空词视为不过滤） */
+function growthQHit(n) {
+  const q = String(growthFilter.q || "").trim().toLowerCase();
+  if (!q) return true;
+  const op = state.opByName ? state.opByName.get(n) : null;
+  return String(n).toLowerCase().indexOf(q) >= 0
+    || !!(op && String(op.id || "").toLowerCase().indexOf(q) >= 0)
+    || !!(op && String(op.professionName || "").toLowerCase().indexOf(q) >= 0);
+}
 function growthFilterActive() {
-  return growthFilter.star !== "all" || growthFilter.state !== "all" || growthFilter.cat !== "all";
+  return growthFilter.star !== "all" || growthFilter.state !== "all" || growthFilter.cat !== "all"
+    || String(growthFilter.q || "").trim() !== "";
 }
 /* 区块筛选：总览套星级 + 达标 + 分类；养成 / 抽取推荐对象本身已限定达标与拥有状态，只套星级 + 分类 */
 function growthPick(rows, useState) {
   return rows.filter((n) => growthStarHit(n, growthFilter.star)
     && growthCatHit(n, growthFilter.cat)
+    && growthQHit(n)
     && (!useState || growthStateHit(n, growthFilter.state)));
 }
 /* 练度文本：紧凑形式省略全零项；完整形式用于 title 与既有属性口径 */
@@ -5392,13 +5428,34 @@ function growthRender() {
   const cur = growthViewOf();
   if (title) title.textContent = GROWTH_TITLES[cur];
   const on = skLoggedIn();
-  gate.hidden = on;
-  body.hidden = !on;
-  if (hint) hint.textContent = on ? (skExpired() ? "授权已过期，请重新登录" : "已连接森空岛") : "未登录森空岛";
-  if (!on) { body.innerHTML = ""; return; }
+  /* 只要本机 BOX 里已有练度数据，未登录也照样展示数据区（数据同源，不额外联网） */
+  const hasBox = boxNames().length > 0;
+  const show = on || hasBox;
+  const qbar = $("#growth-qbar"), qi = $("#growth-q");
+  gate.hidden = show;
+  body.hidden = !show;
+  if (qbar) qbar.hidden = !show;
+  if (hint) hint.textContent = on ? (skExpired() ? "授权已过期，请重新登录" : "已连接森空岛")
+    : (hasBox ? "未登录 · 读本机 BOX" : "未登录森空岛");
+  if (!show) { body.innerHTML = ""; if (qbar) qbar.hidden = true; return; }
+  if (qi && qi.value !== (growthFilter.q || "")) qi.value = growthFilter.q || "";
   try { growthFill(cur); } catch (e) {
     body.innerHTML = '<div class="growth-empty">渲染失败：' + esc((e && e.message) || e) + "</div>";
   }
+}
+/* 搜索计数：命中数 / 本页基数（基数 = 该子页候选集合，未叠星级 / 达标 / 分类筛选） */
+function growthUniverse(cur) {
+  const p = GROWTH_VIEWS.indexOf(cur) >= 0 ? cur : growthViewOf();
+  if (p === "growth-pull") return growthPullPool();
+  if (p === "growth-plan") return boxNames().filter((n) => !meet(n));
+  return boxNames();
+}
+function setGrowthQn(hit, total) {
+  const el = $("#growth-qn");
+  if (!el) return;
+  el.innerHTML = String(growthFilter.q || "").trim()
+    ? '匹配 <b>' + hit + '</b>/<b>' + total + '</b> 名'
+    : '本页共 <b>' + total + '</b> 名';
 }
 function growthFill(cur) {
   const body = $("#growth-body");
@@ -5421,7 +5478,9 @@ function growthFill(cur) {
   } else {
     h += growthFilterBar() + growthSection1() + growthMore();
   }
+  const uni = growthUniverse(page);
   body.innerHTML = h;
+  setGrowthQn(uni.filter(growthQHit).length, uni.length);
 }
 /* 区块 1：账号干员练度总览（套星级 + 达标 + 分类） */
 function growthSection1() {
@@ -5459,9 +5518,9 @@ function growthSection2() {
       const p = pr(n);
       const tip = esc(n) + (op ? " · " + op.rarity + "★ " + op.professionName : "")
         + " · 当前 " + growthLvFull(r) + " · 目标 " + target + " · " + preason[p];
-      return '<li class="p' + p + '" data-grec="' + esc(n) + '" data-grec-p="' + p + '" data-grec-target="' + esc(target) + '" title="' + tip + '">'
+      return '<li class="p' + p + '" data-grec="' + esc(n) + '" data-grec-p="' + p + '" data-grec-target="' + esc(target) + '" data-prts-ent="' + esc(n) + '" title="' + tip + '">'
         + (op ? '<img loading="lazy" src="' + avatarUrl(op) + '" alt="" data-cid="' + esc(op.id) + '" data-base="0" onerror="imgFallback(this)">' : "")
-        + '<span class="gc-tx"><span class="gc-top"><span class="g-nm">' + esc(n) + '</span>'
+        + '<span class="gc-tx"><span class="gc-top">' + prtsLink(n, "g-nm")
         + '<span class="growth-tag p' + p + '" title="' + esc(plab[p]) + '">P' + p + '</span></span>'
         + '<span class="gc-mt">' + (op ? '<span class="sub">' + op.rarity + "★ " + esc(op.professionName) + "</span>" : "")
         + catSpan(n) + "</span></span>" + gwikiBtn(n) + "</li>";
@@ -5506,9 +5565,9 @@ function growthSection3() {
       const ct = catTitle(n);
       const tip = esc(n) + (op ? " · " + op.rarity + "★ " + op.professionName : "")
         + (ct ? " · " + ct : "") + " · " + preason[p];
-      return '<li class="p' + p + '" data-gpull="' + esc(n) + '" data-gpull-p="' + p + '" title="' + tip + '">'
+      return '<li class="p' + p + '" data-gpull="' + esc(n) + '" data-gpull-p="' + p + '" data-prts-ent="' + esc(n) + '" title="' + tip + '">'
         + (op ? '<img loading="lazy" src="' + avatarUrl(op) + '" alt="" data-cid="' + esc(op.id) + '" data-base="0" onerror="imgFallback(this)">' : "")
-        + '<span class="gc-tx"><span class="gc-top"><span class="g-nm">' + esc(n) + '</span>'
+        + '<span class="gc-tx"><span class="gc-top">' + prtsLink(n, "g-nm")
         + '<span class="growth-tag p' + p + '" title="' + esc(plab[p]) + '">P' + p + '</span></span>'
         + '<span class="gc-mt">' + (op ? '<span class="sub">' + op.rarity + "★ " + esc(op.professionName) + "</span>" : "")
         + catSpan(n) + "</span></span>" + gwikiBtn(n) + "</li>";
@@ -5547,15 +5606,25 @@ function growthLevelRows(rows) {
     const tip = esc(n + (op ? " · " + op.rarity + "★ " + op.professionName : "")
       + " · 当前 " + growthLvFull(r) + (ok ? " · 已达合格线" : " · 未达标"));
     return '<div class="gl ' + (ok ? "ok" : "up") + '" data-gg="' + esc(n) + '"'
-      + ' data-gg-e="' + r.e + '" data-gg-l="' + r.l + '" data-gg-m="' + r.m + '" data-gg-mod="' + r.mod + '"'
+      + ' data-prts-ent="' + esc(n) + '" data-gg-e="' + r.e + '" data-gg-l="' + r.l + '" data-gg-m="' + r.m + '" data-gg-mod="' + r.mod + '"'
       + ' title="' + tip + '">'
       + (op ? '<img loading="lazy" src="' + avatarUrl(op) + '" alt="" data-cid="' + esc(op.id) + '" data-base="0" onerror="imgFallback(this)">' : "")
-      + '<span class="gl-nm">' + esc(n) + '</span>'
+      + prtsLink(n, "gl-nm")
       + gwikiBtn(n)
       + '<span class="gl-rec">' + growthLvShort(r) + '</span></div>';
   }).join("");
 }
 /* 养成三页的跳转入口：点「技能 ↗」切到技能 Wiki 并按干员名解析 charId 定位 */
+/* 干员名外链：https://prts.wiki/w/干员名（新窗口 + noopener）；条目整行点击也跳到同一地址 */
+function prtsUrl(n) { return "https://prts.wiki/w/" + encodeURIComponent(String(n == null ? "" : n)); }
+function prtsOpen(n) {
+  const u = prtsUrl(n);
+  try { window.open(u, "_blank", "noopener"); } catch (e) { location.href = u; }
+}
+function prtsLink(n, cls) {
+  return '<a class="' + cls + '" data-prts="' + esc(n) + '" href="' + esc(prtsUrl(n)) + '" target="_blank" rel="noopener"'
+    + ' title="在 prts.wiki 查看「' + esc(n) + '」">' + esc(n) + "</a>";
+}
 function gwikiBtn(n) {
   return '<button class="gwiki" type="button" data-gwiki="' + esc(n) + '"'
     + ' aria-label="在技能 Wiki 中查看 ' + esc(n) + ' 的技能 / 天赋 / 模组"'
@@ -5576,11 +5645,39 @@ function growthInit() {
     viewGo("login", true);
     setTimeout(() => { try { skOpenDialog(skLoggedIn() ? "relay" : "qr"); } catch (e) {} }, 80);
   });
+  const gb = $("#growth-go-box");
+  if (gb) gb.addEventListener("click", () => viewGo("home", true));
   /* 数据区按钮与筛选 chip 都用事件委派（均在 growthFill 里动态生成，不建静态 id） */
+  /* 搜索框（静态元素）：输入只重绘数据区，不会丢失焦点；140ms 防抖避免逐字重建列表 */
+  const qi = $("#growth-q");
+  if (qi) {
+    qi.value = growthFilter.q || "";
+    let qt = 0;
+    qi.addEventListener("input", () => {
+      growthFilter.q = qi.value;
+      if (qt) clearTimeout(qt);
+      qt = setTimeout(() => { try { growthFill(); } catch (e) {} }, 140);
+    });
+    qi.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" || e.key === "Esc") {
+        qi.value = ""; growthFilter.q = ""; growthFill();
+      }
+    });
+  }
+  const qcl = $("#growth-qclear");
+  if (qcl) qcl.addEventListener("click", () => {
+    const el = $("#growth-q");
+    if (el) el.value = "";
+    growthFilter.q = "";
+    growthFill();
+    if (el && el.focus) el.focus();
+  });
   const body = $("#growth-body");
   if (body) body.addEventListener("click", (e) => {
     const t = e.target;
     if (!t || !t.closest) return;
+    /* 点干员名外链：交给原生行为（新窗口打开 prts.wiki），不重复触发条目跳转 */
+    if (t.closest("a[data-prts]")) return;
     const f = t.closest("[data-gf]");
     if (f) {
       growthFilter[f.getAttribute("data-gf")] = f.getAttribute("data-gf-v");
@@ -5589,6 +5686,9 @@ function growthInit() {
     }
     const w = t.closest("[data-gwiki]");
     if (w) { growthToWiki(w.getAttribute("data-gwiki") || ""); return; }
+    /* 整条干员条目可点：跳到该干员在 prts.wiki 的页面 */
+    const ent = t.closest("[data-prts-ent]");
+    if (ent) { prtsOpen(ent.getAttribute("data-prts-ent") || ""); return; }
     const b = t.closest("[data-gact]");
     if (!b) return;
     const act = b.getAttribute("data-gact");
@@ -5600,6 +5700,9 @@ function growthInit() {
       growthFilter.star = "all";
       growthFilter.state = "all";
       growthFilter.cat = "all";
+      growthFilter.q = "";
+      const qel = $("#growth-q");
+      if (qel) qel.value = "";
       growthFill();
     }
   });
