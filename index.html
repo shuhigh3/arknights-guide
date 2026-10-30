@@ -594,7 +594,6 @@ input[type=number]{-moz-appearance:textfield}
 .opchip.none{border-color:var(--line);color:var(--txt-mute)}
 .card-actions{margin-top:auto;display:flex;gap:7px;flex-wrap:wrap;padding-top:2px}
 .card-actions .btn{flex:1;justify-content:center}
-.subs-hint{margin:0 0 11px;line-height:1.7}
 /* ---------- 字幕面板（选中视频后按需读取，不改变卡片原有跳转行为） ---------- */
 .card-subs{margin-top:11px;border-top:1px dashed var(--line);padding-top:10px;display:flex;flex-direction:column;gap:9px}
 .subs-h{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:15px;color:var(--txt-dim)}
@@ -842,6 +841,7 @@ html.ld-fallback .spin-lg{width:34px;height:34px;flex:0 0 34px;vertical-align:0}
 .footer{
   position:relative;z-index:1;max-width:1320px;margin:0 auto;padding:14px 20px 40px;font-size:15px;color:var(--txt-mute);line-height:1.8;border-top:1px dashed var(--line)}
 .footer .ft-mark{font:700 15px/1.6 var(--mono);letter-spacing:1.6px;color:var(--accent);text-transform:uppercase}
+.footer .ft-by{margin-top:9px;padding-top:9px;border-top:1px dashed var(--line-soft);color:var(--txt-dim)}
 
 /* ================= 原创插画与方舟战术装饰（可见度增强） ================= */
 /* 首屏视觉锚点：顶栏下方的全宽战术横幅（原创科幻插画，不含任何角色 / 商标 / 官方标识） */
@@ -957,6 +957,33 @@ body::after{
 .growth-refs li{position:relative;padding-left:13px}
 .growth-refs li::before{content:"·";position:absolute;left:2px;color:var(--accent);font-weight:700}
 .growth-refs .cat-lnk{color:var(--second)}
+
+/* ---------- 检索 / 连接反馈光效：流动线 + 成功绿光 / 失败红光（T4/T5） ---------- */
+#fx{position:fixed;inset:0;z-index:98;pointer-events:none;display:none}
+#fx.show{display:block}
+#fx .fx-edge{position:absolute;display:block;opacity:0;transition:opacity .2s;background-repeat:no-repeat}
+#fx.busy .fx-edge{opacity:1}
+#fx .fx-t,#fx .fx-b{left:0;right:0;height:2px;background-size:34% 100%;background-image:linear-gradient(90deg,transparent 0,rgba(var(--accent-rgb),0) 14%,rgba(var(--accent-rgb),.95) 50%,rgba(var(--accent-rgb),0) 86%,transparent 100%)}
+#fx .fx-t{top:0}
+#fx .fx-b{bottom:0}
+#fx .fx-l,#fx .fx-r{top:0;bottom:0;width:2px;background-size:100% 34%;background-image:linear-gradient(180deg,transparent 0,rgba(var(--accent-rgb),0) 14%,rgba(var(--accent-rgb),.95) 50%,rgba(var(--accent-rgb),0) 86%,transparent 100%)}
+#fx .fx-l{left:0}
+#fx .fx-r{right:0}
+#fx.busy .fx-t,#fx.busy .fx-b{animation:fxSweepX 1.35s linear infinite}
+#fx.busy .fx-l,#fx.busy .fx-r{animation:fxSweepY 1.35s linear infinite}
+#fx.busy .fx-b,#fx.busy .fx-l{animation-direction:reverse}
+#fx .fx-flash{position:absolute;inset:0;opacity:0}
+#fx.flash-ok .fx-flash{animation:fxFlashOk 1.45s ease-out 1}
+#fx.flash-bad .fx-flash{animation:fxFlashBad 1.45s ease-out 1}
+@keyframes fxSweepX{from{background-position:0 0}to{background-position:100% 0}}
+@keyframes fxSweepY{from{background-position:0 0}to{background-position:0 100%}}
+@keyframes fxFlashOk{0%{opacity:0;box-shadow:inset 0 0 0 2px rgba(var(--ok-rgb),0)}12%{opacity:1;box-shadow:inset 0 0 0 3px rgba(var(--ok-rgb),.92),inset 0 0 90px rgba(var(--ok-rgb),.38)}30%{opacity:1;box-shadow:inset 0 0 0 2px rgba(var(--ok-rgb),.28),inset 0 0 45px rgba(var(--ok-rgb),.1)}50%{opacity:1;box-shadow:inset 0 0 0 3px rgba(var(--ok-rgb),.86),inset 0 0 85px rgba(var(--ok-rgb),.34)}68%{opacity:1;box-shadow:inset 0 0 0 2px rgba(var(--ok-rgb),.26),inset 0 0 40px rgba(var(--ok-rgb),.1)}86%{opacity:1;box-shadow:inset 0 0 0 3px rgba(var(--ok-rgb),.8),inset 0 0 80px rgba(var(--ok-rgb),.32)}100%{opacity:0;box-shadow:inset 0 0 0 2px rgba(var(--ok-rgb),0),inset 0 0 0 rgba(var(--ok-rgb),0)}}
+@keyframes fxFlashBad{0%{opacity:0;box-shadow:inset 0 0 0 2px rgba(var(--bad-rgb),0)}12%{opacity:1;box-shadow:inset 0 0 0 3px rgba(var(--bad-rgb),.92),inset 0 0 90px rgba(var(--bad-rgb),.38)}30%{opacity:1;box-shadow:inset 0 0 0 2px rgba(var(--bad-rgb),.28),inset 0 0 45px rgba(var(--bad-rgb),.1)}50%{opacity:1;box-shadow:inset 0 0 0 3px rgba(var(--bad-rgb),.86),inset 0 0 85px rgba(var(--bad-rgb),.34)}68%{opacity:1;box-shadow:inset 0 0 0 2px rgba(var(--bad-rgb),.26),inset 0 0 40px rgba(var(--bad-rgb),.1)}86%{opacity:1;box-shadow:inset 0 0 0 3px rgba(var(--bad-rgb),.8),inset 0 0 80px rgba(var(--bad-rgb),.32)}100%{opacity:0;box-shadow:inset 0 0 0 2px rgba(var(--bad-rgb),0),inset 0 0 0 rgba(var(--bad-rgb),0)}}
+@media (prefers-reduced-motion:reduce){
+#fx.busy .fx-t,#fx.busy .fx-b,#fx.busy .fx-l,#fx.busy .fx-r{animation:none}
+#fx.flash-ok .fx-flash{animation:none;opacity:1;box-shadow:inset 0 0 0 3px rgba(var(--ok-rgb),.85)}
+#fx.flash-bad .fx-flash{animation:none;opacity:1;box-shadow:inset 0 0 0 3px rgba(var(--bad-rgb),.85)}
+}
 
 </style>
 </head>
@@ -1359,7 +1386,6 @@ body::after{
         <button class="chip stage" type="button" data-stage="all" aria-pressed="false" title="连同没有标注本关卡的视频一起显示，卡片上会用 △ / ✕ 标出它实际标注的关卡">含未标注</button>
         <span class="pri-note" id="stage-note"></span>
       </div>
-      <p class="sub subs-hint">点卡片可打开 B 站原视频；卡片上的「提取字幕」会读取该视频的 CC 字幕，若字幕里出现干员摆放顺序或朝向（先 / 然后 / 最后 / 朝上 / 面向…），会按字幕顺序整理成步骤列在卡片下方。默认只列出标题 / 简介里标注了所选关卡的视频，卡片上用 ◎（标题直接标注）／○（仅简介或标签里含本关卡）／✕（标的是其它关卡）／△（完全没标关卡）写明命中依据，并按下 ◎ → ○ → 其它关卡 → 无标注排序；确需查看全部时点上方「含未标注」。</p>
       <div class="result-body" id="result-body">
         <div class="empty"><span class="big">◈</span>还没有结果。选好关卡与练度，点「开始检索攻略」。</div>
       </div>
@@ -1382,6 +1408,7 @@ body::after{
 <div class="footer">
   <div>数据在打开页面时从 jsDelivr（<a class="lnk" href="https://github.com/Kengxxiao/ArknightsGameData" target="_blank" rel="noopener noreferrer"><span class="mono">Kengxxiao/ArknightsGameData</span></a>）实时读取；BOX 与练度为本机手动维护，或登录森空岛经本机转发读取后一键写入。</div>
   <div>隐私：BOX、练度、显示设置只存本机浏览器；森空岛凭据只存 <span class="mono">akgf.skland.v1</span>，不上传第三方，转发脚本无状态、不写日志，授权约 7 天。B 站检索可无代理降级，森空岛读取必须有转发通道。</div>
+  <div class="ft-by">作者：<span class="mono">刘禹畅</span> · 联系方式：<a class="lnk" href="mailto:shuigh3@163.com">shuigh3@163.com</a> · QQ <span class="mono">2964883855</span></div>
 </div>
 
 <!-- ============ 干员选择对话框 ============ -->
@@ -1510,6 +1537,7 @@ body::after{
       <ol>
         <li><b>干员识别不准</b>：识别依赖视频标题与简介里的干员名，个别外号 / 梗称可能漏判，会以「未识别干员」标出；</li>
         <li><b>森空岛读不出来</b>：森空岛读取必须有转发通道（本机代理或云函数），B 站检索则可无代理降级；</li>
+        <li><b>出现其它游戏的视频</b>：结果只保留《明日方舟》内容——标题 / 简介 / 标签里出现其它游戏名即剔除（与方舟联动、对比的内容会保留）；只写关卡号、没写游戏名的方舟攻略不会被误删。</li>
         <li><b>隐私</b>：BOX、练度阈值、显示设置只存本机浏览器；凭证只在本机换取、用完即弃，不上传第三方。</li>
       </ol>
       <h4>显示设置</h4>
@@ -1639,6 +1667,7 @@ body::after{
 </dialog>
 
 <div id="toasts"></div>
+<div id="fx" aria-hidden="true"><i class="fx-edge fx-t"></i><i class="fx-edge fx-b"></i><i class="fx-edge fx-l"></i><i class="fx-edge fx-r"></i><i class="fx-flash"></i></div>
 
 <!-- 以下两个库为本地内联的纯 JS 实现（无 CDN、无外部请求）：摘要/签名 + 二维码生成 -->
 <script id="lib-crypto">/* 纯 JS 摘要与签名实现（供本工具在页面内计算森空岛签名），无任何外部依赖 */
@@ -2005,6 +2034,33 @@ function toast(msg, kind, ms) {
   box.appendChild(el);
   setTimeout(() => { el.style.transition = "opacity .3s"; el.style.opacity = "0"; setTimeout(() => el.remove(), 320); }, ms || 4200);
 }
+/* ------------------------- 检索 / 连接反馈光效（T4/T5） -------------------------
+   用法：fxBusy(true/false) 开关「检索中」的四周流动线条；
+        fxFlash("ok"/"bad") 触发一次四周绿光 / 红光闪烁，1.5s 后自动消失。
+   全部走 position:fixed + pointer-events:none，不改变原有布局、不遮挡任何操作。 */
+let fxFlashTimer = 0;
+function fxBusy(on) {
+  const el = $("#fx");
+  if (!el) return;
+  if (on) { el.classList.add("show", "busy"); return; }
+  el.classList.remove("busy");
+  if (!el.classList.contains("flash-ok") && !el.classList.contains("flash-bad")) el.classList.remove("show");
+}
+function fxFlash(kind) {
+  const el = $("#fx");
+  if (!el) return;
+  const cls = kind === "bad" ? "flash-bad" : "flash-ok";
+  el.classList.remove("flash-ok", "flash-bad");
+  void el.offsetWidth;                        // 强制重排：连续两次同色也能重放动画
+  el.classList.add("show", cls);
+  if (fxFlashTimer) clearTimeout(fxFlashTimer);
+  fxFlashTimer = setTimeout(() => {
+    el.classList.remove(cls);
+    fxFlashTimer = 0;
+    if (!state.searching && !el.classList.contains("busy")) el.classList.remove("show");
+  }, 1500);
+}
+
 function setBadge(id, cls, text) {
   const el = $("#" + id);
   if (!el) return;
@@ -2405,22 +2461,27 @@ function addOp(name) {
 }
 function removeOp(name) { delete state.box[name]; saveBox(); }
 
-/* ---- 干员列表展开 / 收起：默认展开；收起状态写入本地，刷新与切换视图后保持 ---- */
+/* ---- 干员列表展开 / 收起：默认展开；折叠状态以内存为准，本机存储仅作可选记忆 ---- */
 const LS_BOXOPEN = "akgf.boxopen.v1";
+/* 状态以内存为准：本机存储写入失败（配额已满 / 隐私模式 / 存储被禁用）时，点击仍立即生效。 */
+const boxFoldState = { closed: false };
 function boxFoldApply() {
   const list = $("#box-list"), btn = $("#btn-box-toggle");
   if (!list || !btn) return;
-  const folded = lsGet(LS_BOXOPEN) === "closed";
+  const folded = boxFoldState.closed;
   list.hidden = folded;
   btn.textContent = folded ? "展开列表" : "收起列表";
   btn.setAttribute("aria-expanded", folded ? "false" : "true");
 }
+function boxFoldToggle() {
+  boxFoldState.closed = !boxFoldState.closed;
+  lsSet(LS_BOXOPEN, boxFoldState.closed ? "closed" : "open");
+  boxFoldApply();
+}
 function boxFoldInit() {
-  const btn = $("#btn-box-toggle");
-  if (!btn) return;
-  btn.addEventListener("click", () => {
-    lsSet(LS_BOXOPEN, lsGet(LS_BOXOPEN) === "closed" ? "open" : "closed");
-    boxFoldApply();
+  boxFoldState.closed = lsGet(LS_BOXOPEN) === "closed";
+  document.addEventListener("click", (e) => {
+    if (e.target && e.target.closest && e.target.closest("#btn-box-toggle")) boxFoldToggle();
   });
   boxFoldApply();
 }
@@ -2667,6 +2728,7 @@ async function resolveChannel(force) {
     state.channel = ok ? fixed : null;
     setBadge("st-chan", ok ? "is-ok" : "is-err", ok ? "已连接 · " + fixed.label : fixed.label + " 不可用");
     if (!ok) toast("所选通道无法访问 B 站接口，请检查代理是否已启动。", "err", 6500);
+    fxFlash(ok ? "ok" : "bad");
     return state.channel;
   }
   // auto
@@ -2679,15 +2741,84 @@ async function resolveChannel(force) {
       state.channel = c;
       setBadge("st-chan", "is-ok", "已连接 · " + c.label);
       $("#chan-hint").textContent = "通道：" + c.label;
+      fxFlash("ok");
       return c;
     }
   }
   state.channel = null;
   setBadge("st-chan", "is-err", "无可用通道");
   $("#chan-hint").textContent = "无可用通道";
+  fxFlash("bad");
   return null;
 }
 
+/* ------------------------- 游戏归属过滤（只保留《明日方舟》相关） -------------------------
+   需求：检索结果里不能混入「其它游戏」的攻略视频，同时不能误杀《明日方舟》自己的关卡攻略。
+   判定只用视频自身可核对的文本（标题 / 简介 / 标签），不额外请求接口、不猜测：
+     1) 文本里出现明确的「它游名称」→ 记为他游候选；
+     2) 候选里若同时看得到《明日方舟》自身的强特征（明日方舟 / Arknights / 罗德岛 / 鹰角），
+        按「联动或对比」保留，避免误杀方舟内容；
+     3) 只有它游名称、没有任何方舟强特征 → 判定为他游，整条剔除，不进入结果列表。
+   只把「它游名称」当排除依据：标题没写游戏名的方舟攻略（如「1-7 三星低配」）一律保留。 */
+const NON_ARK_GAMES = [
+  // 二次元 / 抽卡
+  "原神", "崩坏", "崩铁", "星穹铁道", "绝区零", "少女前线", "少前", "碧蓝航线", "蔚蓝档案", "碧蓝档案",
+  "明日之后", "战双帕弥什", "战双", "无期迷途", "重返未来", "鸣潮", "幻塔", "尘白禁区", "白夜极光",
+  "阴阳师", "公主连结", "碧蓝幻想", "命运冠位指定", "白荆回廊", "暖暖", "恋与深空", "光与夜之恋",
+  "第七史诗", "剑与远征", "雀魂", "赛马娘", "弹射世界", "白猫",
+  // 竞技 / 射击 / 其它
+  "王者荣耀", "和平精英", "绝地求生", "第五人格", "永劫无间", "三角洲行动", "暗区突围", "使命召唤",
+  "穿越火线", "英雄联盟", "无畏契约", "彩虹六号", "地下城与勇士", "魔兽世界", "星际争霸", "炉石传说",
+  "金铲铲之战", "云顶之弈", "火影忍者", "斗罗大陆", "三国杀", "率土之滨", "剑网3", "剑网三", "逆水寒",
+  "天涯明月刀", "古剑奇谭", "妄想山海", "创造与魔法", "我的世界", "迷你世界", "泰拉瑞亚", "星露谷物语",
+  "宝可梦", "口袋妖怪", "怪物猎人", "上古卷轴", "艾尔登法环", "只狼", "黑神话", "塞尔达", "王国之泪",
+  "超级马里奥", "星之卡比", "光遇", "蛋仔派对", "元梦之星", "糖豆人", "开心消消乐", "咸鱼之王",
+  "无尽冬日", "向僵尸开炮", "超自然行动组", "寻道大千", "赛尔号", "洛克王国", "摩尔庄园", "方舟生存进化",
+  // 补充：常见手游 / 端游 / 主机游戏（仅含只指向它游的名称，不含《明日方舟》自身名称与术语）
+  "闪耀暖暖", "无限暖暖", "以闪亮之名", "未定事件簿", "恋与制作人", "时空中的绘旅人", "食物语", "世界之外",
+  "决战平安京", "哈利波特魔法觉醒", "荒野行动", "香肠派对", "球球大作战", "地铁跑酷", "贪吃蛇大作战", "崩坏学园",
+  "极品飞车", "QQ飞车", "QQ炫舞", "天天酷跑", "节奏大师", "梦幻西游", "大话西游", "天龙八部",
+  "剑侠情缘", "新倩女幽魂", "倩女幽魂", "一梦江湖", "红色警戒", "帝国时代", "全面战争", "饥荒",
+  "杀戮尖塔", "死亡细胞", "空洞骑士", "茶杯头", "哈迪斯", "巫师3", "命运2", "战地风云",
+  "守望先锋", "堡垒之夜", "刀塔", "魔兽争霸", "奇点时代", "宿命回响"
+];
+const NON_ARK_ASCII = [
+  "Genshin", "Honkai", "Zenless", "BlueArchive", "UmaMusume", "Wuthering", "NIKKE", "FGO",
+  "VALORANT", "Minecraft", "ARKSurvival", "AmongUs", "Stardew", "Terraria", "Palworld",
+  "StarRail", "HonkaiStarRail", "AzurLane", "GirlsFrontline", "Fortnite", "Overwatch", "Roblox",
+  "Pokemon", "Zelda", "Elden", "Sekiro", "Dota", "Tetris", "Mario", "Sonic"
+];
+const ASCII_TOKENS = (function () {
+  // 英文名按「整词」匹配，避免把别的词里的片段当游戏名；不支持 lookbehind 时退化为普通匹配。
+  try { return new RegExp("(?<![A-Za-z0-9])(?:" + NON_ARK_ASCII.join("|") + ")(?![A-Za-z0-9])", "i"); }
+  catch (e) { return new RegExp("(?:" + NON_ARK_ASCII.join("|") + ")", "i"); }
+})();
+const ARK_STRONG_RE = /明日方舟|Arknights|罗德岛|Rhodes\s*Island|アークナイツ|鹰角/i;
+function nonArkGameIn(text) {
+  const t = String(text || "");
+  for (const g of NON_ARK_GAMES) if (t.indexOf(g) >= 0) return g;
+  const m = ASCII_TOKENS.exec(t);
+  return m ? m[0] : "";
+}
+function arkStrongIn(text) { return ARK_STRONG_RE.test(String(text || "")); }
+function arkGate(v) {
+  const text = [v && v.title, v && v.desc, v && v.tag].filter(Boolean).join(" ");
+  const game = nonArkGameIn(text);
+  if (!game) return { ok: true, game: "", why: "" };
+  if (arkStrongIn(text)) return { ok: true, game: game, why: "方舟联动 / 对比：" + game };
+  return { ok: false, game: game, why: "其它游戏：" + game, title: (v && v.title) || "" };
+}
+function arkFilter(list) {
+  const kept = [], dropped = [];
+  for (const v of (list || [])) { const g = arkGate(v); if (g.ok) kept.push(v); else dropped.push(g); }
+  return { kept: kept, dropped: dropped };
+}
+function arkDroppedTxt(dropped) {
+  if (!dropped.length) return "";
+  const names = [];
+  for (const d of dropped) if (d.game && names.indexOf(d.game) < 0) names.push(d.game);
+  return "已剔除其它游戏视频 " + dropped.length + " 条（" + names.slice(0, 4).join("、") + (names.length > 4 ? " 等" : "") + "）";
+}
 /* ------------------------- B 站检索 ------------------------- */
 function mapVideo(v) {
   const picRaw = String(v.pic || "");
@@ -2747,9 +2878,11 @@ async function runSearch() {
 
   state.searching = true;
   state.aborter = new AbortController();
+  fxBusy(true);
   $("#btn-search").disabled = true;
   $("#btn-stop").disabled = false;
   const got = new Map();
+  const arkDropped = [];   // 被判定为「其它游戏」而剔除的视频（只计数，不进结果列表）
   const pages = clamp(Number(state.options.pages) || 1, 1, 5);
   const delay = clamp(Number(state.options.delay) || 0, 0, 5000);
   let total = 0, failed = 0;
@@ -2765,7 +2898,12 @@ async function runSearch() {
           const r = await biliSearch(k.kw, p, chan, state.aborter.signal);
           total += r.items.length;
           let fresh = 0;
-          for (const v of r.items) { if (!got.has(v.bvid)) { got.set(v.bvid, v); fresh++; } }
+          for (const v of r.items) {
+            if (got.has(v.bvid)) continue;
+            const gate = arkGate(v);                 // 只留《明日方舟》相关，其它游戏整条剔除
+            if (!gate.ok) { arkDropped.push(gate); continue; }
+            got.set(v.bvid, v); fresh++;
+          }
           if (!r.items.length || (r.numPages && p >= r.numPages)) break;
           if (fresh === 0 && p >= 2) break;
         } catch (e) {
@@ -2784,17 +2922,24 @@ async function runSearch() {
     state.videos = videos.map(analyze);
     renderResults();
     $("#search-status").textContent = "检索完成：原始 " + total + " 条，去重后 " + videos.length + " 条。" +
+      (arkDropped.length ? arkDroppedTxt(arkDropped) + "。" : "") +
       (failed ? "（" + failed + " 次请求失败：" + errMsgs.slice(0, 2).join("；") + "）" : "");
     if (!videos.length) {
-      toast(failed ? "没有取到结果，且存在请求失败：" + errMsgs[0] : "检索完成，但 B 站没有返回相关视频。", failed ? "err" : "info", 8000);
+      toast(failed ? "没有取到结果，且存在请求失败：" + errMsgs[0]
+        : (arkDropped.length ? "检索到的视频都属于其它游戏，已全部剔除（" + arkDropped.length + " 条）。" : "检索完成，但 B 站没有返回相关视频。"),
+        failed ? "err" : "info", 8000);
+      fxFlash("bad");
     } else {
-      toast("检索完成，共 " + videos.length + " 条，其中 " + state.videos.filter((v) => v.level === "full").length + " 条与你的练度完全吻合。", "ok");
+      toast("检索完成，共 " + videos.length + " 条" + (arkDropped.length ? "（" + arkDroppedTxt(arkDropped) + "）" : "") +
+        "，其中 " + state.videos.filter((v) => v.level === "full").length + " 条与你的练度完全吻合。", "ok");
+      fxFlash("ok");
     }
   } catch (e) {
     if (e && e.message === "__abort__") { toast("已停止检索", "info"); $("#search-status").textContent = "已停止，已获得 " + state.videos.length + " 条结果。"; }
-    else { toast("检索中断：" + (e && e.message ? e.message : e), "err", 8000); }
+    else { toast("检索中断：" + (e && e.message ? e.message : e), "err", 8000); fxFlash("bad"); }
   } finally {
     state.searching = false;
+    fxBusy(false);
     $("#btn-search").disabled = false;
     $("#btn-stop").disabled = true;
     updateSearchButton();
@@ -3454,15 +3599,19 @@ function runPaste() {
   if (!items.length) { toast("没有识别到 BV 号或视频条目", "err", 6000); return; }
   const existing = new Map(state.videos.map((v) => [v.bvid, v]));
   let added = 0;
+  const droppedPaste = [];
   for (const it of items) {
     if (existing.has(it.bvid)) continue;
+    const gate = arkGate(it);                     // 粘贴导入同样只留《明日方舟》相关
+    if (!gate.ok) { droppedPaste.push(gate); continue; }
     const v = analyze(it);
     existing.set(it.bvid, v);
     added++;
   }
   state.videos = Array.from(existing.values());
   renderResults();
-  toast("解析到 " + items.length + " 条，新增 " + added + " 条", "ok");
+  toast("解析到 " + items.length + " 条，新增 " + added + " 条" +
+    (droppedPaste.length ? "（" + arkDroppedTxt(droppedPaste) + "）" : ""), "ok");
 }
 
 /* ------------------------- 森空岛账号接入 ------------------------- */
@@ -3834,6 +3983,7 @@ async function skPollTick() {
   } catch (e) {
     skStopPoll();
     setSkScan("轮询失败：" + ((e && e.message) || e) + "（点「刷新二维码」可重试）", "err");
+    fxFlash("bad");
   } finally {
     skPollBusy = false;
   }
@@ -3855,9 +4005,11 @@ async function skBindByCred(cred, signToken, userId) {
     state.sk.nickName = binds[0].nickName || "";
     state.sk.uid = binds[0].uid;
     skSave(); skRenderPanel();
+    fxFlash("ok");
     return binds;
   } catch (e) {
     Object.assign(state.sk, prev);
+    fxFlash("bad");
     throw e;
   }
 }
@@ -3935,8 +4087,10 @@ async function skSync() {
     toast("已从森空岛读取 " + rows.length + " 名干员，写入 BOX " + wrote + " 名" +
       (res.skipped ? "，跳过 " + res.skipped + " 名未收录干员" : "") +
       ($("#sk-merge").checked ? "（合并模式）" : "（覆盖模式）") + "。", "ok", 8000);
+    fxFlash("ok");
   } catch (e) {
     toast("读取失败：" + ((e && e.message) || e), "err", 10000);
+    fxFlash("bad");
     const el = $("#sk-scan-status");
     if (el) setSkScan("读取失败：" + ((e && e.message) || e), "err");
   } finally {
@@ -3983,11 +4137,13 @@ async function skTestRelay() {
       if (hint) { hint.className = "sk-status ok"; hint.textContent = "可用：" + c.label; }
       skRenderPanel();
       toast("转发通道可用：" + c.label, "ok");
+      fxFlash("ok");
       return;
     } catch (e) { msg.push(c.label + " ✗"); }
   }
   if (hint) { hint.className = "sk-status err"; hint.textContent = "均不可用（" + msg.join(" · ") + "）"; }
   toast("没有可用的转发通道。请启动本机代理（python proxy.py），或在「代理设置」里填写可用前缀。", "err", 9000);
+  fxFlash("bad");
 }
 function skSwitchTab(name) {
   $$("#sk-tabs .chip").forEach((b) => b.classList.toggle("on", b.dataset.skTab === name));
