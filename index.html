@@ -351,10 +351,12 @@ button{font-family:inherit}
 [data-view]{display:none}
 html[data-view-cur="home"] [data-view="home"],
 html[data-view-cur="settings"] [data-view="settings"],
-html[data-view-cur="login"] [data-view="login"]{display:block}
-html[data-view-cur="settings"] .wrap,html[data-view-cur="login"] .wrap{grid-template-columns:minmax(0,1fr)}
+html[data-view-cur="login"] [data-view="login"],
+html[data-view-cur="growth"] [data-view="growth"]{display:block}
+html[data-view-cur="settings"] .wrap,html[data-view-cur="login"] .wrap,html[data-view-cur="growth"] .wrap{grid-template-columns:minmax(0,1fr)}
 html[data-view-cur="settings"] .col-left,
 html[data-view-cur="login"] .col-left{grid-column:1/-1;width:100%;max-width:1040px;justify-self:center}
+html[data-view-cur="growth"] .col-left{grid-column:1/-1;width:100%;max-width:1180px;justify-self:center}
 @media (max-width:900px){.nvb .nvb-s{display:none}.view-crumb{display:none}}
 
 /* ---------- 面板（含方舟式切角与强调条）---------- */
@@ -735,7 +737,7 @@ pre.code{
 /* T9 可点击引导链接：虚线强调 + 外链角标，全部走既有令牌 */
 a.lnk{cursor:pointer}
 a.lnk code{border-bottom:1px dashed var(--accent)}
-a.lnk::after{content:"\2197";font-size:12px;line-height:1;margin-left:4px;vertical-align:top;color:var(--accent);opacity:.85}
+a.lnk::after{content:"\2197";font-size:15px;line-height:1;margin-left:4px;vertical-align:top;color:var(--accent);opacity:.85}
 a.lnk:hover code{background:var(--hover);border-color:var(--line-hi)}
 a.lnk:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:7px}
 .sk-status{font-size:15px;color:var(--txt-dim);min-height:22px;line-height:1.6}
@@ -910,6 +912,52 @@ body::after{
   background:linear-gradient(135deg,rgba(var(--accent-rgb),.10),transparent 62%)}
 .wrap::after{right:-2px;bottom:-2px;border-left:0;border-top:0;border-radius:0 0 10px 0;
   background:linear-gradient(315deg,rgba(var(--second-rgb),.10),transparent 62%)}
+/* ---------- 养成推荐页（growth）：未登录空态 + 登录后数据区 ---------- */
+.growth-gate-t{font-size:18px;font-weight:700;color:var(--txt)}
+.growth-gate-p{max-width:640px;margin:11px auto 0;line-height:1.85}
+.growth-gate-a{display:flex;justify-content:center;margin-top:15px}
+.growth-head{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:13px}
+.growth-head .right{margin-left:auto;display:flex;gap:7px;flex-wrap:wrap}
+.growth-stat{display:flex;gap:9px;flex-wrap:wrap}
+.growth-stat .gs-b{display:inline-flex;align-items:baseline;gap:7px;border:1px solid var(--line);border-radius:8px;background:var(--wash-1);padding:7px 11px;font-size:15px;color:var(--txt-dim)}
+.growth-stat .gs-b b{font:700 17px/1 var(--mono);color:var(--accent)}
+.growth-block{margin-top:18px}
+.growth-block>h3{margin:0 0 10px;font-size:16.5px;font-weight:650;display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+.growth-block>h3 .pn{width:24px;height:24px;flex:0 0 24px;display:grid;place-items:center;font:700 15px/1 var(--mono);background:rgba(var(--accent-rgb),.2);color:var(--accent);border:1px solid rgba(var(--accent-rgb),.5);clip-path:polygon(24% 0,100% 0,100% 76%,76% 100%,0 100%,0 24%)}
+.growth-block>h3 .hint{font-size:15px;font-weight:400;color:var(--txt-mute)}
+.growth-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(235px,1fr));gap:9px}
+.growth-grid .gl{display:flex;align-items:center;gap:8px;min-width:0;border:1px solid var(--line);border-left:3px solid var(--line-hi);border-radius:8px;background:var(--wash-1);padding:7px 9px}
+.growth-grid .gl img{width:26px;height:26px;border-radius:6px;object-fit:cover;background:var(--img-bg);flex:0 0 26px}
+.growth-grid .gl .gl-nm{min-width:0;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.growth-grid .gl .gl-rec{margin-left:auto;font:600 15px/1.4 var(--mono);color:var(--txt-dim);white-space:nowrap}
+.growth-grid .gl.ok{border-left-color:var(--ok)}
+.growth-grid .gl.ok .gl-rec{color:var(--ok)}
+.growth-grid .gl.up{border-left-color:var(--accent)}
+.growth-grid .gl.up .gl-rec{color:var(--accent)}
+.growth-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:7px}
+.growth-list li{display:flex;align-items:center;gap:9px;flex-wrap:wrap;border:1px solid var(--line);border-left:3px solid var(--line-hi);border-radius:8px;background:var(--wash-1);padding:8px 10px;font-size:15px;color:var(--txt-dim)}
+.growth-list li img{width:26px;height:26px;border-radius:6px;object-fit:cover;background:var(--img-bg);flex:0 0 26px}
+.growth-list li .g-nm{font-size:15.5px;font-weight:650;color:var(--txt)}
+.growth-list li .g-target{font:600 15px/1.5 var(--mono);color:var(--accent)}
+.growth-list li .g-why{color:var(--txt-mute)}
+.growth-list li .g-right{margin-left:auto;display:flex;gap:7px;align-items:center;flex-wrap:wrap}
+.growth-list li.p1{border-left-color:var(--accent)}
+.growth-list li.p2{border-left-color:var(--second)}
+.growth-list li.p3{border-left-color:var(--line-hi)}
+.growth-tag{font:700 15px/1.4 var(--mono);padding:3px 7px;border-radius:5px;border:1px solid var(--line);background:var(--panel-2);color:var(--txt-dim);white-space:nowrap}
+.growth-tag.p1{background:rgba(var(--accent-rgb),.18);border-color:rgba(var(--accent-rgb),.6);color:var(--accent)}
+.growth-tag.p2{background:rgba(var(--second-rgb),.16);border-color:rgba(var(--second-rgb),.5);color:var(--second)}
+.growth-tag.p3{background:var(--panel-2);border-color:var(--line);color:var(--txt-mute)}
+.growth-empty{border:1px dashed var(--line);border-radius:9px;background:var(--wash-1);padding:14px 16px;font-size:15px;color:var(--txt-mute);line-height:1.85}
+.growth-empty b{color:var(--txt)}
+.growth-basis{font-size:15px;color:var(--txt-mute);line-height:1.8;margin:14px 0 0;border-top:1px dashed var(--line);padding-top:10px}
+.growth-basis b{color:var(--txt-dim)}
+.growth-basis .cat-lnk{color:var(--second)}
+.growth-refs{list-style:none;margin:9px 0 0;padding:0;font-size:15px;color:var(--txt-mute);line-height:1.85}
+.growth-refs li{position:relative;padding-left:13px}
+.growth-refs li::before{content:"·";position:absolute;left:2px;color:var(--accent);font-weight:700}
+.growth-refs .cat-lnk{color:var(--second)}
+
 </style>
 </head>
 <body>
@@ -953,6 +1001,7 @@ body::after{
       <button class="nvb" id="nv-home" type="button" aria-current="page" title="主页：选关卡 / 录练度 / 发起检索 / 看结果列表"><span class="nvb-ic" aria-hidden="true">◈</span><span class="nvb-t">主页</span><span class="nvb-s">选关卡 · 录练度 · 检索</span></button>
       <button class="nvb" id="nv-settings" type="button" title="设置：合格练度标准 / 检索设置（通道、翻页、间隔）"><span class="nvb-ic" aria-hidden="true">⚙</span><span class="nvb-t">设置</span><span class="nvb-s">合格练度标准 · 检索设置</span></button>
       <button class="nvb" id="nv-login" type="button" title="登录：森空岛账号（扫码 / 凭证导入，读取账号干员与练度）"><span class="nvb-ic" aria-hidden="true">◇</span><span class="nvb-t">登录</span><span class="nvb-s">森空岛账号 · 扫码 / 凭证</span></button>
+      <button class="nvb" id="nv-growth" type="button" title="养成推荐：登录森空岛后，按账号练度给出养成与抽取优先级"><span class="nvb-ic" aria-hidden="true">✦</span><span class="nvb-t">养成推荐</span><span class="nvb-s">账号练度 · 养成 / 抽取</span></button>
     </nav>
     <span class="view-crumb" id="view-crumb">当前视图：主页</span>
   </div>
@@ -1104,6 +1153,27 @@ body::after{
           <div class="sk-meta" id="sk-meta" hidden></div>
         </div>
         <p class="sub" style="margin-top:12px">登录或凭证导入成功后，回到「主页」点「读取并写入 BOX」即可把账号里的干员与练度一次性录进 BOX（也可在这里直接同步）。</p>
+      </div>
+    </section>
+
+    <!-- 养成推荐视图：登录森空岛后读取账号练度，给出养成 / 抽取优先级（未登录时显示空态引导） -->
+    <section class="panel" data-view="growth">
+      <div class="panel-h">
+        <span class="step-n">◆</span>
+        <h2>养成推荐 · 按账号练度排优先级</h2>
+        <span class="hint" id="growth-hint">未登录森空岛</span>
+      </div>
+      <div class="panel-b">
+        <!-- 未登录空态：明确引导去「登录」页；凭据只存本机 -->
+        <div class="empty" id="growth-gate">
+          <div class="growth-gate-t">需要先登录森空岛</div>
+          <p class="sub growth-gate-p">养成推荐要读你账号里<b>实际拥有的干员与练度</b>才能给出，请先在「登录」页用森空岛 App 扫码，或粘贴凭证导入。凭据只保存在本机浏览器，代理脚本仅转发、不留存。</p>
+          <div class="btn-row growth-gate-a">
+            <button class="btn btn-primary" id="growth-go-login" type="button">去登录森空岛</button>
+          </div>
+        </div>
+        <!-- 数据区：登录后由 growthRender() 填充（练度总览 / 养成推荐 / 抽取推荐） -->
+        <div id="growth-body" hidden></div>
       </div>
     </section>
 
@@ -3470,6 +3540,7 @@ function skRenderPanel() {
     tb.classList.toggle("is-err", on && exp);
   }
   skRenderAccount();
+  try { if (typeof growthRender === "function") growthRender(); } catch (e) {}
 }
 function skRenderAccount() {
   const box = $("#sk-account");
@@ -3683,6 +3754,7 @@ function skApplyBox(boxObj, merge) {
   for (const n of Object.keys(boxObj)) state.box[n] = boxObj[n];
   saveBox();
   renderBox(); renderOpGrid(); buildKeywords(); renderKeywordList();
+  try { if (typeof growthRender === "function") growthRender(); } catch (e) {}
   if (state.videos.length && typeof analyze === "function") {
     state.videos = state.videos.map((v) => analyze(Object.assign({}, v)));
     renderResults();
@@ -4574,7 +4646,7 @@ function fillHelpCode() {
 
 /* ---------------- 视图切换：主页 / 设置 / 登录 ---------------- */
 const LS_VIEW = "akgf.view.v1";
-const VIEWS = { home: "主页", settings: "设置", login: "登录" };
+const VIEWS = { home: "主页", settings: "设置", login: "登录", growth: "养成推荐" };
 function getView() {
   const v = lsGet(LS_VIEW);
   return Object.prototype.hasOwnProperty.call(VIEWS, v) ? v : "home";
@@ -4597,6 +4669,7 @@ function applyView(v, persist) {
   if (persist) lsSet(LS_VIEW, name);
   try { guideRefresh(); } catch (e) {}
   try { if (typeof stepSpot === "function") stepSpot(); } catch (e) {}
+  try { if (typeof growthRender === "function") growthRender(); } catch (e) {}
   return name;
 }
 function viewGo(v, smooth) {
@@ -4621,6 +4694,158 @@ function viewInit() {
   }, true);
 }
 
+/* ---------------- 养成推荐页：视图挂载 + 账号练度数据区 ---------------- */
+/* 入口：导航「养成推荐」。未登录 → 空态引导去登录；已登录 → 展示账号练度与养成 / 抽取优先级。
+   数据只来自本机 BOX（由森空岛账号同步而来）与站内既有干员分类名单，不引入外部评级。 */
+function growthStat() {
+  const names = Object.keys(state.box);
+  const ok = names.filter((n) => meet(n));
+  return { total: names.length, ok: ok.length, lack: names.length - ok.length };
+}
+function growthRender() {
+  const gate = $("#growth-gate"), body = $("#growth-body"), hint = $("#growth-hint");
+  if (!gate || !body) return;
+  const on = skLoggedIn();
+  gate.hidden = on;
+  body.hidden = !on;
+  if (hint) hint.textContent = on ? (skExpired() ? "授权已过期，请重新登录" : "已连接森空岛") : "未登录森空岛";
+  if (!on) { body.innerHTML = ""; return; }
+  try { growthFill(); } catch (e) {
+    body.innerHTML = '<div class="growth-empty">渲染失败：' + esc((e && e.message) || e) + "</div>";
+  }
+}
+function growthFill() {
+  const body = $("#growth-body");
+  if (!body) return;
+  const st = growthStat();
+  let h = '<div class="growth-head"><div class="growth-stat">' +
+    '<span class="gs-b">账号干员 <b>' + st.total + '</b> 名</span>' +
+    '<span class="gs-b">已达合格线 <b>' + st.ok + '</b> 名</span>' +
+    '<span class="gs-b">仍待养成 <b>' + st.lack + '</b> 名</span>' +
+    '</div><span class="right"><button class="btn btn-sm btn-primary" type="button" data-gact="sync">读取并写入 BOX</button>' +
+    '<button class="btn btn-sm" type="button" data-gact="setup">调整合格练度标准</button></span></div>';
+  if (!st.total) {
+    h += '<div class="growth-empty">已连接森空岛，但本机 BOX 还是空的。点右上「读取并写入 BOX」把账号里的干员与练度一次性同步进来；同步完成后，本页会列出<b>全部干员练度</b>并给出<b>推荐养成</b>与<b>推荐抽取</b>的优先级。</div>';
+  } else {
+    const rows = boxNames().sort(growthSort);
+    h += '<div class="growth-block"><h3><span class="pn">1</span>账号干员练度总览'
+      + '<span class="hint">共 ' + rows.length + ' 名 · 绿色为已达合格线，橙色为未达标</span></h3>'
+      + '<div class="growth-grid">' + growthLevelRows(rows) + '</div>'
+      + '<p class="growth-basis"><b>数据来源：</b>本机 BOX（由森空岛账号「读取并写入 BOX」同步而来），'
+      + '与主页「我的干员与练度」是同一份数据；合格线取「设置」里的当前标准。</p></div>';
+    h += '<div class="growth-block"><h3><span class="pn">2</span>推荐养成角色 · 优先级与目标'
+      + '<span class="hint">只列尚未达到合格线的干员</span></h3>' + growthAdvice() + '</div>';
+    h += '<div class="growth-block"><h3><span class="pn">3</span>推荐抽取角色 · 优先级'
+      + '<span class="hint">只列你尚未拥有的站内推荐名单干员</span></h3>' + growthPull() + '</div>';
+    h += '<p class="growth-basis"><b>推荐依据（全部取自站内既有、可逐条核对的数据，不引入任何外部评级）：</b>'
+      + '① <b>目标练度</b> = 「设置」里你当前的合格练度标准（现已设为 ' + growthTargetText() + '）；'
+      + '② <b>养成优先级</b> 按干员所属分类 —— P1 攻略中常用角色 → P2 适合日常挂机 / 永续的角色 → P3 其余未达标干员；'
+      + '③ <b>抽取优先级</b> 按稀有度 —— P1 6★ → P2 5★ → P3 4★ 及以下（获取渠道更多）；名单取自下方分类名单。</p>'
+      + '<ul class="growth-refs"><li>' + CAT_BASIS.common + '</li><li>' + CAT_BASIS.afk + '</li><li>' + CAT_BASIS.perm + '</li></ul>';
+  }
+  body.innerHTML = h;
+}
+function growthSort(a, b) {
+  const A = state.opByName.get(a), B = state.opByName.get(b);
+  return ((B ? B.rarity : 0) - (A ? A.rarity : 0)) || a.localeCompare(b, "zh");
+}
+function growthRar(n) { const op = state.opByName.get(n); return op ? op.rarity : 0; }
+function growthTargetText() {
+  const t = state.threshold;
+  return E_LABEL[t.e] + ' / Lv' + t.l + ' / ' + M_LABEL[t.m] + ' / ' + MOD_LABEL[t.mod];
+}
+/* ---- 推荐养成：只针对未达合格线的干员；优先级 = 站内分类(常>挂/永>其余)，同级按稀有度 ---- */
+function growthAdvice() {
+  const rows = boxNames().filter((n) => !meet(n));
+  if (!rows.length) return '<div class="growth-empty">当前 BOX 里的干员都达到了合格练度标准，暂无需要补练的角色。</div>';
+  const pr = (n) => (CAT_SETS.common.has(n) ? 1 : (CAT_SETS.afk.has(n) || CAT_SETS.perm.has(n) ? 2 : 3));
+  rows.sort((a, b) => (pr(a) - pr(b)) || (growthRar(b) - growthRar(a)) || a.localeCompare(b, "zh"));
+  const target = growthTargetText();
+  const plab = { 1: "优先养", 2: "次优先", 3: "可后置" };
+  const preason = {
+    1: "站内分类：攻略中常用角色（低配作业常客，先补齐主力）",
+    2: "站内分类：适合日常挂机 / 永续的角色（推图省心）",
+    3: "不在站内推荐分类名单中，按需补练" };
+  return '<ul class="growth-list">' + rows.map((n) => {
+    const r = normRec(state.box[n]);
+    const op = state.opByName.get(n);
+    const p = pr(n);
+    return '<li class="p' + p + '" data-grec="' + esc(n) + '" data-grec-p="' + p + '" data-grec-target="' + esc(target) + '">'
+      + (op ? '<img loading="lazy" src="' + avatarUrl(op) + '" alt="" data-cid="' + esc(op.id) + '" data-base="0" onerror="imgFallback(this)">' : "")
+      + '<span class="g-nm">' + esc(n) + '</span>'
+      + (op ? '<span class="sub">' + op.rarity + '★ ' + esc(op.professionName) + '</span>' : "")
+      + catSpan(n)
+      + '<span class="g-target">目标 ' + target + '</span>'
+      + '<span class="g-why">当前 ' + E_LABEL[r.e] + " / Lv" + r.l + " / " + M_LABEL[r.m] + " / " + MOD_LABEL[r.mod] + ' · ' + preason[p] + '</span>'
+      + '<span class="g-right"><span class="growth-tag p' + p + '">P' + p + ' ' + plab[p] + '</span></span></li>';
+  }).join("") + "</ul>";
+}
+/* ---- 推荐抽取：名单 = 站内分类名单（CAT_MEMBERS ∪ CAT_SKILL）中尚未拥有者；优先级 = 稀有度 ---- */
+function growthPullPool() {
+  const pool = new Set();
+  Object.keys(CAT_MEMBERS).forEach((k) => CAT_MEMBERS[k].forEach((n) => pool.add(n)));
+  Object.keys(CAT_SKILL).forEach((n) => pool.add(n));
+  return Array.from(pool).filter((n) => !state.box[n] && state.opByName.has(n));
+}
+function growthPull() {
+  if (!state.ops.length) return '<div class="growth-empty">干员数据表尚未加载，暂时无法生成抽取推荐：' 
+    + '本页的干员名册与稀有度取自公开游戏数据表，请检查网络后刷新页面。</div>';
+  const pool = growthPullPool();
+  if (!pool.length) return '<div class="growth-empty">站内推荐名单里的干员你都已经拥有了。</div>';
+  const pr = (n) => { const r = growthRar(n); return r >= 6 ? 1 : (r === 5 ? 2 : 3); };
+  pool.sort((a, b) => (pr(a) - pr(b)) || (growthRar(b) - growthRar(a)) || a.localeCompare(b, "zh"));
+  const plab = { 1: "优先抽", 2: "可抽", 3: "最后考虑" };
+  const preason = {
+    1: "站内推荐名单中的 6★（通用核心）",
+    2: "站内推荐名单中的 5★（通用功能位）",
+    3: "4★ 及以下：获取渠道更多，抽取优先级最低" };
+  return '<ul class="growth-list">' + pool.map((n) => {
+    const op = state.opByName.get(n);
+    const p = pr(n);
+    return '<li class="p' + p + '" data-gpull="' + esc(n) + '" data-gpull-p="' + p + '">'
+      + (op ? '<img loading="lazy" src="' + avatarUrl(op) + '" alt="" data-cid="' + esc(op.id) + '" data-base="0" onerror="imgFallback(this)">' : "")
+      + '<span class="g-nm">' + esc(n) + '</span>'
+      + (op ? '<span class="sub">' + op.rarity + '★ ' + esc(op.professionName) + '</span>' : "")
+      + '<span class="g-why">' + esc(catTitle(n)) + '</span>'
+      + '<span class="g-why">' + preason[p] + '</span>'
+      + '<span class="g-right"><span class="growth-tag p' + p + '">P' + p + ' ' + plab[p] + '</span></span></li>';
+  }).join("") + "</ul>";
+}
+/* 全部干员练度行：与主页 BOX 同源，逐条带 data-gg-* 便于核对 */
+function growthLevelRows(rows) {
+  return rows.map((n) => {
+    const r = normRec(state.box[n]);
+    const op = state.opByName.get(n);
+    const ok = meet(n);
+    return '<div class="gl ' + (ok ? "ok" : "up") + '" data-gg="' + esc(n) + '"'
+      + ' data-gg-e="' + r.e + '" data-gg-l="' + r.l + '" data-gg-m="' + r.m + '" data-gg-mod="' + r.mod + '"'
+      + ' title="' + esc(n + (op ? " · " + op.rarity + "★ " + op.professionName : "") + (ok ? " · 已达合格线" : " · 未达标")) + '">'
+      + (op ? '<img loading="lazy" src="' + avatarUrl(op) + '" alt="" data-cid="' + esc(op.id) + '" data-base="0" onerror="imgFallback(this)">' : "")
+      + '<span class="gl-nm">' + esc(n) + '</span>'
+      + '<span class="gl-rec">' + E_LABEL[r.e] + " / Lv" + r.l + " / " + M_LABEL[r.m] + " / " + MOD_LABEL[r.mod] + '</span></div>';
+  }).join("");
+}
+function growthInit() {
+  const go = $("#growth-go-login");
+  if (go) go.addEventListener("click", () => {
+    viewGo("login", true);
+    setTimeout(() => { try { skOpenDialog(skLoggedIn() ? "relay" : "qr"); } catch (e) {} }, 80);
+  });
+  /* 数据区按钮用事件委派（按钮在 growthFill 里动态生成，不建静态 id） */
+  const body = $("#growth-body");
+  if (body) body.addEventListener("click", (e) => {
+    const b = e.target && e.target.closest ? e.target.closest("[data-gact]") : null;
+    if (!b) return;
+    const act = b.getAttribute("data-gact");
+    if (act === "sync") skSync();
+    else if (act === "setup") {
+      viewGo("settings", true);
+      setTimeout(() => { const el = $("#th-e"); if (el && el.focus) el.focus(); }, 120);
+    }
+  });
+  growthRender();
+}
+
 /* ------------------------- 启动 ------------------------- */
 loadLocal();
 themeInit();
@@ -4631,6 +4856,7 @@ priInit();
 stageInit();
 bind();
 skInit();
+growthInit();
 fillHelpCode();
 $("#result-body").innerHTML = '<div class="empty"><div class="spin spin-lg" role="status" aria-label="正在读取数据"></div><div style="margin-top:12px">正在读取干员与关卡数据…</div><div class="sub" style="margin-top:6px">首次约 35 MB，之后读浏览器缓存，秒开。</div></div>';
 bootData();
