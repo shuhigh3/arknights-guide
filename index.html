@@ -1916,6 +1916,9 @@ const MOD_LABEL = { 0: "无", 1: "模1", 2: "模2", 3: "模3" };
 const LS_BOX = "akgf.box.v1";
 const LS_TH = "akgf.threshold.v1";
 const LS_OPT = "akgf.options.v1";
+// 站点内置默认检索中继（腾讯云 SCF 函数 URL）：新访客打开站点即走这条通道，不用本机代理；
+// 在「检索设置」里选本机代理 / 自定义前缀会覆盖此处默认值。
+const DEFAULT_RELAY = "https://1316809184-9fdqr4gh7f.ap-guangzhou.tencentscf.com/proxy?url=";
 const LS_THEME = "akgf.theme.v1";
 const LS_MODE = "akgf.mode.v1";
 const LS_GUIDE = "akgf.guide.v1";
@@ -2054,7 +2057,7 @@ const state = {
   stageByStageId: new Map(),
   box: {},            // { 干员名: {e,l,m,mod} }
   threshold: { e: 2, l: 60, m: 3, mod: 0 },
-  options: { pages: 2, delay: 700, chan: "auto", prefix: "", relay: "", skPrefix: "", sfx: true },
+  options: { pages: 2, delay: 700, chan: "auto", prefix: "", relay: DEFAULT_RELAY, skPrefix: "", sfx: true },
   selectedStage: null,
   keywords: [],       // [{kw, tag, on}]
   kwStage: null,      // 关键词所属关卡 stageId，用于跨关卡重建时区分保留勾选
@@ -2483,6 +2486,9 @@ function loadLocal() {
   try {
     const o = JSON.parse(localStorage.getItem(LS_OPT) || "null");
     if (o && typeof o === "object") state.options = Object.assign(state.options, o);
+    // 老访客 localStorage 里可能存着空的 relay，直接合并会盖掉上面内置的默认中继；
+    // 只在存值为空时回填默认值，用户自己填过的地址不受影响。
+    if (!String(state.options.relay || "").trim()) state.options.relay = DEFAULT_RELAY;
   } catch (e) {}
 
   $("#th-e").value = String(state.threshold.e);
