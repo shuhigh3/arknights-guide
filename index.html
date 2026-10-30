@@ -1331,9 +1331,10 @@ html[data-mode="light"] #fx{--fx-rgb:0,150,190}
           <div class="full">
             <label class="fl" for="opt-chan">检索通道</label>
             <select id="opt-chan">
-              <option value="auto" selected>自动（依次尝试本机代理 / 公共代理 / 直连）</option>
+              <option value="auto" selected>自动（依次尝试自建中继 / 本机代理 / 公共代理 / 直连）</option>
+              <option value="relay">自建中继（云函数，部署一次，全设备可用）</option>
               <option value="local">本机代理 http://127.0.0.1:8787/proxy?url=</option>
-              <option value="sameorigin">当前站点代理 /proxy?url=</option>
+              <option value="sameorigin">当前站点代理 /proxy?url=（B 站检索：仅站点自建转发可用；云平台出口会被拦截）</option>
               <option value="custom">自定义代理前缀</option>
               <option value="direct">直连（多数浏览器会被 CORS 拦截）</option>
               <option value="none">不使用联机检索（在结果框内「粘贴导入」分析）</option>
@@ -1342,6 +1343,11 @@ html[data-mode="light"] #fx{--fx-rgb:0,150,190}
           <div class="full" id="custom-wrap" style="display:none">
             <label class="fl" for="opt-prefix">自定义代理前缀（会把 url 参数编码后拼在末尾）</label>
             <input type="text" id="opt-prefix" placeholder="https://your-worker.workers.dev/?url=">
+          </div>
+          <div class="full" id="relay-wrap" style="display:none">
+            <label class="fl" for="opt-relay">自建中继地址（把 url 参数编码后拼在末尾）</label>
+            <input type="text" id="opt-relay" placeholder="https://你的函数地址/proxy?url=">
+            <p class="sub" style="margin-top:6px">把随附的 <code>arknights-relay.js</code> 部署到腾讯云 SCF 或阿里云函数计算 FC，拿到访问地址后按 <code>…/proxy?url=</code> 填在这里。填好后选「自建中继」或「自动」都可以，测通后会记住，之后在任何设备打开本站点都能直接检索，不用再开本机代理。点「通道说明 / 自建代理」有逐步部署方法。</p>
           </div>
         </div>
         <div class="btn-row mt">
@@ -1500,10 +1506,18 @@ html[data-mode="light"] #fx{--fx-rgb:0,150,190}
       <button class="x" data-close="dlg-help" aria-label="关闭">×</button>
     </div>
     <div class="dlg-b help">
-      <p>B 站搜索接口对浏览器跨域请求有风控限制：带上 <code>Origin</code> 头会被直接拦截，因此纯网页直连通常拿不到数据（这是 B 站的策略，不是本工具的缺陷）。要拿到可自动分析的结果，需要一条“代理通道”。</p>
-      <p>另外，B 站的检索接口要求请求携带 <code>buvid3 / buvid4</code> 设备指纹，否则会返回 <code>412</code>；纯浏览器脚本无法伪造它，所以下面两条通道的代码都已经内置了「先取指纹、再带 Cookie 检索」的处理，直接复制即可用。</p>
+      <p>B 站检索接口会对请求来源做风控：纯网页直连（带 <code>Origin</code> 头）通常会被拦；架在 <code>Cloudflare</code> 这类云平台上的中继也会被按出口 IP 拦回 <code>412 request was banned</code>。所以想让工具<b>自动</b>拿到结果，需要一条「出口不被风控的中继」。</p>
+      <p>本工具自带的中继代码已内置浏览器同款请求头与设备指纹（<code>buvid</code>）处理，直接部署就能用，不需要你写任何网络代码。</p>
 
-      <h4>方案 A（推荐，最稳）：本机 20 行代理脚本</h4>
+      <h4>方案 A（推荐，部署一次、全设备可用）：国内云函数中继</h4>
+      <ol>
+        <li>把随附的 <code>arknights-relay.js</code> 部署成国内云函数：<b>腾讯云 SCF</b> 或 <b>阿里云函数计算 FC</b>（注册时需一次实名认证）；</li>
+        <li>开通 HTTP 触发器，拿到访问地址，形如 <code>https://xxxx/proxy?url=</code>（路径带前缀也可以，例如 <code>/release/proxy?url=</code>）；</li>
+        <li>把地址填进「检索设置 → 自建中继地址」，通道选「自建中继」或「自动」都行；测通后会记住。此后在<b>任何设备</b>打开这个站点都能直接检索，不用再开本机代理。</li>
+      </ol>
+      <p class="sub" style="margin-top:6px">两套控制台的逐步操作见随附的《云函数中继部署指引》。部署完成后可直接在浏览器打开函数地址的首页，页面会显示「B 站出口可用：是 / 否」，一眼就能确认这条中继是否真的能取到 B 站数据。</p>
+
+      <h4>方案 B：本机代理脚本（不用注册，但每次得开着）</h4>
       <ol>
         <li>把下面代码保存为 <code>proxy.py</code>，与这个 HTML 放在同一个文件夹；</li>
         <li>在该文件夹打开终端执行 <code>python proxy.py</code>；</li>
@@ -1514,7 +1528,7 @@ html[data-mode="light"] #fx{--fx-rgb:0,150,190}
         <button class="btn btn-sm" data-copy="code-py">复制 python 代理脚本</button>
       </div>
 
-      <h4>方案 B：Cloudflare Worker（免费，需能访问 workers.dev）</h4>
+      <h4>方案 C：Cloudflare Worker（免注册，但 B 站检索用不了）</h4>
       <ol>
         <li>打开 <a class="lnk" href="https://dash.cloudflare.com/" target="_blank" rel="noopener noreferrer"><code>dash.cloudflare.com</code></a> → Workers &amp; Pages → 创建 Worker；</li>
         <li>粘贴下面代码并部署；把部署后的地址填进「自定义代理前缀」，形如 <code>https://your-worker.workers.dev/?url=</code>。</li>
@@ -1523,15 +1537,16 @@ html[data-mode="light"] #fx{--fx-rgb:0,150,190}
       <div class="btn-row" style="margin:10px 0 4px">
         <button class="btn btn-sm" data-copy="code-cf">复制 Worker 代码</button>
       </div>
+      <p class="sub" style="margin-top:8px"><b>注意</b>：B 站按出口对云平台做了风控，Cloudflare 出口会被拦回 <code>412</code>，这条通道<b>取不到 B 站检索数据</b>；如果本站点就是用 Cloudflare Pages 部署的，里面的「当前站点代理 <code>/proxy?url=</code>」同样只管森空岛、管不了 B 站检索。要在云上跑 B 站检索，请改用方案 A 的国内云函数。</p>
 
-      <h4>方案 C：不联机检索</h4>
+      <h4>方案 D：不联机检索</h4>
       <p>通道选 <code>不使用联机检索</code>。点「复制关键词」把生成的检索词拿去 B 站搜索，再把结果整段粘进结果框底部的「粘贴导入」，工具会照样做干员识别与练度匹配。此方案在任何环境都不会失败。</p>
 
       <h4>关于公共代理</h4>
-      <p>工具内置了若干公开 CORS 代理，但这类免费服务可用性波动很大、且常被限流；它们只作为兜底，不保证稳定。建议使用方案 A。</p>
+      <p>工具内置了若干公开 CORS 代理，但这类免费服务可用性波动很大、且常被限流；它们只作为兜底，不保证稳定。</p>
 
-      <h4>方案 A 的代理脚本同时承担森空岛读取</h4>
-      <p>登录「森空岛」需要额外一条转发端点 <code>POST /skland</code>（请求体形如 <code>{"method","url","headers","body"}</code>）：它只允许转发 <code>as.hypergryph.com</code> / <code>zonai.skland.com</code> / <code>web-api.skland.com</code> 三个域名，凭证随请求体穿过代理，代理不做任何留存、不写日志。这两段代码已写在下面的 <code>proxy.py</code> 与 Worker 里：<b>只要代理在跑，森空岛功能就能用</b>；也可以在森空岛登录弹窗的「代理设置」里单独填写一条前缀（形如 <code>https://your-worker.workers.dev/skland</code>）。注意：B 站检索可以在没有代理时降级使用，<b>森空岛读取则必须有转发通道</b>。</p>
+      <h4>森空岛（练度同步）的转发通道</h4>
+      <p>登录「森空岛」需要一条转发端点 <code>POST /skland</code>（请求体形如 <code>{"method","url","headers","body"}</code>），只允许转发 <code>as.hypergryph.com</code> / <code>zonai.skland.com</code> / <code>web-api.skland.com</code> 三个域名，凭证随请求体穿过转发，转发端不做任何留存、不写日志。方案 A 的云函数中继与方案 B 的 <code>proxy.py</code> 都已内置该端点：<b>只要中继或代理可用，森空岛功能就能用</b>；把「自建中继地址」填好后，工具会自动用它的 <code>…/skland</code> 端点。也可以单独在森空岛登录弹窗的「代理设置」里填一条前缀。注意：B 站检索在没有可用通道时可以降级为「不联机检索」，<b>森空岛读取则必须有转发通道</b>。</p>
     </div>
     <div class="dlg-f"><button class="btn btn-primary" data-close="dlg-help">知道了</button></div>
   </div>
@@ -2039,7 +2054,7 @@ const state = {
   stageByStageId: new Map(),
   box: {},            // { 干员名: {e,l,m,mod} }
   threshold: { e: 2, l: 60, m: 3, mod: 0 },
-  options: { pages: 2, delay: 700, chan: "auto", prefix: "", skPrefix: "", sfx: true },
+  options: { pages: 2, delay: 700, chan: "auto", prefix: "", relay: "", skPrefix: "", sfx: true },
   selectedStage: null,
   keywords: [],       // [{kw, tag, on}]
   kwStage: null,      // 关键词所属关卡 stageId，用于跨关卡重建时区分保留勾选
@@ -2478,6 +2493,7 @@ function loadLocal() {
   $("#opt-delay").value = String(state.options.delay);
   $("#opt-chan").value = state.options.chan;
   $("#opt-prefix").value = state.options.prefix || "";
+  $("#opt-relay").value = state.options.relay || "";
   toggleCustomPrefix();
 }
 
@@ -2709,6 +2725,11 @@ function currentPrefix() {
   const c = state.options.chan;
   if (c === "direct") return { label: "直连", prefix: "", direct: true };
   if (c === "none") return null;
+  if (c === "relay") {
+    const r = (state.options.relay || "").trim();
+    if (!r) return null;
+    return { label: "自建中继", prefix: r, relay: true };
+  }
   if (c === "local") return { label: "本机代理", prefix: LOCAL_PROXY };
   if (c === "sameorigin") return { label: "当前站点代理", prefix: "/proxy?url=" };
   if (c === "custom") {
@@ -2719,8 +2740,13 @@ function currentPrefix() {
   return null; // auto
 }
 function autoCandidates() {
+  // 不再把「当前站点代理 /proxy?url=」放进自动候选：站点架在 Cloudflare 等云平台时，
+  // B 站会按出口 IP 直接拦回 412（request was banned），列进去只会白跑一轮。
+  // 站点由自建转发服务提供（例如用本机 proxy.py 打开页面）时，仍可在下拉里显式选择该通道。
   const arr = [];
-  if (location.protocol === "http:" || location.protocol === "https:") arr.push({ label: "当前站点代理", prefix: "/proxy?url=" });
+  // 自建中继（国内云函数）优先：一次部署后任何设备打开站点都能用，不依赖本机代理。
+  const relayPrefix = (state.options.relay || "").trim();
+  if (relayPrefix) arr.push({ label: "自建中继", prefix: relayPrefix, relay: true });
   arr.push({ label: "本机代理", prefix: LOCAL_PROXY });
   if ((state.options.prefix || "").trim()) arr.push({ label: "自定义代理", prefix: state.options.prefix.trim() });
   for (const p of PUBLIC_PROXIES) arr.push({ label: p.label, prefix: p.prefix });
@@ -2738,33 +2764,85 @@ async function fetchWithTimeout(url, ms, signal) {
     return await fetch(url, { signal: ctl.signal, credentials: "omit", mode: "cors" });
   } finally { clearTimeout(t); }
 }
-async function testChannel(chan, quiet) {
-  // 用真实的检索接口做健康检查：只有能实际取回搜索结果（code 0）的通道才算可用。
-  // 仅探测 /spi 是不够的——B 站检索接口缺少 buvid Cookie 时会返回 412，而 /spi 不校验 Cookie。
-  const target = "https://api.bilibili.com/x/web-interface/search/type?search_type=video&keyword=" +
-    encodeURIComponent("明日方舟 攻略") + "&page=1&page_size=1";
+// 健康检查用的真实检索接口：只有能实际取回搜索结果（code 0）的通道才算可用。
+// 仅探测 /spi 是不够的——B 站检索接口缺少 buvid Cookie 时会返回 412，而 /spi 不校验 Cookie。
+const CHAN_PROBE_URL = "https://api.bilibili.com/x/web-interface/search/type?search_type=video&keyword=" +
+  encodeURIComponent("明日方舟 攻略") + "&page=1&page_size=1";
+// 探测细节：失败时用来区分「通道出口被 B 站风控拦截」与「本机代理没启动」两种完全不同的原因。
+async function probeChannel(chan) {
   try {
-    const res = await fetchWithTimeout(buildUrl(chan, target), 12000);
-    if (!res.ok) throw new Error("HTTP " + res.status);
-    const j = await res.json();
-    if (j && j.code === 0 && j.data && Array.isArray(j.data.result)) return true;
-    throw new Error("接口返回 code " + (j && j.code));
+    const res = await fetchWithTimeout(buildUrl(chan, CHAN_PROBE_URL), 12000);
+    let j = null;
+    try { j = await res.json(); } catch (e2) { j = null; }
+    const msg = (j && j.message) || "";
+    return {
+      status: res.status,
+      code: (j && j.code),
+      hasResult: !!(j && j.data && Array.isArray(j.data.result)),
+      banned: res.status === 412 || (j && j.code === -412) || /banned/i.test(String(msg))
+    };
   } catch (e) {
-    if (!quiet) console.warn("[chan]", chan.label, e);
-    return false;
+    return { status: 0, code: null, hasResult: false, banned: false, err: String((e && e.message) || e) };
   }
+}
+async function testChannel(chan, quiet) {
+  const d = await probeChannel(chan);
+  const ok = d.status === 200 && d.code === 0 && d.hasResult;
+  if (!ok && !quiet) console.warn("[chan]", chan.label, d);
+  return ok;
+}
+// 固定通道失败时的提示：不再一律说“请检查代理是否已启动”。
+// 站点自带的 /proxy 中继架在 Cloudflare 这类云平台时，B 站按出口风控直接拦回 412，
+// 与用户有没有在本机启动代理无关；这时必须点明真正原因，否则提示会把用户引向错误方向。
+function chanFailMsg(chan, d) {
+  if (chan.relay) {
+    if (!d.status) {
+      return "自建中继没有响应" + (d.err ? "（" + d.err + "）" : "") +
+        "：请确认云函数已部署成功、触发器地址填对了（末尾应是 …/proxy?url=），并且允许跨域访问。" +
+        "点「通道说明 / 自建代理」可对照检查。";
+    }
+    if (d.banned) {
+      return "自建中继取不到 B 站数据（HTTP " + d.status + " · request was banned）：" +
+        "这台云函数的出口 IP 也被 B 站风控了。换个地域开通，或改用「本机代理」。";
+    }
+    return "自建中继返回了异常数据（HTTP " + d.status + "）：请确认「自建中继地址」填的是 …/proxy?url=，" +
+      "且粘贴的函数代码就是这份中继（直接打开函数地址首页应能看到说明与自检结果）。";
+  }
+  if (d.banned) {
+    return "该通道出口被 B 站风控拦截（HTTP " + (d.status || 412) + " · request was banned）：" +
+      "B 站会拦截 Cloudflare 这类云平台的出口，所以架在云上的「当前站点代理」取不到 B 站检索数据，" +
+      "不是你本机代理没启动。请把检索通道改回「自动」并在本机运行 proxy.py，" +
+      "或用「自定义代理前缀」指向自己的服务器。";
+  }
+  if (chan.prefix === "/proxy?url=") {
+    return "站点自带的 /proxy 中继没有返回可用的 B 站检索数据" +
+      (d.status ? "（HTTP " + d.status + "）" : "（请求失败）") +
+      "。该中继只在站点本身由自建转发服务提供（例如用本机 proxy.py 打开页面）时才可用于 B 站检索；" +
+      "请改用「自动」+ 本机代理，或填「自定义代理前缀」。";
+  }
+  return "所选通道无法访问 B 站接口，请检查代理是否已启动。";
 }
 async function resolveChannel(force) {
   if (state.channel && !force) return state.channel;
   const fixed = currentPrefix();
   if (fixed) {
     setBadge("st-chan", "is-load", "检测中…");
-    const ok = await testChannel(fixed, true);
+    $("#chan-hint").textContent = "检测中…";
+    const d = await probeChannel(fixed);
+    const ok = d.status === 200 && d.code === 0 && d.hasResult;
     state.channel = ok ? fixed : null;
     setBadge("st-chan", ok ? "is-ok" : "is-err", ok ? "已连接 · " + fixed.label : fixed.label + " 不可用");
-    if (!ok) toast("所选通道无法访问 B 站接口，请检查代理是否已启动。", "err", 6500);
+    $("#chan-hint").textContent = ok ? "通道：" + fixed.label : "通道不可用";
+    if (!ok) toast(chanFailMsg(fixed, d), "err", 12000);
     fxFlash(ok ? "ok" : "bad");
     return state.channel;
+  }
+  if (state.options.chan === "relay") {
+    setBadge("st-chan", "is-err", "未填写自建中继地址");
+    $("#chan-hint").textContent = "未填地址";
+    toast("还没填「自建中继地址」。请到「检索设置」把云函数地址按 …/proxy?url= 填进去；点「通道说明 / 自建代理」有逐步部署方法。", "err", 12000);
+    fxFlash("bad");
+    return null;
   }
   // auto
   const cands = autoCandidates();
@@ -2907,7 +2985,7 @@ async function runSearch() {
 
   const chan = await resolveChannel();
   if (!chan) {
-    toast("没有可用检索通道。可按「通道说明 / 自建代理」启动本机代理，或在结果框内展开「粘贴导入」。", "err", 9000);
+    toast("没有可用检索通道。可到「检索设置」填「自建中继地址」（国内云函数，一次部署全设备可用），或按「通道说明 / 自建代理」启动本机代理，或在结果框内展开「粘贴导入」。", "err", 9000);
     return;
   }
 
@@ -3749,10 +3827,17 @@ function skRelayCandidates(probing) {
   out.push({ id: "local", label: "本机 8787", url: SK_RELAY_LOCAL });
   const p = String(state.options.skPrefix || "").trim();
   if (p) out.push({ id: "custom", label: "自定义前缀", url: p });
+  const rp = String(state.options.relay || "").trim();
+  if (rp) {
+    let ru = rp.replace(/\/proxy\?url=\s*$/i, "/skland");
+    if (ru === rp) ru = rp.replace(/\?url=\s*$/i, "skland");
+    if (ru !== rp) out.push({ id: "cloudrelay", label: "云函数中继", url: ru });
+  }
   if (probing) {  // 探活时把上次成功的那条提到最前，减少无谓失败
     const last = state.sk.relay;
     if (last === "自定义前缀") out.sort((a, b) => (b.id === "custom") - (a.id === "custom"));
     else if (last === "本机 8787") out.sort((a, b) => (b.id === "local") - (a.id === "local"));
+    else if (last === "云函数中继") out.sort((a, b) => (b.id === "cloudrelay") - (a.id === "cloudrelay"));
   }
   return out;
 }
@@ -3788,7 +3873,7 @@ async function skCall(method, url, headers, bodyStr) {
       tried.push(c.label + "（" + ((e && e.message) || e) + "）");
     }
   }
-  throw new Error("没有可用的转发通道：" + tried.join("；") + "。请先启动本机代理，或在「代理设置」里填写可用的转发前缀。");
+  throw new Error("没有可用的转发通道：" + tried.join("；") + "。请先把「自建中继地址」按 …/proxy?url= 填好，或启动本机代理，或在「代理设置」里填写可用的转发前缀。");
 }
 function skEnvelope(j) {
   if (!j || typeof j !== "object") return { code: undefined, data: null, message: "" };
@@ -4177,7 +4262,7 @@ async function skTestRelay() {
     } catch (e) { msg.push(c.label + " ✗"); }
   }
   if (hint) { hint.className = "sk-status err"; hint.textContent = "均不可用（" + msg.join(" · ") + "）"; }
-  toast("没有可用的转发通道。请启动本机代理（python proxy.py），或在「代理设置」里填写可用前缀。", "err", 9000);
+  toast("没有可用的转发通道。请把「检索设置 → 自建中继地址」按 …/proxy?url= 填好（云函数中继会自动提供 …/skland），或启动本机代理（python proxy.py），或在「代理设置」里填写可用前缀。", "err", 9000);
   fxFlash("bad");
 }
 function skSwitchTab(name) {
@@ -4248,6 +4333,8 @@ function updateSearchButton() {
 }
 function toggleCustomPrefix() {
   $("#custom-wrap").style.display = state.options.chan === "custom" ? "block" : "none";
+  const rw = $("#relay-wrap");
+  if (rw) rw.style.display = state.options.chan === "relay" ? "block" : "none";
 }
 
 function bind() {
@@ -4449,11 +4536,12 @@ function bind() {
     toggleCustomPrefix(); saveOptions();
   });
   $("#opt-prefix").addEventListener("change", () => { state.options.prefix = $("#opt-prefix").value.trim(); state.channel = null; saveOptions(); });
+  $("#opt-relay").addEventListener("change", () => { state.options.relay = $("#opt-relay").value.trim(); state.channel = null; saveOptions(); });
   $("#btn-search").addEventListener("click", runSearch);
   $("#btn-stop").addEventListener("click", () => { if (state.aborter) state.aborter.abort(); });
   $("#btn-testchan").addEventListener("click", async () => {
     const c = await resolveChannel(true);
-    toast(c ? "通道可用：" + c.label : "没有可用通道。可按「通道说明」启动本机代理，或在结果框内展开「粘贴导入」。", c ? "ok" : "err", 7000);
+    toast(c ? "通道可用：" + c.label : "没有可用通道。可填「自建中继地址」（云函数）或按「通道说明」启动本机代理，或在结果框内展开「粘贴导入」。", c ? "ok" : "err", 7000);
   });
   $("#btn-help-proxy").addEventListener("click", () => $("#dlg-help").showModal());
   $("#btn-copy-kw").addEventListener("click", () => {
