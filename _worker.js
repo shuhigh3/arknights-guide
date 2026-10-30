@@ -66,8 +66,12 @@ async function relayBili(target) {
   } catch (e) {}
   const headers = Object.assign({}, base);
   if (cookie) headers["Cookie"] = cookie;
-  const r = await fetch(target, { headers });
-  return new Response(await r.arrayBuffer(), { status: r.status, headers: CORS });
+  try {
+    const r = await fetch(target, { headers });
+    return new Response(await r.arrayBuffer(), { status: r.status, headers: CORS });
+  } catch (e) {
+    return new Response(JSON.stringify({ __relay_error: "upstream failed" }), { status: 502, headers: CORS });
+  }
 }
 
 export default {
