@@ -6,7 +6,7 @@
 <title>罗德岛攻略检索终端 · 明日方舟关卡攻略筛选</title>
 <!-- 显示设置预置：在任何样式生效前套用上次选择的主色调、显示模式与所在视图，避免首屏颜色跳变。
      只读写本机 localStorage 的 akgf.theme.v1 / akgf.mode.v1 / akgf.view.v1，不涉及任何网络与账号信息。 -->
-<script>(function(){try{var d=document.documentElement;var t=localStorage.getItem("akgf.theme.v1");d.setAttribute("data-theme",(t==="stone"||t==="amber")?t:"navy");d.setAttribute("data-mode",localStorage.getItem("akgf.mode.v1")==="light"?"light":"dark");var v=localStorage.getItem("akgf.view.v1");d.setAttribute("data-view-cur",(v==="settings"||v==="login"||v==="wiki"||v==="growth-scan"||v==="growth-plan"||v==="growth-pull")?v:"home");}catch(e){}})();</script>
+<script>(function(){try{var d=document.documentElement;var t=localStorage.getItem("akgf.theme.v1");d.setAttribute("data-theme",(t==="stone"||t==="amber")?t:"navy");d.setAttribute("data-mode",localStorage.getItem("akgf.mode.v1")==="light"?"light":"dark");var v=localStorage.getItem("akgf.view.v1");d.setAttribute("data-view-cur",(v==="settings"||v==="login"||v==="wiki"||v==="video"||v==="growth-scan"||v==="growth-plan"||v==="growth-pull")?v:"home");}catch(e){}})();</script>
 <style>
 :root{
   /* ======== 设计令牌（默认主色调 = 罗德岛 · 夜航蓝）========
@@ -367,6 +367,7 @@ html[data-view-cur="settings"] [data-view="settings"],
 html[data-view-cur="login"] [data-view="login"],
 html[data-view-cur="growth-scan"] [data-view="growth-scan"]{display:block}
 html[data-view-cur="wiki"] [data-view="wiki"]{display:block}
+html[data-view-cur="video"] [data-view="video"]{display:block}
 /* 养成推荐三页共用同一块面板 #growth-panel：任一子页激活时都显示它 */
 html[data-view-cur="growth-plan"] #growth-panel,
 html[data-view-cur="growth-pull"] #growth-panel{display:block}
@@ -375,13 +376,15 @@ html[data-view-cur="login"] .wrap,
 html[data-view-cur="growth-scan"] .wrap,
 html[data-view-cur="growth-plan"] .wrap,
 html[data-view-cur="growth-pull"] .wrap,
-html[data-view-cur="wiki"] .wrap{grid-template-columns:minmax(0,1fr)}
+html[data-view-cur="wiki"] .wrap{grid-template-columns:minmax(0,1fr)},
+html[data-view-cur="video"] .wrap{grid-template-columns:minmax(0,1fr)}
 html[data-view-cur="settings"] .col-left,
 html[data-view-cur="login"] .col-left{grid-column:1/-1;width:100%;max-width:1040px;justify-self:center}
 html[data-view-cur="growth-scan"] .col-left,
 html[data-view-cur="growth-plan"] .col-left,
 html[data-view-cur="growth-pull"] .col-left{grid-column:1/-1;width:100%;max-width:1180px;justify-self:center}
 html[data-view-cur="wiki"] .col-left{grid-column:1/-1;width:100%;max-width:1180px;justify-self:center}
+html[data-view-cur="video"] .col-left{grid-column:1/-1;width:100%;max-width:1180px;justify-self:center}
 /* 二级引导栏：养成推荐三页（账号练度总览 / 养成 / 推荐抽取）之间的跳转，只在这三页出现 */
 .subnav-row{max-width:1420px;margin:0 auto;padding:20px 20px 0;display:none}
 html[data-view-cur="growth-scan"] .subnav-row,
@@ -726,31 +729,6 @@ input[type=number]{-moz-appearance:textfield}
 .opchip.none{border-color:var(--line);color:var(--txt-mute)}
 .card-actions{margin-top:auto;display:flex;gap:7px;flex-wrap:wrap;padding-top:2px}
 .card-actions .btn{flex:1;justify-content:center}
-/* ---------- 字幕面板（选中视频后按需读取，不改变卡片原有跳转行为） ---------- */
-.card-subs{margin-top:11px;border-top:1px dashed var(--line);padding-top:10px;display:flex;flex-direction:column;gap:9px}
-.subs-h{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:15px;color:var(--txt-dim)}
-.subs-h b{color:var(--txt)}
-.subs-tag{font-size:15px;padding:2.5px 8px;border-radius:5px;border:1px solid var(--line);background:var(--panel-2);color:var(--txt-mute)}
-.subs-tag.on{border-color:rgba(var(--ok-rgb),.45);color:var(--ok);background:rgba(var(--ok-rgb),.09)}
-.subs-tag.wait{border-color:rgba(var(--accent-rgb),.45);color:var(--accent);background:rgba(var(--accent-rgb),.10)}
-.subs-tag.err{border-color:rgba(var(--bad-rgb),.45);color:var(--bad-txt);background:rgba(var(--bad-rgb),.09)}
-.subs-note{margin:0;font-size:15px;line-height:1.75;color:var(--txt-mute)}
-.subs-note.err{color:var(--bad-txt)}
-.subs-ops{display:flex;gap:5px;flex-wrap:wrap;align-items:center}
-.subs-ops>i{font-style:normal;font-size:15px;color:var(--txt-mute)}
-.subs-op{font-size:15px;padding:2px 7px;border-radius:5px;border:1px solid rgba(var(--accent-rgb),.42);color:var(--accent);background:rgba(var(--accent-rgb),.10)}
-.subs-steps,.subs-lines{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:6px}
-.subs-steps li{display:grid;grid-template-columns:auto minmax(0,1fr);gap:9px;align-items:start;background:var(--inset);border:1px solid var(--line-soft);border-left:2px solid rgba(var(--accent-rgb),.55);border-radius:8px;padding:8px 10px}
-.subs-n{display:inline-flex;align-items:center;justify-content:center;min-width:22px;height:22px;border-radius:6px;background:rgba(var(--accent-rgb),.16);color:var(--accent);font:700 15px/1 var(--mono)}
-.subs-step-txt{font-size:15px;line-height:1.8;color:var(--txt);overflow-wrap:anywhere}
-.subs-meta{display:flex;gap:9px;flex-wrap:wrap;font-size:15px;color:var(--txt-mute);margin-top:4px}
-.subs-time{font:600 15px/1.5 var(--mono);color:var(--txt-mute);white-space:nowrap}
-.subs-hl{background:rgba(var(--accent-rgb),.18);border-radius:4px;padding:0 3px;color:var(--txt);font-weight:700}
-.subs-dir{background:rgba(var(--ok-rgb),.16);border-radius:4px;padding:0 3px;color:var(--ok);font-weight:700}
-.subs-lines li{display:grid;grid-template-columns:auto minmax(0,1fr);gap:9px;font-size:15px;line-height:1.75;color:var(--txt-dim)}
-details.subs-all>summary{cursor:pointer;font-size:15px;color:var(--txt-dim);padding:2px 0}
-details.subs-all>summary:hover{color:var(--txt)}
-.subs-tools{display:flex;gap:7px;flex-wrap:wrap}
 .pill{font:700 15px/1 var(--mono);padding:3.5px 7px;border-radius:5px;letter-spacing:.3px}
 .pill.full{background:rgba(var(--ok-rgb),.15);color:var(--ok);border:1px solid rgba(var(--ok-rgb),.42)}
 .pill.partial{background:rgba(var(--accent-rgb),.14);color:var(--accent);border:1px solid rgba(var(--accent-rgb),.4)}
@@ -1237,6 +1215,102 @@ html[data-mode="light"] #fx{--fx-rgb:0,150,190}
     mask-image:linear-gradient(90deg,#000 0,#000 calc(100% - 20px),transparent 100%)}
 }
 
+/* ============ 解读视频：视频直链 → 本机逐帧采样 → 读数条判定的放置 / 撤离干员 / 击敌数 ============
+   全部像素读取都在本机 canvas 完成，不引入任何外部资源或额外网络请求。 */
+.vid-grid{display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:14px;align-items:start}
+@media (max-width:1080px){.vid-grid{grid-template-columns:minmax(0,1fr)}}
+.vid-stage{position:relative;background:#05080d;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;min-height:180px}
+.vid-stage video{display:block;width:100%;height:auto;background:#05080d}
+.vid-stage.is-empty video{display:none}
+.vid-empty{display:none;padding:48px 16px;text-align:center;color:var(--txt-mute);font-size:15px}
+.vid-stage.is-empty .vid-empty{display:block}
+.vid-cal{position:absolute;inset:0;display:none;cursor:crosshair;touch-action:none}
+.vid-stage.calibrating .vid-cal{display:block}
+.vid-box{position:absolute;border:2px solid var(--accent);background:rgba(var(--accent-rgb),.12);pointer-events:none;box-shadow:0 0 0 1px rgba(0,0,0,.45),inset 0 0 0 1px rgba(0,0,0,.3)}
+.vid-box b{position:absolute;left:-2px;top:-21px;font-size:15px;line-height:18px;font-weight:600;padding:0 6px;border-radius:5px;background:var(--accent);color:var(--on-accent);white-space:nowrap}
+.vid-box.kills{border-color:var(--ok);border-style:dashed;background:rgba(var(--ok-rgb),.12)}
+.vid-box.kills b{background:var(--ok);color:#05201a}
+.vid-box.on{box-shadow:0 0 0 2px rgba(var(--accent-rgb),.6),0 0 0 1px rgba(0,0,0,.45)}
+.vid-box.kills.on{box-shadow:0 0 0 2px rgba(var(--ok-rgb),.6),0 0 0 1px rgba(0,0,0,.45)}
+.vid-tools{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:10px}
+.vid-inline{display:inline-flex;align-items:center;gap:6px;font-size:15px;color:var(--txt-dim)}
+.vid-inline select{font-size:15px}
+.vid-note{font-size:15px;color:var(--txt-mute);line-height:1.55;margin-top:8px}
+.vid-note.ok{color:var(--ok)}
+.vid-note.warn{color:var(--warn)}
+.vid-note.err{color:var(--bad-txt)}
+.vid-bar{position:relative;height:6px;border-radius:99px;background:var(--track);overflow:hidden;margin-top:10px}
+.vid-bar i{position:absolute;left:0;top:0;bottom:0;width:0;background:linear-gradient(90deg,var(--accent-dim),var(--accent));transition:width .16s linear}
+/* 视频时间轴（p100）：独立于逐帧采样进度，可拖动定位；按每条截图记录的时间点打标记 */
+.vid-tl{margin-top:10px}
+.vid-tl-hd{display:flex;flex-wrap:wrap;align-items:center;gap:8px;line-height:1.5}
+.vid-tl-t{font-family:var(--mono);color:var(--txt);font-weight:600;font-size:15px}
+.vid-tl-cur{color:var(--accent)}
+.vid-tl-note{font-size:15px;color:var(--txt-mute);line-height:1.5}
+.vid-tl-track{position:relative;height:20px;margin-top:6px;border-radius:99px;background:var(--track);border:1px solid var(--line);cursor:pointer;touch-action:none;user-select:none;-webkit-user-select:none}
+.vid-tl-track:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.vid-tl-track.is-off{opacity:.55;cursor:not-allowed}
+.vid-tl-track.is-busy{cursor:progress}
+.vid-tl-track.is-drag{cursor:grabbing}
+.vid-tl-fill{position:absolute;left:0;top:0;bottom:0;width:0;border-radius:99px;background:linear-gradient(90deg,var(--accent-dim),var(--accent));pointer-events:none}
+.vid-tl-knob{position:absolute;top:50%;left:0;width:12px;height:12px;margin:-6px 0 0 -6px;border-radius:50%;background:var(--accent);border:2px solid var(--panel);box-shadow:0 0 0 1px var(--line-hi);pointer-events:none}
+.vid-tl-marks{position:absolute;inset:0}
+.vid-tl-mk{position:absolute;top:50%;width:8px;height:8px;min-width:0;padding:0;margin:-4px 0 0 -4px;border-radius:2px;transform:rotate(45deg);border:1px solid var(--panel);background:var(--ok);cursor:pointer}
+.vid-tl-mk.up{background:var(--warn)}
+.vid-tl-mk:hover,.vid-tl-mk:focus-visible{outline:2px solid var(--txt);outline-offset:2px}
+
+.vid-kv{display:flex;justify-content:space-between;gap:10px;font-size:15px;color:var(--txt-mute);padding:3px 0}
+.vid-kv b{color:var(--txt);font-weight:600;font-family:var(--mono)}
+.vid-rel{display:flex;flex-direction:column;gap:6px}
+.vid-rel .panel-h h2{font-size:15px}
+/* 记录列表（p49b）：按发生顺序逐条列出 */
+.vid-ref{margin-top:8px;padding:10px 12px;border:1px dashed var(--line);border-radius:10px;background:var(--inset)}
+.vid-ref-hd{display:flex;flex-wrap:wrap;align-items:center;gap:8px;line-height:1.5}
+.vid-ref-t{font-size:15px;color:var(--txt);font-weight:600}
+.vid-ref-note{flex:1 1 240px;min-width:200px;font-size:15px;color:var(--txt-mute);line-height:1.5;margin:0}
+.vid-ref-img{display:block;margin-top:8px;width:min(420px,100%);height:auto;border-radius:6px;border:1px solid var(--line-soft);background:var(--inset-3)}
+.vid-ref-img[hidden]{display:none}
+.vid-events-wrap{margin-top:12px}
+.vid-events{display:grid;gap:10px;margin-top:8px}
+.vid-ev-none{font-size:15px;color:var(--txt-mute);line-height:1.55;padding:10px 12px;border:1px dashed var(--line);border-radius:10px;background:var(--inset)}
+.vid-ev{display:grid;grid-template-columns:minmax(0,1fr);gap:10px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--inset)}
+.vid-ev-l{min-width:0}
+.vid-ev-shot{display:block;width:min(64vw,100%);height:auto;border-radius:6px;border:1px solid var(--line-soft);background:var(--inset-3);cursor:zoom-in}
+.vid-ev-shot.zoom{width:100%;max-width:none;cursor:zoom-out}
+.vid-ev-noimg{display:flex;align-items:center;justify-content:center;width:min(64vw,100%);min-height:120px;border:1px dashed var(--line);border-radius:6px;color:var(--txt-mute);font-size:15px;background:var(--inset-3)}
+.vid-ev-r{min-width:0}
+.vid-ev-hd{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.vid-ev-i{font-family:var(--mono);color:var(--txt-mute);font-size:15px}
+.vid-ev-t{font-family:var(--mono);color:var(--txt);font-weight:600;font-size:15px}
+.vid-ev-d{padding:1px 8px;border-radius:99px;border:1px solid var(--line);font-size:15px;color:var(--txt-dim)}
+.vid-ev-d.up{color:var(--ok);border-color:var(--ok)}
+.vid-ev-d.down{color:var(--bad-txt);border-color:var(--bad-txt)}
+.vid-ev-jump{padding:2px 9px;border-radius:99px;border:1px solid var(--line-hi);background:var(--btn-hi);color:var(--txt);font-size:15px;line-height:1.5;cursor:pointer}
+.vid-ev-jump:hover{border-color:var(--accent);color:var(--accent)}
+.vid-ev-jump:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.vid-ev-shot{cursor:pointer}
+
+.vid-ev-k{font-family:var(--mono);color:var(--txt-dim);font-size:15px;margin-top:6px}
+.vid-ev-sub{font-size:15px;color:var(--txt-mute);line-height:1.5;margin-top:4px;word-break:break-word}
+@media (max-width:820px){.vid-ev-shot,.vid-ev-noimg{width:100%}}
+/* 记录右栏（p90）：截图右侧放「变化格干员头像 + 干员名点选」——干员名默认「未确认」 */
+.vid-ev-media{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-start}
+.vid-ev-media>.vid-ev-shot,.vid-ev-media>.vid-ev-noimg{flex:0 1 auto;min-width:0;max-width:min(64vw,100%)}
+.vid-ev-side{flex:0 0 220px;max-width:100%;display:flex;flex-direction:column;gap:8px}
+.vid-ev-photo-wrap{display:flex;flex-direction:column;gap:4px}
+.vid-ev-photo{display:block;width:100%;max-width:132px;border-radius:6px;border:1px solid var(--line);background:var(--inset-3)}
+.vid-ev-photo-cap{font-size:15px;color:var(--txt-mute);line-height:1.5}
+.vid-ev-op{display:flex;flex-direction:column;gap:6px}
+.vid-ev-op-n{font-size:15px;color:var(--txt);font-weight:600;line-height:1.5}
+.vid-ev-op-n.none{color:var(--txt-mute);font-weight:400}
+.vid-ev-op-in{font:inherit;font-size:15px;line-height:1.4;padding:5px 7px;border-radius:6px;border:1px solid var(--line);background:var(--inset-2);color:var(--txt);width:100%;min-width:0;box-sizing:border-box}
+.vid-ev-op-in:focus{outline:2px solid var(--ok);outline-offset:1px}
+@media (max-width:820px){.vid-ev-side{flex:1 1 100%}.vid-ev-photo{max-width:100%}}
+
+/* 记录详情折叠（p50）：生成记录列表后，右栏「说明与统计」默认收起，点「记录详情」展开 */
+.vid-notes-bar{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.vid-notes-s{font-size:15px;color:var(--txt-mute);line-height:1.45}
+#vid-notes.collapsed{display:none}
 </style>
 </head>
 <body>
@@ -1282,6 +1356,7 @@ html[data-mode="light"] #fx{--fx-rgb:0,150,190}
       <button class="nvb" id="nv-home" type="button" aria-current="page" title="主页：选关卡 / 录练度 / 发起检索 / 看结果列表"><span class="nvb-ic" aria-hidden="true">◈</span><span class="nvb-txt"><span class="nvb-t">主页</span><span class="nvb-s">选关卡 · 录练度 · 检索</span></span></button>
       <button class="nvb" id="nv-growth" type="button" title="养成推荐：登录森空岛后，按账号练度给出养成与抽取优先级"><span class="nvb-ic" aria-hidden="true">✦</span><span class="nvb-txt"><span class="nvb-t">养成推荐</span><span class="nvb-s">账号练度 · 养成 / 抽取</span></span></button>
       <button class="nvb" id="nv-wiki" type="button" title="技能 Wiki：干员技能 / 天赋 / 模组速查（星级 / 职业 / 位置 / 词缀筛选 + 仅看有模组 + 搜索）"><span class="nvb-ic" aria-hidden="true">❖</span><span class="nvb-txt"><span class="nvb-t">技能 Wiki</span><span class="nvb-s">技能 · 天赋 · 模组速查</span></span></button>
+      <button class="nvb" id="nv-video" type="button" title="解读视频：载入视频直链，本机逐帧采样，读右下角「剩余可放置角色」的增减（减少＝放置干员、增加＝撤离干员）与正中间上方「击敌数」，并在变化时刻截图"><span class="nvb-ic" aria-hidden="true">▶</span><span class="nvb-txt"><span class="nvb-t">解读视频</span><span class="nvb-s">放置 / 撤离 · 击敌数</span></span></button>
       <button class="nvb" id="nv-settings" type="button" title="设置：合格练度标准 / 检索设置（通道、翻页、间隔）"><span class="nvb-ic" aria-hidden="true">⚙</span><span class="nvb-txt"><span class="nvb-t">设置</span><span class="nvb-s">合格练度标准 · 检索设置</span></span></button>
       <button class="nvb" id="nv-login" type="button" title="登录：森空岛账号（扫码 / 凭证导入，读取账号干员与练度）"><span class="nvb-ic" aria-hidden="true">◇</span><span class="nvb-txt"><span class="nvb-t">登录</span><span class="nvb-s">森空岛账号 · 扫码 / 凭证</span></span></button>
     </nav>
@@ -1499,6 +1574,106 @@ html[data-mode="light"] #fx{--fx-rgb:0,150,190}
           <button class="btn btn-sm" id="wiki-more" type="button">加载更多干员</button>
           <span class="wiki-more-n" id="wiki-more-n"></span>
         </div>
+      </div>
+    </section>
+
+    <!-- 解读视频视图：载入视频直链 → 本机逐帧采样 → 右下角「剩余可放置角色」读数增减 / 正中间上方「击敌数」 / 变化时刻截图（截图与列表见后续实现） -->
+    <section class="panel" data-view="video" id="video-panel">
+      <div class="panel-h">
+        <span class="step-n">▶</span>
+        <h2>解读视频 · 放置 / 撤离干员 · 击敌数</h2>
+        <span class="hint" id="vid-hint">全程本机解析 · 不上传 · 不额外联网</span>
+      </div>
+      <div class="panel-b">
+        <div class="vid-grid">
+          <div>
+            <label class="fl" for="vid-url">视频直链 URL（需允许跨域，形如 https://…/xxx.mp4）</label>
+            <div style="display:flex;gap:8px;flex-wrap:wrap">
+              <input type="text" id="vid-url" autocomplete="off" spellcheck="false" placeholder="https://…/video.mp4" style="flex:1;min-width:240px">
+              <button class="btn" id="vid-load" type="button">载入视频</button>
+            </div>
+            <div class="vid-stage is-empty" id="vid-stage" style="margin-top:10px">
+              <video id="vid-player" playsinline preload="metadata" controls></video>
+              <div class="vid-empty">尚未载入视频。填入直链 URL 后点「载入视频」。</div>
+              <div class="vid-cal" id="vid-cal">
+                <div class="vid-box slots" id="vid-box-slots"><b>剩余可放置角色</b></div>
+                <div class="vid-box kills" id="vid-box-kills"><b>击敌数</b></div>
+              </div>
+            </div>
+            <div class="vid-tl" id="vid-tl">
+              <div class="vid-tl-hd">
+                <span class="vid-tl-t vid-tl-cur" id="vid-tl-cur">0:00.0</span>
+                <span class="vid-tl-t">/</span>
+                <span class="vid-tl-t" id="vid-tl-dur">—</span>
+                <span class="vid-tl-note" id="vid-tl-hint">尚未载入视频：载入后可在时间轴上拖动定位，方块标记各条记录的截图时刻。</span>
+              </div>
+              <div class="vid-tl-track is-off" id="vid-tl-track" role="slider" tabindex="0" aria-label="视频时间轴（可拖动定位）" aria-valuemin="0" aria-valuemax="0" aria-valuenow="0" aria-disabled="true" aria-describedby="vid-tl-hint">
+                <i class="vid-tl-fill" id="vid-tl-fill"></i>
+                <div class="vid-tl-marks" id="vid-tl-marks"></div>
+                <i class="vid-tl-knob" id="vid-tl-knob"></i>
+              </div>
+            </div>
+            <div class="vid-bar" id="vid-bar" role="progressbar" aria-label="逐帧采样进度"><i id="vid-bar-i"></i></div>
+            <div class="vid-tools">
+              <button class="btn btn-sm" id="vid-run" type="button" disabled>开始解读</button>
+              <button class="btn btn-sm btn-ghost" id="vid-cal-btn" type="button" disabled>校准区域</button>
+              <button class="btn btn-sm btn-ghost" id="vid-reset" type="button">恢复默认区域</button>
+              <label class="vid-inline"><span>采样间隔</span>
+                <select id="vid-step">
+                  <option value="0.2">0.2 秒</option>
+                  <option value="0.3" selected>0.3 秒</option>
+                  <option value="0.5">0.5 秒</option>
+                  <option value="1">1 秒</option>
+                </select>
+              </label>
+              <label class="vid-inline"><span>校准目标</span>
+                <select id="vid-cal-target">
+                  <option value="slots">剩余可放置角色</option>
+                  <option value="kills">击敌数</option>
+                </select>
+              </label>
+            </div>
+            <p class="vid-note" id="vid-status">等待载入视频。</p>
+          </div>
+          <div class="panel" style="margin:0">
+            <div class="panel-h"><span class="step-n">◆</span><h2>区域与采样</h2></div>
+            <div class="panel-b vid-rel">
+              <div class="vid-kv"><span>剩余可放置角色</span><b id="vid-reg-slots">—</b></div>
+              <div class="vid-kv"><span>击敌数</span><b id="vid-reg-kills">—</b></div>
+              <div class="vid-kv"><span>画面尺寸</span><b id="vid-wh">—</b></div>
+              <div class="vid-kv"><span>视频时长</span><b id="vid-dur">—</b></div>
+              <div class="vid-kv"><span>已采样帧</span><b id="vid-frames">0</b></div>
+              <div class="vid-kv"><span>击敌数总数</span><b id="vid-kills-total">—</b></div>
+              <div class="vid-kv"><span>放置 / 撤离</span><b id="vid-events-n">0</b></div>
+              <div class="vid-kv"><span>记录截图</span><b id="vid-shots-n">0</b></div>
+              <div class="vid-notes-bar">
+                <button class="btn btn-sm btn-ghost" id="vid-notes-btn" type="button" aria-expanded="true" aria-controls="vid-notes">记录详情</button>
+                <span class="vid-notes-s" id="vid-notes-s">解析完成后自动收起</span>
+              </div>
+              <div id="vid-notes">
+                <p class="vid-note" id="vid-events-note">尚无记录。载入视频并点「开始解读」后，每次放置 / 撤离干员都会在这里按时间列出。</p>
+                <p class="vid-note" id="vid-kills-note">击敌数识别：尚无数据。载入视频并点「开始解读」后，会取变化时刻的画面读出击敌数。</p>
+                <p class="vid-note" id="vid-shots-note">记录截图：尚无记录。每次放置 / 撤离干员都会在变化那一刻截取一张该帧画面，截图取自视频像素本身，不含播放器控件。</p>
+                <p class="vid-note">放置 / 撤离判定只看画面右下角「剩余可放置角色」读数：读数减少＝放置干员、读数增加＝撤离干员；读数不可读时如实说明并给出零记录，不猜。「剩余可放置角色」区域默认就是画面右下角那条读数本身（标签＋数量数字，约占画面 x 0.82–1.00、y 0.70–0.80），读数即在该区域内按原分辨率取样识别；每条记录里的「变化格干员照片」另按部署栏的固定相对位置取景，不依赖该区域。击敌数默认取正中间上方（形如 0/400）。点「校准区域」后，在画面上拖出方框即可重设；区域保存在本机。</p>
+                <p class="vid-note">直链必须允许跨域（响应带 Access-Control-Allow-Origin），否则浏览器会禁止读取画面像素。</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 记录列表：按发生顺序逐条列出（时间 / 放置·撤离干员 / 击敌数 / 变化时刻截图） -->
+      <div class="panel-b vid-events-wrap">
+        <div class="panel-h"><span class="step-n">&#9670;</span><h2>记录列表 · 按发生顺序</h2><span class="hint" id="vid-list-hint">尚无记录</span></div>
+        <div class="vid-ref" id="vid-ref">
+          <div class="vid-ref-hd">
+            <span class="vid-ref-t">开场干员展示参照</span>
+            <button class="btn btn-sm btn-ghost" id="vid-ref-btn" type="button">截取当前画面</button>
+            <p class="vid-ref-note" id="vid-ref-note">载入视频并点「开始解读」后，会自动截取视频开头的「干员展示」画面；也可把视频拖到该画面后点「截取当前画面」。对照它读出的干员名，填到每条记录右侧的干员名框里（默认「未确认」，可点选名册或手输，结果存在本机）。</p>
+          </div>
+          <img class="vid-ref-img" id="vid-ref-img" alt="开场干员展示参照画面（取自本视频像素）" hidden>
+        </div>
+        <div class="vid-events" id="vid-events-list" aria-live="polite"></div>
       </div>
     </section>
 
@@ -3726,9 +3901,8 @@ function renderResults() {
         '<div class="card-actions">' +
           '<a class="btn btn-sm btn-primary" href="https://www.bilibili.com/video/' + esc(v.bvid) + '" target="_blank" rel="noopener noreferrer">打开视频 ↗</a>' +
           '<button class="btn btn-sm" data-copy-bv="' + esc(v.bvid) + '">复制 BV</button>' +
-          '<button class="btn btn-sm" data-subs="' + esc(v.bvid) + '" aria-expanded="false">提取字幕</button>' +
+          '<button class="btn btn-sm btn-ghost" data-video-bv="' + esc(v.bvid) + '" data-video-title="' + esc(cleanTitle(v.title)) + '" title="在本站「解读视频」里解析该视频的放置 / 撤离干员与击敌数">解读视频</button>' +
         '</div>' +
-        subsHTML(v) +
       '</div>' +
     '</article>';
   }).join("") + '</div>';
@@ -3736,176 +3910,6 @@ function renderResults() {
 }
 
 
-/* ------------------------- 字幕读取（选中视频后按需） -------------------------
-   链路：x/web-interface/view 取 cid → x/player/v2 取 subtitle.subtitles[].subtitle_url
-        → 拉取字幕 JSON 的 body[{from,to,content}]
-   全程复用页面已有的「检索通道」（本机转发 / 公共代理），不新增外部依赖；
-   浏览器直连被 CORS 拦住、或视频没有 CC 字幕时，给出可理解的降级说明。 */
-const SUB_ORDER = /首先|先放|先下|先上|先摆|先站|第一步|第二步|第三步|第四步|然后|接着|随后|之后|再放|再下|再上|最后|依次|按顺序|顺序|步骤|第[一二三四五六七八九十]/;
-const SUB_DIR = /朝[上下左右前后]|面向[上下左右前后]|朝北|朝南|朝东|朝西|方向|向上|向下|向左|向右|向前|向后|上方|下方|左侧|右侧|正前|正后|正面|背面|左下方|右下方|右上方|左上方/;
-const SUB_MAX = 800;   // 字幕过长时的展示上限，超出会明确说明
-
-function fmtTs(sec) {
-  const t = Math.max(0, Math.floor(Number(sec) || 0));
-  const h = Math.floor(t / 3600), m = Math.floor((t % 3600) / 60), s = t % 60;
-  const p = (n) => (n < 10 ? "0" + n : String(n));
-  return (h ? h + ":" : "") + p(m) + ":" + p(s);
-}
-function subsOpHits(text) {
-  const hits = [];
-  for (const op of state.ops) {
-    const n = op.name;
-    if (n.length < 2) continue;
-    if (text.indexOf(n) >= 0 && hits.indexOf(n) < 0) hits.push(n);
-  }
-  return hits;
-}
-function subsLineData(lines) {
-  return lines.map((l) => {
-    const txt = String(l.content || "").trim();
-    const ops = subsOpHits(txt);
-    const dirs = Array.from(new Set(txt.match(new RegExp(SUB_DIR.source, "g")) || []));
-    return { from: Number(l.from) || 0, to: Number(l.to) || 0, txt: txt, ops: ops, dirs: dirs, order: SUB_ORDER.test(txt) };
-  }).filter((it) => it.txt);
-}
-function subsHasSeq(items) {
-  return items.some((it) => (it.ops.length > 0 && it.dirs.length > 0) || it.order);
-}
-function subsHighlight(txt, ops, dirs) {
-  let h = esc(txt);
-  for (const n of ops) h = h.split(esc(n)).join('<span class="subs-hl">' + esc(n) + "</span>");
-  for (const d of dirs) h = h.split(d).join('<span class="subs-dir">' + d + "</span>");
-  return h;
-}
-async function subsGet(chan, target, what, raw) {
-  const res = await fetchWithTimeout(buildUrl(chan, target), 20000);
-  if (!res.ok) throw new Error(what + "请求失败：HTTP " + res.status);
-  const txt = await res.text();
-  let j;
-  try { j = JSON.parse(txt); } catch (e) { throw new Error(what + "返回的不是 JSON（通道可能被限流或代理失效）。"); }
-  if (!raw && j && typeof j.code === "number" && j.code !== 0) {
-    throw new Error(what + "接口返回 code " + j.code + (j.message ? "（" + j.message + "）" : "") +
-      (j.code === -412 || j.code === -799 ? "。触发了 B 站风控，稍后再试或换一条通道。" : ""));
-  }
-  return j;
-}
-async function subsFetch(bvid) {
-  const chan = state.channel || (await resolveChannel());
-  if (!chan) throw new Error("当前没有可用的检索通道，读不到字幕。可先在「设置」里点「测试通道」，或按通道说明启动本机转发。");
-  const j1 = await subsGet(chan, "https://api.bilibili.com/x/web-interface/view?bvid=" + encodeURIComponent(bvid), "视频信息");
-  const d = (j1 && j1.data) || null;
-  if (!d || !d.cid) throw new Error("没有取到该视频的 cid（视频可能已删除，或接口被限流）。");
-  const j2 = await subsGet(chan, "https://api.bilibili.com/x/player/v2?bvid=" + encodeURIComponent(bvid) + "&cid=" + d.cid, "字幕索引");
-  const subs = ((j2 && j2.data && j2.data.subtitle && j2.data.subtitle.subtitles) || []).filter((s) => s && s.subtitle_url);
-  if (!subs.length) return { ok: false, reason: "none" };
-  const picked = subs.find((s) => /zh/i.test(String(s.lan || ""))) || subs[0];
-  let u = String(picked.subtitle_url || "");
-  u = u.indexOf("//") === 0 ? "https:" + u : u.replace(/^http:/, "https:");
-  let body = [];
-  try {
-    const j3 = await subsGet(chan, u, "字幕内容", true);
-    body = Array.isArray(j3 && j3.body) ? j3.body : [];
-  } catch (e) {
-    return { ok: false, reason: "blocked", msg: "字幕接口读不到内容：" + ((e && e.message) || "") };
-  }
-  const lines = body.map((b) => ({ from: Number(b.from) || 0, to: Number(b.to) || 0, content: String(b.content || "") }))
-    .filter((b) => b.content.trim());
-  if (!lines.length) return { ok: false, reason: "none" };
-  return { ok: true, title: d.title || "", lan: String(picked.lan || ""), lines: lines };
-}
-function subsHTML(v) {
-  const s = v.subs;
-  if (!s) return "";
-  const host = ' data-subs-host="' + esc(v.bvid) + '"';
-  if (s.status === "loading") {
-    return '<div class="card-subs"' + host + '><div class="subs-h"><b>字幕</b><span class="subs-tag wait">读取中…</span>' +
-      '<span class="spin" role="status" aria-label="正在读取字幕"></span><span>正在读取该视频的 CC 字幕…</span></div></div>';
-  }
-  if (s.status === "none" || s.status === "err") {
-    return '<div class="card-subs"' + host + '><div class="subs-h"><b>字幕</b><span class="subs-tag err">未取到</span></div>' +
-      '<p class="subs-note err">' + esc(s.msg || "") + '</p></div>';
-  }
-  const items = s.items || [];
-  const shown = items.slice(0, SUB_MAX);
-  const truncated = items.length > shown.length;
-  const opsOrder = [];
-  for (const it of items) for (const n of it.ops) if (opsOrder.indexOf(n) < 0) opsOrder.push(n);
-  const opsRow = opsOrder.length
-    ? '<div class="subs-ops"><i>字幕里提到的干员（按首次出现顺序）：</i>' +
-      opsOrder.map((n) => '<span class="subs-op">' + esc(n) + '</span>').join("") + '</div>'
-    : '<p class="subs-note">字幕里没有出现你 BOX / 干员表里的干员名，因此不会有按干员排布的顺序清单。</p>';
-  let main;
-  if (s.seq) {
-    main = '<div class="subs-h"><b>按字幕顺序整理</b><span class="subs-tag on">与摆放顺序 / 朝向相关</span>' +
-      '<span class="subs-tag">共 ' + items.length + ' 句</span></div>' +
-      '<p class="subs-note">下面的编号就是字幕的先后顺序（同一句里出现干员名与朝向时用底色标出：'
-      + '<span class="subs-hl">干员</span> / <span class="subs-dir">朝向</span>）。</p>' +
-      '<ol class="subs-steps">' + shown.map((it, i) =>
-        '<li><span class="subs-n">' + (i + 1) + '</span><div><div class="subs-step-txt">' +
-        subsHighlight(it.txt, it.ops, it.dirs) + '</div><div class="subs-meta"><span class="subs-time">' +
-        fmtTs(it.from) + '</span>' +
-        (it.ops.length ? '<span>干员：' + it.ops.map((n) => esc(n)).join("、") + '</span>' : "") +
-        (it.dirs.length ? '<span>朝向 / 方向：' + it.dirs.map((d) => esc(d)).join("、") + '</span>' : "") +
-        (it.order ? '<span>顺序词：是</span>' : "") +
-        '</div></div></li>').join("") + '</ol>';
-  } else {
-    main = '<div class="subs-h"><b>字幕</b><span class="subs-tag on">已读取</span>' +
-      '<span class="subs-tag">与摆放顺序 / 朝向无明显关系</span><span class="subs-tag">共 ' + items.length + ' 句</span></div>' +
-      '<p class="subs-note">字幕里没有「先 / 然后 / 最后 / 朝上 / 面向…」这类顺序或朝向表述，'
-      + '因此按时间顺序原样列出，供你对照视频。</p>';
-  }
-  return '<div class="card-subs"' + host + '>' + main +
-    (truncated ? '<p class="subs-note">字幕共 ' + items.length + ' 句，过长，上面只整理了前 ' + shown.length + ' 句；完整内容可在下面的「全部字幕」里查看。</p>' : "") +
-    opsRow +
-    '<details class="subs-all"><summary>全部字幕（' + items.length + ' 句，按时间顺序）</summary>' +
-    '<ol class="subs-lines">' + items.map((it) =>
-      '<li><span class="subs-time">' + fmtTs(it.from) + '</span><span>' + subsHighlight(it.txt, it.ops, it.dirs) + '</span></li>').join("") +
-    '</ol></details>' +
-    '<div class="subs-tools"><button class="btn btn-sm" data-copy-subs="' + esc(v.bvid) + '">复制全部字幕</button>' +
-    '<button class="btn btn-sm" data-subs="' + esc(v.bvid) + '">收起字幕</button></div>' +
-    '</div>';
-}
-function subsFocus(bvid) {
-  const el = document.querySelector('[data-subs-host="' + bvid + '"]');
-  if (el && el.scrollIntoView) { try { el.scrollIntoView({ block: "nearest", behavior: "smooth" }); } catch (e) {} }
-}
-async function runSubs(bvid) {
-  const v = state.videos.find((x) => x.bvid === bvid);
-  if (!v) return;
-  if (v.subs && v.subs.status === "ok") { v.subs = null; renderResults(); return; }   // 再点一次收起
-  if (v.subs && v.subs.status === "loading") return;
-  v.subs = { status: "loading" };
-  renderResults();
-  subsFocus(bvid);
-  try {
-    const r = await subsFetch(bvid);
-    if (!r.ok) {
-      v.subs = {
-        status: "none",
-        msg: r.reason === "none"
-          ? "这个视频没有读到字幕：可能 UP 主没有上传 CC 字幕，或字幕仅在登录 B 站后可见。可以先点「打开视频 ↗」在 B 站页面确认播放器有没有字幕开关，再换别的视频试试。"
-          : (r.msg || "读取字幕失败。")
-      };
-    } else {
-      const items = subsLineData(r.lines);
-      v.subs = { status: "ok", lan: r.lan, count: items.length, items: items, seq: subsHasSeq(items) };
-    }
-  } catch (e) {
-    v.subs = { status: "err", msg: ((e && e.message) || "读取字幕失败。") + " 这不影响其它结果，可以换别的视频或通道重试。" };
-  }
-  renderResults();
-  subsFocus(bvid);
-  if (v.subs.status === "ok") toast("已读取 " + v.subs.count + " 句字幕" + (v.subs.seq ? "，并按顺序整理" : ""), "ok", 4500);
-  else toast("没读到字幕，已在卡片里给出说明", "err", 5000);
-}
-function copySubs(bvid) {
-  const v = state.videos.find((x) => x.bvid === bvid);
-  const items = (v && v.subs && v.subs.items) || [];
-  if (!items.length) { toast("还没有字幕可复制", "err"); return; }
-  const txt = items.map((it) => "[" + fmtTs(it.from) + "] " + it.txt).join("\n");
-  navigator.clipboard.writeText(txt).then(() => toast("已复制 " + items.length + " 句字幕", "ok"))
-    .catch(() => toast("复制失败，请展开「全部字幕」手动选择", "err"));
-}
 
 function exportCSV() {
   const arr = currentResults();
@@ -4898,6 +4902,8 @@ function bind() {
   $("#f-key").addEventListener("input", () => { clearTimeout(window.__fkT); window.__fkT = setTimeout(renderResults, 200); });
   $("#btn-csv").addEventListener("click", exportCSV);
   $("#result-body").addEventListener("click", (e) => {
+    const vb = e.target.closest("[data-video-bv]");
+    if (vb) { vidFromCard(vb.dataset.videoBv, vb.dataset.videoTitle); return; }
     const b = e.target.closest("[data-copy-bv]");
     if (b) {
       const bv = b.dataset.copyBv;
@@ -4907,12 +4913,7 @@ function bind() {
       }).catch(() => toast("复制失败，请手动选中：" + bv, "err"));
       return;
     }
-    const sb = e.target.closest("[data-subs]");
-    if (sb) { runSubs(sb.dataset.subs); return; }
-    const cs = e.target.closest("[data-copy-subs]");
-    if (cs) { copySubs(cs.dataset.copySubs); return; }
     if (e.target.closest("a")) return;                 // 卡内链接自己处理跳转
-    if (e.target.closest(".card-subs")) return;        // 字幕面板内的交互不打开视频
     const card = e.target.closest(".card[data-href]");
     if (card) window.open(card.dataset.href, "_blank", "noopener");
   });
@@ -5273,11 +5274,12 @@ const VIEWS = {
   "growth-plan": "养成推荐 · 养成",
   "growth-pull": "养成推荐 · 推荐抽取",
   wiki: "技能 Wiki · 技能 / 天赋 / 模组",
+  video: "解读视频 · 放置 / 撤离干员 · 击敌数",
 };
 /* 视图 → 主引导栏按钮 / 二级引导栏按钮（养成推荐三页都归到主引导栏的「养成推荐」） */
 const VIEW_MAIN = { home: "nv-home", settings: "nv-settings", login: "nv-login",
   "growth-scan": "nv-growth", "growth-plan": "nv-growth", "growth-pull": "nv-growth",
-  wiki: "nv-wiki" };
+  wiki: "nv-wiki", video: "nv-video" };
 const VIEW_SUB = { "growth-scan": "sb-scan", "growth-plan": "sb-plan", "growth-pull": "sb-pull" };
 function getView() {
   const v = lsGet(LS_VIEW);
@@ -5294,7 +5296,7 @@ function applyView(v, persist) {
   if (crumb) crumb.textContent = "当前视图：" + VIEWS[name];
   /* 主引导栏：四个入口，养成推荐三页都算「养成推荐」当前 */
   const main = VIEW_MAIN[name] || "nv-home";
-  ["nv-home", "nv-growth", "nv-wiki", "nv-settings", "nv-login"].forEach((id) => {
+  ["nv-home", "nv-growth", "nv-wiki", "nv-video", "nv-settings", "nv-login"].forEach((id) => {
     const b = $("#" + id);
     if (!b) return;
     if (id === main) b.setAttribute("aria-current", "page");
@@ -5325,6 +5327,7 @@ function viewInit() {
   [["nv-home", "home"], ["nv-settings", "settings"], ["nv-login", "login"],
    ["nv-growth", GROWTH_VIEWS[0]],
    ["nv-wiki", "wiki"],
+   ["nv-video", "video"],
    ["sb-scan", GROWTH_VIEWS[0]], ["sb-plan", GROWTH_VIEWS[1]], ["sb-pull", GROWTH_VIEWS[2]]
   ].forEach((pair) => {
     const b = $("#" + pair[0]);
@@ -6062,6 +6065,1957 @@ function wikiInit() {
   wikiRender();
 }
 
+/* =========================================================================
+   解读视频：载入视频直链 → 本机逐帧采样 → 读数条判定的放置 / 撤离干员 / 击敌数 / 变化时刻截图
+   -------------------------------------------------------------------------
+   · 所有像素读取都在本机 <canvas> 上完成，不发起任何额外网络请求。
+   · 直链需允许跨域（响应带 Access-Control-Allow-Origin），否则 canvas 会被
+     判定为「已污染」，既读不出像素也导不出截图，此时给出可理解的降级提示。
+   · 区域以相对画面的比例（x/y/w/h ∈ [0,1]）记录，可拖动校准并存到本机。
+   ========================================================================= */
+const LS_VREG = "akgf.vid.regions.v1";
+const LS_VOP = "akgf.vid.opnames.v1";                       /* 每条记录上确认的干员名（本机保存） */
+const VREG_DEFAULT = {
+  slots: { x: 0.820, y: 0.700, w: 0.180, h: 0.100 },   /* 右下角「剩余可放置角色」读数条（默认＝读数文字行本身：标签＋数量数字；实测 640*360 落在 y274..282、x526..631） */
+  kills: { x: 0.385, y: 0.018, w: 0.230, h: 0.085 }    /* 正中间上方「击敌数」 */
+};
+const VREG_NAME = { slots: "剩余可放置角色", kills: "击敌数" };
+/* 部署栏几何（与识别区域解耦）：只服务「变化格干员照片」取景，不参与读数识别；
+   默认沿用原「整段视频下方区域」口径，保证照片取景口径不变。 */
+const VID_CELL_REG = { x: 0.000, y: 0.700, w: 1.000, h: 0.300 };
+const KTPL = {
+  '0': ["000007dfffb400000003cfebbdff8000001df810003cf700008f60000001be2001ec000000004f9005f7000000000dd008f3000000000bf00af10000000009f00af10000000009f009f3000000000af006f8000000001dd003ee200000006f90009f90000003ef40003ef920005efa000005effcbdffb200000048cefeb61000"],
+  '1': ["00000002d90000000003358df9000000000cccdff90000000000005ff90000000000004ff90000000000004ff90000000000004ff90000000000004ff90000000000004ff90000000000004ff90000000000004ff90000000000004ff90000000000004ff90000000000005ffa000000000335bffe843000000efffffffff000","00000009f20000000000004ef20000000000cdfff20000000000999ef20000000000000cf20000000000000cf20000000000000cf20000000000000cf20000000000000cf20000000000000cf20000000000000cf20000000000000cf20000000000000cf20000000000000cf20000000000999efa9900000000ffffffff0000","00000016b00000000000059fc00000000000011dc00000000000000bc00000000000000ac00000000000000ac00000000000000ac00000000000000ac00000000000000ac00000000000000ac00000000000000ac00000000000000ac00000000000000ac00000000000000ad00000000000000ce10000000000058ef9500000"],
+  '2': ["00028cffda500000004dc7458df9100004de300005ff80000aff300000cfe2000bff500000aff40007ec200000bff4000021000001dfd2000000000005ff9000000000003dfa100000000017dd710000000016dc720000000002ad7100000000005d81000000000007ec7777777777000fffffffffffff000fffffffffffff00","00038befeb400000000afebadff500000008720019fd10000000000002ef40000000000000cf60000000000001ef40000000000006fc1000000000001cf7000000000001bf90000000000009fb1000000000008fc2000000000008fc2000000000008fc200000000000afb1000000000000ffbaaaaaaa000000ffffffffff000","000005cfea30000000005ebadfd300000001b4002bfa00000005600002ee20000002100000bf20000000000000ac00000000000001d800000000000004e20000000000000a700000000000006a10000000000002b20000000000002a20000000000002930000100000001930000180000001adaaaaad8000000bffffffff3000"],
+  '3': ["000004bcec70000000008d4019fa00000004fb0001ef40000006fc0000cf70000002b70000df60000000000003fd1000000000003cc300000000006ffb3000000000001349fb200000000000009fa00000000000005fe00000035000005ff000000cf500006fd000000cf40000af80000005f71018f9000000003adcda400000","00038cefd92000000009febaefc20000000782002cf800000000000006fa00000000000007f90000000000001ce3000000000068dd400000000000dff8200000000000225de400000000000005fb00000000000002fe00000000000002fe00000001000006fb0000000b51003df60000000ffdabefa000000005adffc7100000","000018dfd81000000001aa8aef800000000640005fe20000000200000cf30000000000000bb00000000000003d30000000000001a60000000000027dfe70000000000136bff600000000000009fc00000000000002ee00000000000000ad00000000000000aa00000001000003d30000000dc7325b4000000009efec82000000"],
+  '4': ["00000000004800000000000003ef1000000000001cff200000000000cdcf20000000000bf36f10000000009f505f1000000005e7006f100000004d80006f10000001db00006f1000000bb000006f2000008ffcbbbbffea00007dccddddfffc0000000000009f600000000000008f500000000000008f60000000000000493000"],
+  '5': ["00001fffffff900000003feeeeee800000005c1111111000000069000000000000008700000000000000a636751000000000cbcabfd500000000d71007ff30000000100000afb00000000000005ff00000000000003ff00000047000004ff000000df500007fb000000cf40001de30000004e8203ae5000000003adcda300000","0008ffffffff00000008fdaaaaaa00000008f800000000000008f800000000000008f800000000000008f822000000000008ffffd92000000007caaaefd300000000000019fb00000000000003fe00000000000001ef00000000000002ff00000000000006fc0000000b51004df70000000ffdbbefa100000007bdfec7100000","000000affffd0000000002dcccc70000000009400000000000003c000000000000009ea7200000000003efffe50000000001358dfe600000000000019fe300000000000009fa00000000000001dc000000000000009c000000000000008b00000000000000b500000003400006900000000ce944891000000006cfeb60000000"],
+  '6': ["000000005ad200000000003bc5000000000005ea0000000000003eb0000000000001ce20000000000006f90031000000000af79effb20000000dfc512afd2000000ff30000cf8000000ff200007fc000000ff200005fe000000ef300005fd000000af600006fa0000005fb0000bf400000008f8008f70000000005bdda400000","00000049dff90000000007ffcab9000000006fd5000100000002de30000000000007f80000000000000bf40121000000000df7aefea30000000fffcaadfd3000000fe200009fb000000fd000003fe000000fe100001df000000df300001ef0000009f800005fc0000004ee4002bf700000007feaadfa1000000006befc710000","0000000039a9400000000018d6100000000002bd3000000000001be40000000000007f90000000000002ee30220000000008fb6bfea20000000bfc623afc2000000ef40001cf9000000ff300007fc000000ff300004fe000000cf400003fc0000008f700003f90000002dc10006e300000005e8003c60000000004bb89400000"],
+  '7': ["000ffffffffff000000ffeeeeeefa000000f6211112e3000000c0000007a00000003000001e200000000000008900000000000002e200000000000008a00000000000002e200000000000008a00000000000002e200000000000009900000000000002e20000000000000a900000000000003e20000000000000a90000000000","000efffffffff000000bcccccccef00000000000002ee00000000000009f80000000000003ee20000000000009f70000000000003ed1000000000000af70000000000003fd1000000000000af70000000000004fd1000000000000af70000000000005fd1000000000000bf70000000000005fd1000000000000bf7000000000","0000afffffffe0000002edcccccea00000078100001d500000050000005d10000000000000a900000000000002e500000000000006e10000000000000a900000000000002e400000000000006c00000000000000b800000000000001e400000000000005c10000000000000a800000000000002e300000000000006e00000000"],
+  '8': ["000029ddeb4000000004ea101af60000001dd10001de2000006fa00000af6000006fd10000af5000002ef90001dc10000005ffd507d3000000004dffed2000000002b96cffd40000004ea0004dfe500000df400001bfc00000ff2000005ff00000ff4000005fd00000af8000008f7000001cf71006e7000000006becda300000","000017cefc7100000000afc88cfb10000005fc1001cf60000009f700007fa0000009f800007f90000006fe5000af500000009ffa36f9000000001bffefa000000002ce439efb10000009f70003cf9000000df300005fe000000ff200002ff000000df500004fd0000008fc2001bf80000001cfd98cfb1000000018cffc710000","00003a99a81000000003c60009b10000000ab00003f70000000cb00002e90000000bf60005f400000005fe502c70000000008ff8b6000000000007ffc10000000000188dfc2000000001a803dfc100000008d1003df80000000ea00003ed0000000fa00000ad0000000cc10000ba00000004d80006b2000000003aa999200000"],
+  '9': ["000005bdda40000000009f601af600000006f90001de3000000cf500008f8000000ff300005fc000000ff300005fd000000ef500004fe000000afa00005fd0000003ef8116dfb00000003cffe88f80000000002300bf40000000000004fa0000000000001cd2000000000001bd3000000000016da200000000004d9400000000","000017cfec6000000001afdaaef800000006fc2004ef4000000cf500007f9000000fe200003fd000000fe100001df000000ef300000cf000000bf900002df0000003dfdaacfff00000003adfea7fd00000000012104fb00000000000007f70000000000003ed2000000010004cf6000000009bacff70000000009ffda4000000","000004aaca30000000006d4019e500000003e60001cd20000009f300007f8000000cf300004fc000000df400003ff000000cf700003ff0000009fc10004ff0000002cfa336cfc00000002aefb6bf80000000002203ee30000000000009f70000000000004eb1000000000002db2000000000015c710000000004899300000000"],
+  '/': ["000000000019000000000000009c00000000000002d700000000000009c00000000000002d70000000000000ad00000000000002e70000000000000ad00000000000003f70000000000000cf00000000000004f80000000000000ce10000000000005f90000000000000ce10000000000000f900000000000000820000000000"],
+};
+const vid = {
+  url: "", ready: false, running: false, cal: false, calTarget: "slots",
+  pixelSafe: true, dur: 0, vw: 0, vh: 0, step: 0.3, maxFrames: 5000,
+  regions: null, frames: [], auto: null, autoRun: false,
+  events: [], dev: [], sens: 1, stable: 5, minStep: 0, cellsMax: 0,
+  reads: [], killsTotal: "", readOk: 0, readFail: 0,
+  shotN: 0, shotFail: 0, dropN: 0, winA: -1, winB: -1, notesTouched: false,
+  photoN: 0, photoFail: 0, opN: 0,
+  roOk: false, roNote: "", roSeq: [], roFix: 0, roLock: null, jumpN: 0,
+  openAt: -1, roTplN: 5,
+  tlDrag: false, tlT: 0, refT: 0
+};
+
+function vidMsg(txt, kind) {
+  const el = $("#vid-status");
+  if (el) { el.textContent = txt || ""; el.className = "vid-note" + (kind ? " " + kind : ""); }
+  if (kind === "err") { try { toast(txt, "err", 9000); } catch (e) {} }
+}
+function vidSetBar(p) {
+  const i = $("#vid-bar-i");
+  if (i) i.style.width = (Math.max(0, Math.min(1, p)) * 100).toFixed(2) + "%";
+}
+function vidFmt(sec) {
+  if (!isFinite(sec)) return "—";
+  const s = Math.max(0, Math.floor(sec)), m = Math.floor(s / 60), r = s % 60;
+  return m + ":" + String(r).padStart(2, "0") + "." + Math.round((sec - Math.floor(sec)) * 10);
+}
+function vidRegLoad() {
+  let r = null;
+  try { r = JSON.parse(lsGet(LS_VREG) || "null"); } catch (e) { r = null; }
+  const ok = !!(r && r.slots && r.kills
+    && typeof r.slots.x === "number" && typeof r.slots.w === "number"
+    && typeof r.kills.x === "number" && typeof r.kills.w === "number");
+  /* p99 迁移：识别区域由「干员栏位（整段视频下方区域）」换成「剩余可放置角色」读数区域。
+     旧存档若仍是那一版默认值（整宽 × 整段下方区域），直接换成新默认值；人工校准过的区域保持不动。 */
+  let mig = false;
+  if (ok && r.slots.w >= 0.98 && r.slots.x <= 0.001 && r.slots.y <= 0.71 && r.slots.h >= 0.29) {
+    r.slots = JSON.parse(JSON.stringify(VREG_DEFAULT.slots)); mig = true;
+  }
+  vid.regions = ok ? r : JSON.parse(JSON.stringify(VREG_DEFAULT));
+  if (mig) vidRegSave();
+  vidRegPaint();
+}
+function vidRegSave() { lsSet(LS_VREG, JSON.stringify(vid.regions)); }
+function vidRegPaint() {
+  ["slots", "kills"].forEach((k) => {
+    const el = $("#vid-box-" + k);
+    if (!el) return;
+    const r = vid.regions[k];
+    el.style.left = (r.x * 100).toFixed(3) + "%";
+    el.style.top = (r.y * 100).toFixed(3) + "%";
+    el.style.width = (r.w * 100).toFixed(3) + "%";
+    el.style.height = (r.h * 100).toFixed(3) + "%";
+    el.classList.toggle("on", vid.cal && vid.calTarget === k);
+  });
+  const s = $("#vid-reg-slots"), k = $("#vid-reg-kills");
+  const fmt = (r) => Math.round(r.x * 100) + "," + Math.round(r.y * 100) + " · "
+    + Math.round(r.w * 100) + "×" + Math.round(r.h * 100);
+  if (s) s.textContent = fmt(vid.regions.slots);
+  if (k) k.textContent = fmt(vid.regions.kills);
+}
+function vidButtons() {
+  const run = $("#vid-run"), calb = $("#vid-cal-btn");
+  if (run) { run.disabled = !vid.ready || vid.running; run.textContent = vid.running ? "解读中…" : "开始解读"; }
+  if (calb) calb.disabled = !vid.ready;
+}
+
+/* ---- 载入视频直链 ---- */
+function vidLoad() {
+  const input = $("#vid-url");
+  const url = String((input && input.value) || "").trim();
+  if (!url) { vidMsg("请先填写视频直链 URL。", "err"); return; }
+  const v = $("#vid-player");
+  if (!v) return;
+  vid.url = url; vid.ready = false; vid.pixelSafe = true; vid.frames = [];
+  vid.events = []; vid.dev = []; vid.reads = []; vid.killsTotal = "";
+  vid.readOk = 0; vid.readFail = 0; vid.shotN = 0; vid.shotFail = 0;
+  vid.dropN = 0; vid.openN = 0; vid.openT = -1;
+  vid.closeN = 0; vid.closeT = -1; vid.errN = 0; vid.errList = [];
+  vid.winA = -1; vid.winB = -1; vid.notesTouched = false;
+  vidRenderEvents(); vidKillsNote(); vidShotInfo();
+  ($("#vid-frames") || {}).textContent = "0";
+  vidSetBar(0);
+  vid.tlDrag = false; vidTlPaint();
+  const st = $("#vid-stage");
+  if (st) st.classList.add("is-empty");
+  try { v.pause(); } catch (e) {}
+  v.removeAttribute("src");
+  try { v.load(); } catch (e) {}
+  v.setAttribute("crossorigin", "anonymous");
+  v.setAttribute("src", url);
+  vidButtons();
+  vidMsg("正在载入视频…", "warn");
+}
+function vidBindMedia() {
+  const v = $("#vid-player");
+  if (!v || v.dataset.vbound === "1") return;
+  v.dataset.vbound = "1";
+  v.addEventListener("loadedmetadata", () => {
+    vid.ready = true;
+    vid.dur = v.duration || 0; vid.vw = v.videoWidth || 0; vid.vh = v.videoHeight || 0;
+    const st = $("#vid-stage"); if (st) st.classList.remove("is-empty");
+    const wh = $("#vid-wh"), du = $("#vid-dur");
+    if (wh) wh.textContent = vid.vw + "×" + vid.vh;
+    if (du) du.textContent = vidFmt(vid.dur);
+    vidButtons(); vidRegPaint(); vidTlPaint();
+    vidMsg("视频已载入，可点「开始解读」逐帧采样。", "ok");
+    if (vid.autoRun) { vid.autoRun = false; try { vidRun(); } catch (e) {} }
+  });
+  v.addEventListener("error", () => {
+    if (v.hasAttribute("crossorigin")) {
+      /* 直链不带跨域头时 crossorigin 模式会直接载入失败：退回普通模式至少能播 */
+      v.removeAttribute("crossorigin");
+      vid.pixelSafe = false;
+      vidMsg("该直链未允许跨域，已改为「仅播放」模式重试；该模式下无法读取画面像素与截图。", "warn");
+      v.setAttribute("src", vid.url);
+      return;
+    }
+    vid.ready = false; vidButtons();
+    vidMsg("视频载入失败：直链不可访问、格式不受支持，或站点不允许跨域读取。", "err");
+  });
+  v.addEventListener("loadeddata", () => { if (vid.ready) vidRegPaint(); });
+  /* 播放位置变化时同步时间轴读数与手柄；逐帧采样期间不重绘，由采样循环自行推进 */
+  const tlSync = () => { if (!vid.running) vidTlPaint(); };
+  v.addEventListener("timeupdate", tlSync);
+  v.addEventListener("seeked", tlSync);
+  v.addEventListener("play", tlSync);
+  v.addEventListener("pause", tlSync);
+  v.addEventListener("durationchange", tlSync);
+}
+
+/* ---- 视频时间轴（p100）：独立于逐帧采样进度；可拖动定位，并按每条记录的时间点打标记 ---- */
+function vidTlRatio(t) {
+  const d = vid.dur || 0;
+  if (!(d > 0)) return 0;
+  return Math.max(0, Math.min(1, (Number(t) || 0) / d));
+}
+function vidTlPct(r) { return Math.max(0, Math.min(100, (Number(r) || 0) * 100)); }
+function vidTlCurT() {
+  const v = $("#vid-player");
+  const t = (v && isFinite(v.currentTime)) ? v.currentTime : (vid.tlT || 0);
+  return Math.max(0, Math.min(t, vid.dur || 0));
+}
+/* 时间轴上的截图标记：一条记录一个方块，位置与时间成比例；点一下即跳到该时刻并暂停 */
+function vidTlMarks() {
+  const box = $("#vid-tl-marks");
+  if (!box) return;
+  const list = [];
+  if (vid.ready && vid.dur > 0) {
+    vid.events.forEach((e, i) => { if (e && !e.open && !e.close) list.push({ e: e, i: i }); });
+  }
+  const sig = list.map((x) => x.i + ":" + Number(x.e.t).toFixed(2) + ":" + x.e.dir).join("|");
+  if (box.__sig === sig) return;
+  box.textContent = "";
+  list.forEach((x) => {
+    const e = x.e, i = x.i;
+    const b = document.createElement("button");
+    b.type = "button";
+    b.className = "vid-tl-mk " + (e.dir === "down" ? "down" : "up");
+    b.style.left = vidTlPct(vidTlRatio(e.t)).toFixed(3) + "%";
+    b.dataset.t = String(e.t);
+    b.title = "#" + (i + 1) + " \u00b7 " + (e.dir === "down" ? "\u653e\u7f6e" : "\u64a4\u79bb")
+      + " \u00b7 " + vidFmt(e.t) + " \u00b7 \u70b9\u4e00\u4e0b\u8df3\u5230\u8be5\u65f6\u523b\u5e76\u6682\u505c";
+    b.setAttribute("aria-label", "\u8df3\u5230\u7b2c " + (i + 1) + " \u6761\u8bb0\u5f55\uff08" + vidFmt(e.t) + "\uff09\u5e76\u6682\u505c");
+    b.addEventListener("pointerdown", (ev) => { ev.preventDefault(); ev.stopPropagation(); });
+    b.addEventListener("click", (ev) => { ev.preventDefault(); ev.stopPropagation(); vidTlJump(Number(b.dataset.t) || 0); });
+    box.appendChild(b);
+  });
+  box.__sig = sig;
+}
+function vidTlPaint() {
+  const track = $("#vid-tl-track"), fill = $("#vid-tl-fill"), knob = $("#vid-tl-knob");
+  const cur = $("#vid-tl-cur"), du = $("#vid-tl-dur"), hint = $("#vid-tl-hint");
+  const on = !!(vid.ready && vid.dur > 0);
+  const t = vidTlCurT(), r = on ? vidTlRatio(t) : 0;
+  if (du) du.textContent = on ? vidFmt(vid.dur) : "\u2014";
+  if (cur) cur.textContent = on ? vidFmt(t) : "0:00.0";
+  if (fill) fill.style.width = vidTlPct(r).toFixed(3) + "%";
+  if (knob) knob.style.left = vidTlPct(r).toFixed(3) + "%";
+  if (track) {
+    track.classList.toggle("is-off", !on);
+    track.classList.toggle("is-busy", !!vid.running);
+    track.classList.toggle("is-drag", !!vid.tlDrag);
+    track.setAttribute("aria-valuemax", String(Math.round((vid.dur || 0) * 10) / 10));
+    track.setAttribute("aria-valuenow", String(Math.round(t * 10) / 10));
+    track.setAttribute("aria-disabled", (on && !vid.running) ? "false" : "true");
+  }
+  if (hint) {
+    hint.textContent = !on
+      ? "\u5c1a\u672a\u8f7d\u5165\u89c6\u9891\uff1a\u8f7d\u5165\u540e\u53ef\u5728\u65f6\u95f4\u8f74\u4e0a\u62d6\u52a8\u5b9a\u4f4d\uff0c\u65b9\u5757\u6807\u8bb0\u5404\u6761\u8bb0\u5f55\u7684\u622a\u56fe\u65f6\u523b\u3002"
+      : (vid.running
+        ? "\u9010\u5e27\u91c7\u6837\u8fdb\u884c\u4e2d\uff1a\u4e3a\u907f\u514d\u6253\u65ad\u91c7\u6837\uff0c\u91c7\u6837\u671f\u95f4\u65f6\u95f4\u8f74\u6682\u4e0d\u53ef\u62d6\u52a8\u3002"
+        : "\u6309\u4e0b\u5e76\u62d6\u52a8\u53ef\u5b9a\u4f4d\uff08\u677e\u624b\u540e\u4fdd\u6301\u6682\u505c\uff09\u00b7 \u70b9\u65b9\u5757\u6216\u8bb0\u5f55\u91cc\u7684\u300c\u8df3\u5230\u8be5\u65f6\u523b\u300d\u8df3\u5230\u5bf9\u5e94\u622a\u56fe\u65f6\u95f4\u5e76\u6682\u505c\u3002");
+  }
+  vidTlMarks();
+}
+/* 跳到某时刻并暂停（时间轴拖动、时间轴标记、记录里按钮、截图点击四处共用同一入口） */
+function vidTlJump(t) {
+  const v = $("#vid-player");
+  if (!v || !vid.ready || !(vid.dur > 0)) { vidMsg("\u65f6\u95f4\u8f74\u6682\u4e0d\u53ef\u7528\uff1a\u8bf7\u5148\u8f7d\u5165\u89c6\u9891\u3002", "warn"); return false; }
+  if (vid.running) { vidMsg("\u9010\u5e27\u91c7\u6837\u8fdb\u884c\u4e2d\uff0c\u4e3a\u907f\u514d\u6253\u65ad\u91c7\u6837\uff0c\u6682\u4e0d\u80fd\u8df3\u8f6c\u65f6\u95f4\u8f74\u3002", "warn"); return false; }
+  const tt = Math.max(0, Math.min(Number(t) || 0, Math.max(0, vid.dur - 0.02)));
+  try { v.pause(); } catch (e) {}
+  try { v.currentTime = tt; } catch (e) {}
+  vid.tlT = tt;
+  vidTlPaint();
+  return true;
+}
+function vidTlBind() {
+  const track = $("#vid-tl-track");
+  if (!track || track.dataset.tbound === "1") return;
+  track.dataset.tbound = "1";
+  const ratio = (e) => {
+    const r = track.getBoundingClientRect();
+    if (!(r.width > 0)) return 0;
+    return Math.max(0, Math.min(1, (e.clientX - r.left) / r.width));
+  };
+  const off = () => { if (!vid.ready || !(vid.dur > 0)) return "no-video"; if (vid.running) return "busy"; return ""; };
+  track.addEventListener("pointerdown", (e) => {
+    const why = off();
+    if (why) {
+      vidMsg(why === "busy" ? "\u9010\u5e27\u91c7\u6837\u8fdb\u884c\u4e2d\uff0c\u6682\u4e0d\u80fd\u62d6\u52a8\u65f6\u95f4\u8f74\u3002"
+        : "\u65f6\u95f4\u8f74\u6682\u4e0d\u53ef\u7528\uff1a\u8bf7\u5148\u8f7d\u5165\u89c6\u9891\u3002", "warn");
+      return;
+    }
+    vid.tlDrag = true;
+    try { $("#vid-player").pause(); } catch (err) {}
+    vidTlJump(ratio(e) * (vid.dur || 0));       /* 按下即定位 */
+    try { track.setPointerCapture(e.pointerId); } catch (err) {}
+    e.preventDefault();
+  });
+  track.addEventListener("pointermove", (e) => {
+    if (!vid.tlDrag) return;
+    vidTlJump(ratio(e) * (vid.dur || 0));       /* 按住拖动实时改变播放位置 */
+    e.preventDefault();
+  });
+  const end = (e) => {
+    if (!vid.tlDrag) return;
+    vid.tlDrag = false;
+    if (e && typeof e.clientX === "number") vidTlJump(ratio(e) * (vid.dur || 0));
+    try { $("#vid-player").pause(); } catch (err) {}
+    vidTlPaint();
+    try { track.releasePointerCapture(e.pointerId); } catch (err) {}
+  };
+  track.addEventListener("pointerup", end);
+  track.addEventListener("pointercancel", end);
+  track.addEventListener("keydown", (e) => {
+    const why = off();
+    if (why) { if (why === "busy") vidMsg("\u9010\u5e27\u91c7\u6837\u8fdb\u884c\u4e2d\uff0c\u6682\u4e0d\u80fd\u8df3\u8f6c\u65f6\u95f4\u8f74\u3002", "warn"); return; }
+    const v = $("#vid-player"), cur = vidTlCurT();
+    let tt = null;
+    if (e.key === " " || e.key === "Enter") {
+      try { if (v.paused) v.play(); else v.pause(); } catch (err) {}
+      e.preventDefault(); vidTlPaint(); return;
+    }
+    if (e.key === "ArrowLeft" || e.key === "ArrowDown") tt = cur - 5;
+    else if (e.key === "ArrowRight" || e.key === "ArrowUp") tt = cur + 5;
+    else if (e.key === "Home") tt = 0;
+    else if (e.key === "End") tt = (vid.dur || 0) - 0.05;
+    if (tt == null) return;
+    e.preventDefault();
+    vidTlJump(tt);
+  });
+}
+/* ---- 区域校准（在画面上拖出方框）---- */
+function vidCalToggle(on) {
+  vid.cal = (typeof on === "boolean") ? on : !vid.cal;
+  const st = $("#vid-stage");
+  if (st) st.classList.toggle("calibrating", vid.cal);
+  const b = $("#vid-cal-btn");
+  if (b) { b.textContent = vid.cal ? "结束校准" : "校准区域"; }
+  vidRegPaint();
+}
+function vidCalApply(d, x, y) {
+  const r = vid.regions[d.k];
+  r.x = Math.min(d.x0, x); r.y = Math.min(d.y0, y);
+  r.w = Math.abs(x - d.x0); r.h = Math.abs(y - d.y0);
+  if (r.w < 0.005) r.w = 0.005;
+  if (r.h < 0.005) r.h = 0.005;
+  vidRegPaint();
+}
+let vidDrag = null;
+function vidBindCal() {
+  const cal = $("#vid-cal");
+  if (!cal || cal.dataset.cbound === "1") return;
+  cal.dataset.cbound = "1";
+  const norm = (e) => {
+    const rect = $("#vid-stage").getBoundingClientRect();
+    return {
+      x: Math.min(1, Math.max(0, (e.clientX - rect.left) / rect.width)),
+      y: Math.min(1, Math.max(0, (e.clientY - rect.top) / rect.height))
+    };
+  };
+  cal.addEventListener("pointerdown", (e) => {
+    if (!vid.cal) return;
+    const p = norm(e);
+    vidDrag = { x0: p.x, y0: p.y, k: vid.calTarget };
+    vidCalApply(vidDrag, p.x, p.y);
+    try { cal.setPointerCapture(e.pointerId); } catch (err) {}
+    e.preventDefault(); e.stopPropagation();
+  });
+  cal.addEventListener("pointermove", (e) => {
+    if (!vidDrag) return;
+    const p = norm(e);
+    vidCalApply(vidDrag, p.x, p.y);
+    e.preventDefault();
+  });
+  const end = (e) => {
+    if (!vidDrag) return;
+    const k = vidDrag.k;
+    vidDrag = null;
+    vidRegSave();
+    vidMsg("已保存「" + VREG_NAME[k] + "」区域。", "ok");
+    try { cal.releasePointerCapture(e.pointerId); } catch (err) {}
+  };
+  cal.addEventListener("pointerup", end);
+  cal.addEventListener("pointercancel", end);
+}
+
+/* ---- 逐帧采样：把每一帧的两块区域取成灰度签名，留给后续判定 ---- */
+function vidSeek(v, t) {
+  return new Promise((res) => {
+    let done = false;
+    const fire = () => { if (done) return; done = true; v.removeEventListener("seeked", fire); clearTimeout(to); res(true); };
+    const to = setTimeout(() => { if (done) return; done = true; v.removeEventListener("seeked", fire); res(false); }, 6000);
+    v.addEventListener("seeked", fire);
+    try { v.currentTime = t; } catch (e) { done = true; clearTimeout(to); res(false); }
+  });
+}
+function vidGray(v, reg, dw) {
+  const vw = v.videoWidth, vh = v.videoHeight;
+  let sx = Math.round(reg.x * vw), sy = Math.round(reg.y * vh);
+  let sw = Math.round(reg.w * vw), sh = Math.round(reg.h * vh);
+  sx = Math.min(Math.max(0, sx), Math.max(0, vw - 2));
+  sy = Math.min(Math.max(0, sy), Math.max(0, vh - 2));
+  sw = Math.min(Math.max(2, sw), vw - sx);
+  sh = Math.min(Math.max(2, sh), vh - sy);
+  const dh = Math.max(2, Math.round(dw * sh / sw));
+  const c = vid._cv || (vid._cv = document.createElement("canvas"));
+  c.width = dw; c.height = dh;
+  const cx = c.getContext("2d", { willReadFrequently: true });
+  cx.drawImage(v, sx, sy, sw, sh, 0, 0, dw, dh);
+  const d = cx.getImageData(0, 0, dw, dh).data;   /* 跨域污染会在此抛 SecurityError */
+  const out = new Uint8Array(dw * dh);
+  for (let i = 0, p = 0; i < out.length; i++, p += 4) {
+    out[i] = (d[p] * 77 + d[p + 1] * 150 + d[p + 2] * 29) >> 8;
+  }
+  return { w: dw, h: dh, px: out };
+}
+/* ---- 击敌数识别：HUD 数字模板匹配（全部本机完成，不引外部库、不发请求）----
+   模板 KTPL：每个字符 1~3 个 16×16 覆盖度模板（nibble-hex）。
+     0 / 4 / 斜杠 → 真实 HUD 字形均值原型；其余数字 → georgia / tahoma / times 模板集。
+   流程：只在「需要读数」的时刻取原生分辨率画面 → 连通域找字形 → 按行/间距切串
+     → 逐字比距离取前 3 候选 → 装配出恰好一个「/」且两侧都是数字的最佳串。
+   跨帧校正：总数取众数，逐条把右侧字形按总数改写；击敌数序列要求单调不减
+     （用候选回改；改不动则如实标记「不确定」，不臆造读数）。 */
+let KTV = null;
+function kTpl() {
+  if (KTV) return KTV;
+  const o = {};
+  for (const ch in KTPL) {
+    const c = { t: [], h: [], a: [] };
+    KTPL[ch].forEach((hex) => {
+      const f = new Float32Array(256);
+      for (let i = 0; i < 256; i++) f[i] = parseInt(hex.charAt(i), 16) / 15;
+      c.t.push(f); c.h.push(kHoles(f)); c.a.push(kAspect(f));
+    });
+    o[ch] = c;
+  }
+  KTV = o;
+  return o;
+}
+function kHoles(b) {
+  const seen = new Uint8Array(256);
+  let n = 0;
+  for (let i = 0; i < 256; i++) {
+    if (b[i] >= 0.35 || seen[i]) continue;
+    const st = [i]; seen[i] = 1; let touch = false, k = 0;
+    while (st.length) {
+      const p = st.pop(); k++;
+      const x = p % 16, y = (p - x) / 16;
+      if (x === 0 || x === 15 || y === 0 || y === 15) touch = true;
+      for (let dy = -1; dy <= 1; dy++) {
+        for (let dx = -1; dx <= 1; dx++) {
+          const nx = x + dx, ny = y + dy;
+          if (nx < 0 || nx > 15 || ny < 0 || ny > 15) continue;
+          const q = ny * 16 + nx;
+          if (b[q] < 0.35 && !seen[q]) { seen[q] = 1; st.push(q); }
+        }
+      }
+    }
+    if (!touch && k >= 2) n++;
+  }
+  return n;
+}
+function kAspect(b) {
+  let x0 = 16, x1 = -1, y0 = 16, y1 = -1;
+  for (let y = 0; y < 16; y++) {
+    for (let x = 0; x < 16; x++) {
+      if (b[y * 16 + x] >= 0.35) {
+        if (x < x0) x0 = x; if (x > x1) x1 = x;
+        if (y < y0) y0 = y; if (y > y1) y1 = y;
+      }
+    }
+  }
+  if (x1 < 0 || y1 < 0) return 0;
+  return (x1 - x0 + 1) / (y1 - y0 + 1);
+}
+function kDist(a, b) {
+  let best = 1e9;
+  for (let dy = -1; dy <= 1; dy++) {
+    for (let dx = -1; dx <= 1; dx++) {
+      let d = 0;
+      for (let y = 0; y < 16; y++) {
+        const yy = y + dy;
+        for (let x = 0; x < 16; x++) {
+          const xx = x + dx;
+          const vb = (xx < 0 || xx > 15 || yy < 0 || yy > 15) ? 0 : b[yy * 16 + xx];
+          d += Math.abs(a[y * 16 + x] - vb);
+        }
+      }
+      if (d < best) best = d;
+      if (best === 0) break;
+    }
+  }
+  return best / 256;
+}
+function kNorm(o, box) {                 /* 面积平均归一为 16×16 覆盖度（0..1，与模板同标度） */
+  const x0 = box.x0, y0 = box.y0, cw = box.w, ch = box.h;
+  const f = new Float32Array(256);
+  const s = 16 / ch;
+  const nw = Math.max(1, Math.min(16, Math.round(cw * s)));
+  const nh = Math.max(1, Math.min(16, Math.round(ch * s)));
+  const ox = (16 - nw) >> 1, oy = (16 - nh) >> 1;
+  for (let i = 0; i < nh; i++) {
+    const ya = y0 + Math.floor(ch * i / nh), yb = Math.max(ya + 1, y0 + Math.ceil(ch * (i + 1) / nh));
+    for (let j = 0; j < nw; j++) {
+      const xa = x0 + Math.floor(cw * j / nw), xb = Math.max(xa + 1, x0 + Math.ceil(cw * (j + 1) / nw));
+      let t = 0, n = 0;
+      for (let yy = ya; yy < Math.min(yb, y0 + ch); yy++) {
+        for (let xx = xa; xx < Math.min(xb, x0 + cw); xx++) { t += o.a[yy * o.w + xx]; n++; }
+      }
+      f[(oy + i) * 16 + ox + j] = n ? t / n / 255 : 0;   /* 归一到 0..1：与 KTPL 模板同标度 */
+    }
+  }
+  return f;
+}
+function kClass(bm) {                     /* 候选按距离升序：[[字符, 距离], …] */
+  const tp = kTpl(), h0 = kHoles(bm), a0 = kAspect(bm), out = [];
+  for (const ch in tp) {
+    const c = tp[ch];
+    let best = 1e9;
+    for (let i = 0; i < c.t.length; i++) {
+      const v = kDist(bm, c.t[i]) + 0.06 * Math.abs(c.h[i] - h0) + 0.05 * Math.abs(c.a[i] - a0);
+      if (v < best) best = v;
+    }
+    out.push([ch, best]);
+  }
+  out.sort((p, q) => p[1] - q[1]);
+  return out;
+}
+function kInkArray(v, reg) {              /* 击敌数区域原生分辨率覆盖度（彩色元素直接排除）*/
+  const vw = v.videoWidth, vh = v.videoHeight;
+  if (!vw || !vh) return null;
+  let sx = Math.round(reg.x * vw), sy = Math.round(reg.y * vh);
+  let sw = Math.max(8, Math.round(reg.w * vw)), sh = Math.max(8, Math.round(reg.h * vh));
+  sx = Math.max(0, Math.min(sx, vw - 2)); sy = Math.max(0, Math.min(sy, vh - 2));
+  sw = Math.max(2, Math.min(sw, vw - sx)); sh = Math.max(2, Math.min(sh, vh - sy));
+  const sc = sh < 26 ? Math.min(2, 26 / sh) : 1;   /* 画面过小时放大，避免字形被压扁 */
+  const dw = Math.round(sw * sc), dh = Math.round(sh * sc);
+  const c = vid._kc || (vid._kc = document.createElement("canvas"));
+  c.width = dw; c.height = dh;
+  const cx = c.getContext("2d", { willReadFrequently: true });
+  cx.imageSmoothingEnabled = true;
+  cx.drawImage(v, sx, sy, sw, sh, 0, 0, dw, dh);
+  const d = cx.getImageData(0, 0, dw, dh).data;    /* 跨域污染在此抛 SecurityError */
+  const a = new Uint8Array(dw * dh);
+  for (let i = 0, p = 0; i < a.length; i++, p += 4) {
+    const r = d[p], g = d[p + 1], b = d[p + 2];
+    const mx = r > g ? (r > b ? r : b) : (g > b ? g : b);
+    const mn = r < g ? (r < b ? r : b) : (g < b ? g : b);
+    if (mx - mn > 75) { a[i] = 0; continue; }      /* 图标/红字等彩色元素不当作字幕 */
+    const y = (r * 77 + g * 150 + b * 29) >> 8;
+    const t = (y - 105) / 110;
+    a[i] = t <= 0 ? 0 : (t >= 1 ? 255 : Math.round(t * 255));
+  }
+  return { w: dw, h: dh, a: a };
+}
+function kComps(o) {
+  const W = o.w, H = o.h, a = o.a, seen = new Uint8Array(W * H), out = [];
+  for (let i = 0; i < a.length; i++) {
+    if (a[i] < 90 || seen[i]) continue;
+    const st = [i]; seen[i] = 1;
+    let x0 = W, x1 = -1, y0 = H, y1 = -1, n = 0;
+    while (st.length) {
+      const p = st.pop(), x = p % W, y = (p - x) / W;
+      n++;
+      if (x < x0) x0 = x; if (x > x1) x1 = x;
+      if (y < y0) y0 = y; if (y > y1) y1 = y;
+      for (let dy = -1; dy <= 1; dy++) {
+        for (let dx = -1; dx <= 1; dx++) {
+          const nx = x + dx, ny = y + dy;
+          if (nx < 0 || nx >= W || ny < 0 || ny >= H) continue;
+          const q = ny * W + nx;
+          if (a[q] >= 90 && !seen[q]) { seen[q] = 1; st.push(q); }
+        }
+      }
+    }
+    out.push({ x0: x0, y0: y0, x1: x1, y1: y1, n: n, w: x1 - x0 + 1, h: y1 - y0 + 1 });
+  }
+  return out;
+}
+function kScoreArr(seg, arr) {
+  let s = 0;
+  for (let i = 0; i < seg.length; i++) {
+    const c = seg[i].cands.find((p) => p[0] === arr[i]);
+    s += c ? c[1] : 0.30;
+  }
+  return s / seg.length;
+}
+function kValid(arr) { return /^\d+\/\d+$/.test(arr.join("")); }
+function kScan(o) {                       /* 在区域内找「数字/数字」计数串 */
+  const cs = kComps(o);
+  const gl = cs.filter((c) => c.h >= 9 && c.h <= 28 && c.w >= 3 && c.w <= 26
+    && c.w / c.h <= 1.6 && c.n / (c.w * c.h) >= 0.16);
+  if (gl.length < 3) return null;
+  const yc = gl.map((c) => (c.y0 + c.y1) / 2).sort((a, b) => a - b);
+  const mc = yc[yc.length >> 1];
+  const row = gl.filter((c) => Math.abs((c.y0 + c.y1) / 2 - mc) <= 4).sort((a, b) => a.x0 - b.x0);
+  if (row.length < 3) return null;
+  const runs = [];
+  let cur = [row[0]];
+  for (let i = 1; i < row.length; i++) {
+    const gap = row[i].x0 - row[i - 1].x1 - 1;
+    const aw = Math.max(4, (row[i].w + row[i - 1].w) / 2);
+    if (gap > aw * 1.4) { runs.push(cur); cur = [row[i]]; } else cur.push(row[i]);
+  }
+  runs.push(cur);
+  let best = null;
+  runs.forEach((r) => {
+    if (r.length < 3 || r.length > 10) return;
+    const gs = r.map((c) => ({ box: c, cands: kClass(kNorm(o, c)) }));
+    const arr0 = gs.map((g) => g.cands[0][0]);
+    for (let i0 = 0; i0 < r.length - 2; i0++) {
+      for (let i1 = i0 + 3; i1 <= r.length; i1++) {
+        const seg = gs.slice(i0, i1);
+        const base = arr0.slice(i0, i1);
+        const drop = r.length - seg.length;
+        let hit = null;
+        if (kValid(base)) hit = { arr: base.slice(), fix: 0 };
+        if (!hit) {                            /* 单字替换（含「/」被误判成数字）*/
+          let bs = null;
+          for (let i = 0; i < seg.length; i++) {
+            for (let k = 0; k < seg[i].cands.length; k++) {
+              const a2 = base.slice(); a2[i] = seg[i].cands[k][0];
+              if (kValid(a2)) {
+                const s = kScoreArr(seg, a2);
+                if (!bs || s < bs.s) bs = { arr: a2, fix: 1, s: s };
+              }
+            }
+          }
+          if (bs) hit = { arr: bs.arr, fix: 1 };
+        }
+        if (!hit) {                            /* 双字替换 */
+          let bs = null;
+          for (let i = 0; i < seg.length; i++) {
+            for (let j = i + 1; j < seg.length; j++) {
+              for (let k1 = 0; k1 < seg[i].cands.length; k1++) {
+                for (let k2 = 0; k2 < seg[j].cands.length; k2++) {
+                  const a2 = base.slice();
+                  a2[i] = seg[i].cands[k1][0]; a2[j] = seg[j].cands[k2][0];
+                  if (kValid(a2)) {
+                    const s = kScoreArr(seg, a2);
+                    if (!bs || s < bs.s) bs = { arr: a2, fix: 2, s: s };
+                  }
+                }
+              }
+            }
+          }
+          if (bs) hit = { arr: bs.arr, fix: 2 };
+        }
+        if (!hit) continue;
+        const sc = kScoreArr(seg, hit.arr) + 0.015 * drop;
+        if (!best || sc < best.score) {
+          const m = hit.arr.join("").split("/");
+          best = {
+            str: hit.arr.join(""), k: m[0], t: m[1], score: sc, fix: hit.fix,
+            glyphs: seg.map((g, i) => ({ ch: hit.arr[i], cands: g.cands.slice(0, 3), box: g.box }))
+          };
+        }
+      }
+    }
+  });
+  return best;
+}
+function vidKillsNote() {
+  const el = $("#vid-kills-note"), tot = $("#vid-kills-total");
+  if (tot) tot.textContent = vid.killsTotal || "—";
+  if (!el) return;
+  if (!vid.reads || !vid.reads.length) {
+    el.textContent = "击敌数识别：尚无数据。载入视频并点「开始解读」后，会取变化时刻的画面读出击敌数。";
+    return;
+  }
+  const n = vid.reads.filter((r) => r.str).length;
+  let t = "击敌数识别：可读 " + n + "/" + vid.reads.length + " 次读数";
+  if (vid.killsTotal) t += " · 判定总数 " + vid.killsTotal;
+  if (vid.readFail) t += " · " + vid.readFail + " 次画面读数不可用";
+  const sus = vid.reads.filter((r) => r.str && r.suspect).length;
+  if (sus) t += " · " + sus + " 次与总数/单调性不一致（已在记录中标注）";
+  const dtx = vidDropText();
+  if (dtx) t += " · " + dtx;
+  el.textContent = t + "。";
+}
+function kReadAt(v, t, reg) {
+  return vidSeek(v, t).then((okSeek) => {
+    if (!okSeek) return null;
+    let o = null;
+    try { o = kInkArray(v, reg); } catch (e) {
+      if (e && e.name === "SecurityError") { vid.pixelSafe = false; }
+      return null;
+    }
+    if (!o) return null;
+    const r = kScan(o);
+    return r ? { str: r.str, k: r.k, tt: r.t, score: r.score, glyphs: r.glyphs }
+             : { str: "", k: "", tt: "", score: 1, glyphs: null };
+  });
+}
+async function vidScanKills(v) {
+  const reg = vid.regions.kills, step = vid.step || 0.3;
+  vid.reads = []; vid.killsTotal = ""; vid.readOk = 0; vid.readFail = 0;
+  /* p97：事件已由读数链路定稿（不再有栏位格数兜底 / 栏位锚点判据），此处无需再改写记录 */
+  vidKillsNote();
+  if (vid.pixelSafe === false) return 0;
+  const targets = [];
+  const nProbe = 10;
+  for (let i = 0; i < nProbe; i++) targets.push({ t: Math.min(vid.dur - 0.02, vid.dur * i / nProbe), tag: "probe" });
+  vid.events.forEach((e) => targets.push({ t: Math.min(vid.dur - 0.02, Math.max(0, e.t)), tag: "event", idx: e.idx }));
+  const uniq = [];
+  targets.sort((a, b) => a.t - b.t).forEach((x) => {
+    const last = uniq[uniq.length - 1];
+    if (last && Math.abs(last.t - x.t) < 0.12) { if (x.tag === "event") { last.tag = "event"; last.idx = x.idx; } return; }
+    uniq.push(x);
+  });
+  const list = uniq.slice(0, 70);
+  for (let i = 0; i < list.length; i++) {
+    const it = list[i];
+    let r = null;
+    const tries = [0, step, -step];
+    for (let k = 0; k < tries.length; k++) {
+      const t = Math.min(Math.max(0, vid.dur - 0.02), it.t + tries[k]);
+      r = await kReadAt(v, t, reg);
+      if (r && r.str) break;
+      if (vid.pixelSafe === false) break;
+    }
+    const rec = { t: it.t, tag: it.tag, idx: it.idx, str: r && r.str ? r.str : "",
+      k: r && r.k ? r.k : "", tt: r && r.tt ? r.tt : "",
+      glyphs: r && r.glyphs ? r.glyphs : null, fixed: 0, suspect: false };
+    if (rec.str) vid.readOk++; else vid.readFail++;
+    vid.reads.push(rec);
+    if (i % 3 === 0) vidSetBar(0.7 + 0.3 * (i + 1) / list.length);
+  }
+  vidSetBar(1);
+  try { vidPostKills(); } catch (e) {}
+  vidRenderEvents(); vidKillsNote();
+  return vid.readOk;
+}
+function vidPostKills() {                 /* 总数取众数 → 逐条校正 → 击敌数单调性 */
+  const rs = vid.reads.filter((r) => r.str);
+  if (!rs.length) { vid.killsTotal = "";
+    /* 无任何可用读数时也要如实标注，不能静默省略击敌数 */
+    vid.events.forEach((e) => { e.kills = { str: "", total: "", unsure: true }; });
+    vid.dropN = 0; vid.winA = -1; vid.winB = -1;
+    return; }
+  const cnt = {};
+  rs.forEach((r) => { cnt[r.tt] = (cnt[r.tt] || 0) + 1; });
+  let T = "", bn = -1;
+  Object.keys(cnt).forEach((k) => {
+    if (cnt[k] > bn || (cnt[k] === bn && k.length > T.length)) { bn = cnt[k]; T = k; }
+  });
+  vid.killsTotal = T;
+  let maxK = -1;
+  vid.reads.forEach((r) => {
+    if (!r.str || !r.glyphs) { r.suspect = true; return; }
+    const gi = r.glyphs.findIndex((g) => g.ch === "/");
+    if (gi < 1 || r.glyphs.length - gi - 1 !== T.length) { r.suspect = true; return; }
+    for (let i = 0; i < T.length; i++) {          /* 右侧按总数校正 */
+      const g = r.glyphs[gi + 1 + i];
+      if (g.ch !== T.charAt(i)) {
+        const alt = (g.cands || []).find((c) => c[0] === T.charAt(i));
+        if (alt) { g.ch = T.charAt(i); r.fixed++; } else r.suspect = true;
+      }
+    }
+    r.k = r.glyphs.slice(0, gi).map((g) => g.ch).join("");
+    if (!/^\d+$/.test(r.k)) { r.k = ""; r.suspect = true; return; }
+    let kv = parseInt(r.k, 10);
+    if (maxK >= 0 && kv < maxK) {                 /* 单调不减：用候选回改 */
+      const want = String(maxK);
+      if (want.length === gi) {
+        for (let i = 0; i < gi; i++) {
+          const g = r.glyphs[i];
+          if (g.ch !== want.charAt(i)) {
+            const alt = (g.cands || []).find((c) => c[0] === want.charAt(i));
+            if (alt) { g.ch = want.charAt(i); r.fixed++; } else r.suspect = true;
+          }
+        }
+        r.k = r.glyphs.slice(0, gi).map((g) => g.ch).join("");
+        if (!/^\d+$/.test(r.k)) r.k = String(kv);
+        kv = parseInt(r.k, 10);
+      } else r.suspect = true;
+    }
+    if (isFinite(kv)) maxK = Math.max(maxK, kv);
+  });
+  vid.events.forEach((e) => {                     /* 把读数挂到每次栏位变化上 */
+    let hit = null, bd = 1e9;
+    vid.reads.forEach((r) => {
+      const same = (r.tag === "event" && r.idx === e.idx) || Math.abs(r.t - e.t) < 0.05;
+      if (!same) return;
+      const d = Math.abs(r.t - e.t);
+      if (d < bd) { bd = d; hit = r; }
+    });
+    if (!hit) {
+      vid.reads.forEach((r) => {
+        const d = Math.abs(r.t - e.t);
+        if (d < bd) { bd = d; hit = r; }
+      });
+    }
+    e.kills = (hit && hit.str)
+      ? { k: hit.k, t: T, str: hit.k + "/" + T, ok: !hit.suspect, fixed: hit.fixed }
+      : { k: "", t: T, str: "", ok: false, fixed: 0 };
+  });
+}
+
+/* ---- 对局区间与事件判定：只由「剩余可放置角色」读数链路判定（p97）----
+   开局 = 读数最大值平台的起点；结束 = 读数条连续 >=1 秒不再出现；
+   方向 = 读数减少（放置干员）/ 读数增加（撤离干员）；|Δ|≥2 由读数 ±1 链修复或如实标记。
+   不再使用任何「干员栏位格数」判据：p50 的击敌数区间过滤、p91 的「全片格数最大值＝开局」、
+   「栏位区域边缘强度塌陷＝结束」、以及「格数变化量 ≥2 视为识别错误」的单步修正都已整体移除。
+   干员栏位几何只保留给「变化格干员照片」取景（vidCellIdx / vidCellPix）。
+   读数不可用时如实报告「读数不可用」并输出零记录，不再回落到栏位格数链路。 */
+function vidAnchors() {                        /* 已停用：判定全部在 vidRoRun 内完成，此处不再改写记录 */
+  return (vid.events && vid.events.length) || 0;
+}
+function vidDropText() {                       /* 剔除 / 修正情况的分项说明（无异常时返回空串） */
+  const p = [], q = [];
+  if (vid.openN) p.push("开局前 " + vid.openN + " 条");
+  if (vid.closeN) p.push("结束后 " + vid.closeN + " 条");
+  if (vid.errN) p.push("疑似识别错误 " + vid.errN + " 条");
+  if (p.length) q.push("已剔除记录：" + p.join(" · "));
+  if (vid.roFix) q.push("读数跳变已按 ±1 拆出中间读数 " + vid.roFix + " 处");
+  if (vid.jumpN) q.push("读数跳变未拆分 " + vid.jumpN + " 条");
+  return q.join(" · ");
+}
+
+
+/* ---- 部署栏几何（右下角格子计数）：只用于定位「变化格」并裁出该格干员照片（p97；p99 起与识别区域解耦）----
+   口径：把 VID_CELL_REG（固定＝整段视频下方区域，与识别区域解耦）内卡片主体行（约画面 0.80H–0.92H）按「竖向边缘强度」切成格子，
+   数出「被卡片占用的格子数」＝ 该时刻栏位上已放置（占用）的格数。
+   放置一名干员 → 对应格子变空 → 格数减少；撤离一名干员 → 卡片回到栏位 → 格数增加。
+   p97 起：放置 / 撤离干员的判定只依据读数条（见 vidRoRun）；这里的格数只用于定位「变化格」的像素矩形，
+   供 vidCellIdx / vidCellPix 裁出该条记录的干员照片，不再参与方向与计数判定，也不再据此记事件。
+   格数是整数、一次变化至少 ±1，定位变化格时自最右格起取连续占用格数，抗压缩噪声与画面动画。
+   计数只用本机像素（不发请求、不引外部库）：
+   区域灰度 → 卡片主体行逐列水平梯度 → 5 点平滑 → 90 分位自适应阈值 →
+   以「卡片行右端固定」为锚、从右向左扫出左右界 → (跨度 / 格距 0.132H) 取整 = 占用格数。 */
+function vidMed3(a) {
+  const o = a.slice();
+  for (let i = 1; i < a.length - 1; i++) {
+    const t = [a[i - 1], a[i], a[i + 1]].sort((x, y) => x - y);
+    o[i] = t[1];
+  }
+  return o;
+}
+/* ---- 栏位几何自校准（p86）----
+   部署栏随视频 UI 缩放而变：固定比例格距（0.132H）在部分素材上偏小 / 偏大。这里按整片帧序列
+   自适应求「卡片行带」与「格距」：
+   · 逐帧行剖面（取区域右侧 28% 列、逐行水平梯度）在对局中（卡片行）高、在非对局低，
+     故用「开关性」（逐行帧间 90 分位 − 10 分位）取最长连续段＝卡片行带；卡片条完整可见时
+     近似正方形，格距 ≈ 带高（带高不足 max(28, 0.30×区域高) 视为卡片被裁切，放弃自校准）。
+     与固定比例相差 ≤12% 时沿用固定比例，避免既有素材回归。
+   · 逐格取「卡片顶边」竖向边缘强度（该格宽度 × 行带上沿附近若干行），对整片做 Otsu 分档
+     得该格阈值；若某格高类强度远低于最强格（<0.45×），判为非卡片格（画面杂纹理），不参与计数。
+   · 计数＝自最右格起「连续被卡片占用」的格数（遇第一空格即停），抗压缩噪声与鼠标白点。
+   整片帧数太少 / 找不到行带 / 无卡片格时返回 null，调用方退回固定比例口径。 */
+function vidOtsu(v) {                          /* 一维 Otsu：返回类间方差最大的分档阈值 */
+  const n = v.length;
+  if (!n) return 0;
+  let mn = v[0], mx = v[0];
+  for (let i = 1; i < n; i++) { if (v[i] < mn) mn = v[i]; if (v[i] > mx) mx = v[i]; }
+  if (!(mx > mn)) return mn;
+  const B = 64, hist = new Float64Array(B), sc = (B - 1) / (mx - mn);
+  for (let i = 0; i < n; i++) {
+    let b = Math.round((v[i] - mn) * sc);
+    if (b < 0) b = 0; if (b > B - 1) b = B - 1;
+    hist[b]++;
+  }
+  let total = 0;
+  for (let b = 0; b < B; b++) total += b * hist[b];
+  let w0 = 0, s0 = 0, best = -1, th = (mn + mx) / 2;
+  for (let b = 1; b < B; b++) {
+    w0 += hist[b - 1]; s0 += (b - 1) * hist[b - 1];
+    const w1 = n - w0;
+    if (w0 <= 0 || w1 <= 0) continue;
+    const m0 = s0 / w0, m1 = (total - s0) / w1, d = w0 * w1 * (m0 - m1) * (m0 - m1);
+    if (d > best) { best = d; th = mn + b / sc; }
+  }
+  return th;
+}
+/* ==== 段一：读数条「剩余可放置角色」字形原型表（本机从参考视频实拍字形挖掘） ====
+   RO_TPL 与 KTPL 同结构（nibble-hex，parseInt(ch,16)/15 → 0..1 覆盖度），只用于读数条识别
+   （vidRoClass），不并入 KTPL，避免影响既有击敌数读数。
+   特征链路与 KTPL 完全一致：vidRoInk → kComps → 选行 → kNorm(16×16) → kDist。 */
+let RO_TPL = {"4": ["00000000ccdd700000000000ccdd70000000024466ad700000000499006d600000012588006d600000023577007d700000047633007d70000006c600007e70000006c600007e7000088ada8888be93300fffffffffffb7700888888888be933000000000007d700000000000005a500000000000003730000000000000373000"], "5": ["0006ca77555520000006ca77555520000005b7443332100000049400000000000337b977774000000559deeeff700000033577777778400000000000008f800000000000008f800000000000008f800000000000008f800005530000008f80000aa61000008f80000554356677784000000259ddee700000000259ddee700000"], "6": ["000008ff00000000000008ff00000000000246880000000000049400000000000006ca77774110000008ffeeee82100007778777778940000ee70000008f80000ee70000008f80000ee70000006d60000ff80000005b50000cc72100006d600009974200008f8000055556776678400000036aeecc60000000036aeecc600000"], "7": ["0335766666bf80000335766666bf8000022333338888400000000000aa50000000000000cc60000000000000ff8000000000048888400000000008ff00000000000008ff00000000000006cc00000000000004990000000000048644000000000008f800000000000005a5000000000000024200000000000002420000000000"], "8": ["0006d600227c60000006d600227c600005556300117d700009950000008f800005556422448b60000006b855888840000116c855889a50000117d95588ad70000117d95588ad700008876422448c60000ff80000005b50000ee70000006d60000dd70000008f8000077545667778400000049bdddd70000000049bdddd700000"]};
+/* ==== 段二：读数条几何与逐帧字形 ==== */
+const VID_RO_REL = { x: 0.00, y: 0.00, w: 1.00, h: 1.00 };   /* 相对识别区域：区域本身即读数条（默认区域＝读数文字行） */
+const VID_RO_GAP = 0.095;                                     /* 锁定后同字判定：同字≈0.00~0.05，异字≥0.10 */
+const RO_FAIL_TEXT = "读数不可用：未能识别右下角「剩余可放置角色」读数（本机不再用干员栏位格数兜底），本次不输出任何记录";
+function vidRoInk(g) {                     /* 区域内读数带灰度（与 KTPL 同标度：0..255）*/
+  const w = g.w, h = g.h, px = g.px;
+  const xa = Math.max(0, Math.min(w - 8, Math.round(w * VID_RO_REL.x)));
+  const xb = Math.max(xa + 6, Math.min(w, Math.round(w * (VID_RO_REL.x + VID_RO_REL.w))));
+  const yb = Math.max(6, Math.min(h, Math.round(h * (VID_RO_REL.y + VID_RO_REL.h))));
+  const dw = xb - xa, dh = yb;
+  const a = new Uint8Array(dw * dh);
+  for (let y = 0; y < dh; y++) {
+    const so = y * w + xa;
+    for (let x = 0; x < dw; x++) {
+      const t = (px[so + x] - 105) / 110;
+      a[y * dw + x] = t <= 0 ? 0 : (t >= 1 ? 255 : Math.round(t * 255));
+    }
+  }
+  return { w: dw, h: dh, a: a };
+}
+function vidRoBox(c, maxH) {               /* 字形过滤：排除卡片 / 大图标 / 过宽笔画 */
+  return c.h >= 4 && c.h <= maxH && c.w >= 2 && c.w <= maxH
+      && c.w / c.h <= 1.8 && c.n / (c.w * c.h) >= 0.14;
+}
+function vidRoRow(o) {                     /* 读数行 = 子区内「一串窄字形」且整体靠右的行；行尾字形即数字 */
+  const maxH = Math.max(10, Math.round(o.h * 0.60));
+  const gl = kComps(o).filter((c) => vidRoBox(c, maxH));
+  if (gl.length < 3) return null;
+  const keys = [], seen = {};
+  gl.forEach((c) => {
+    const k = Math.round((c.y0 + c.y1) / 2 / 3) * 3;
+    if (!seen[k]) { seen[k] = 1; keys.push(k); }
+  });
+  let best = null;
+  keys.forEach((k) => {
+    const row = gl.filter((c) => Math.abs((c.y0 + c.y1) / 2 - k) <= 5).sort((a, b) => a.x0 - b.x0);
+    const nar = row.filter((c) => c.w <= 1.25 * c.h);        /* 窄字形＝文字笔画，排除大块 UI */
+    if (nar.length < 3) return;
+    const last = nar[nar.length - 1];
+    if (last.x1 < 0.72 * o.w) return;                        /* 读数条贴右侧 */
+    let gs = 0;
+    for (let i = 1; i < nar.length; i++) gs += nar[i].x0 - nar[i - 1].x1 - 1;
+    const gap = gs / (nar.length - 1);
+    const wMed = nar.map((c) => c.w).sort((a, b) => a - b)[nar.length >> 1];
+    if (gap > Math.max(4, 2.2 * wMed)) return;               /* 间距不规则 → 不是一句读数文字 */
+    const sc = nar.length + last.x1 / o.w;
+    if (!best || sc > best.sc) best = { sc: sc, nar: nar, last: last, n: nar.length };
+  });
+  if (!best) return null;
+  const d = best.last;
+  if (d.w < 3 || d.h < 4 || d.w / d.h > 1.4) return null;     /* 数字应接近正方 */
+  const prev = best.nar[best.nar.length - 2];
+  if (prev && d.x0 - prev.x1 < 1) return null;                /* 与左侧字形粘连 → 不是独立数字 */
+  return best;
+}
+function vidRoInkRun(o, row, xr, maxW) { /* 行内「最右墨迹块」横纵范围：抗小字被阈值切碎 */
+  const TH = 40, W = o.w, H = o.h;
+  const yc = (row.last.y0 + row.last.y1) / 2;
+  let ya = 1e9, yb = -1;
+  row.nar.forEach((c) => {                                  /* 同一行内字形共同决定行带（数字与标签同线）*/
+    if (Math.abs((c.y0 + c.y1) / 2 - yc) > 4) return;
+    if (c.y0 < ya) ya = c.y0; if (c.y1 > yb) yb = c.y1;
+  });
+  if (yb < 0) { ya = row.last.y0; yb = row.last.y1; }
+  ya = Math.max(0, ya - 2); yb = Math.min(H - 1, yb + 2);
+  const col = new Uint8Array(W);
+  for (let x = 0; x < W; x++) {
+    for (let y = ya; y <= yb; y++) if (o.a[y * W + x] >= TH) { col[x] = 1; break; }
+  }
+  let xe = -1;
+  for (let x = Math.min(W - 1, xr + 4); x >= 0; x--) if (col[x]) { xe = x; break; }
+  if (xe < 0) return null;
+  let xa = xe, gap = 0;
+  for (let x = xe; x >= 0 && gap <= 1; x--) {   /* 只并回同一字的断裂笔画（≥2px 视为左邻字形）*/
+    if (col[x]) { xa = x; gap = 0; } else gap++;
+  }
+  const wMed = row.nar.map((c) => c.w).sort((a, b) => a - b)[row.nar.length >> 1];
+  const wMax = Math.max(maxW, Math.round(1.3 * wMed));      /* 行内等宽：块更宽说明粘连了左侧「：」*/
+  if (xe - xa + 1 > wMax) xa = xe - wMax + 1;
+  let ty = 1e9, by = -1;
+  for (let x = xa; x <= xe; x++) {
+    for (let y = ya; y <= yb; y++) if (o.a[y * W + x] >= 25) { if (y < ty) ty = y; if (y > by) by = y; }
+  }
+  if (by < 0 || by - ty + 1 < 4 || by - ty + 1 > 0.9 * H) return null;
+  return { x0: xa, y0: ty, w: xe - xa + 1, h: by - ty + 1 };
+}
+function vidRoNorm(ino, box) {               /* 字形框按高度归一重采样：跨源不同 UI 缩放可比 */
+  const NH = 14;
+  const nw = Math.max(3, Math.min(24, Math.round(box.w * NH / box.h)));
+  const a = new Float32Array(nw * NH);
+  for (let y = 0; y < NH; y++) {
+    const ya = box.y0 + (y * box.h) / NH, yb = box.y0 + ((y + 1) * box.h) / NH;
+    for (let x = 0; x < nw; x++) {
+      const xa = box.x0 + (x * box.w) / nw, xb = box.x0 + ((x + 1) * box.w) / nw;
+      let t = 0, n = 0;
+      for (let yy = Math.floor(ya); yy < Math.ceil(yb); yy++) {
+        for (let xx = Math.floor(xa); xx < Math.ceil(xb); xx++) {
+          const py = Math.min(ino.h - 1, Math.max(0, yy)), pxx = Math.min(ino.w - 1, Math.max(0, xx));
+          t += ino.a[py * ino.w + pxx]; n++;
+        }
+      }
+      a[y * nw + x] = n ? t / n : 0;
+    }
+  }
+  return { w: nw, h: NH, a: a };
+}
+function vidRoFrame(g) {                   /* 单帧 → {box,f,h,n,x1}；不可读返回 null */
+  if (!g || !(g.w > 24 && g.h > 12)) return null;
+  const o = vidRoInk(g);
+  const r = vidRoRow(o);
+  if (!r) return null;
+  const b = vidRoInkRun(o, r, r.last.x1, 10);
+  if (!b) return null;
+  const z = vidRoNorm(o, b);
+  return { box: b, f: kNorm(z, { x0: 0, y0: 0, w: z.w, h: z.h }), h: b.h, n: r.n, x1: b.x0 + b.w - 1 };
+}
+function vidRoLock(det) {                  /* 逐帧检测格 → 全片中位格（整片锁定，消抖）*/
+  const bx = [], by = [], bw = [], bh = [];
+  for (const r of det) {
+    if (!r || !r.box) continue;
+    const b = r.box;
+    if (b.w < 3 || b.w > 16 || b.h < 4 || b.h > 16) continue;
+    bx.push(b.x0); by.push(b.y0); bw.push(b.w); bh.push(b.h);
+  }
+  if (bx.length < 12) return null;
+  const med = (a) => { a.sort((p, q) => p - q); return a[a.length >> 1]; };
+  return { x0: med(bx), y0: med(by), w: med(bw), h: med(bh) };
+}
+function vidRoFit(o, box) {                /* 锁定格内墨迹是否仍是「一个数字」*/
+  const W = o.w, H = o.h, a = o.a;
+  let n = 0, bx0 = 1e9, bx1 = -1, by0 = 1e9, by1 = -1;
+  for (let y = box.y0; y < box.y0 + box.h; y++) {
+    if (y < 0 || y >= H) continue;
+    for (let x = box.x0; x < box.x0 + box.w; x++) {
+      if (x < 0 || x >= W) continue;
+      if (a[y * W + x] < 60) continue;
+      n++; if (x < bx0) bx0 = x; if (x > bx1) bx1 = x; if (y < by0) by0 = y; if (y > by1) by1 = y;
+    }
+  }
+  if (n < 6 || bx1 < 0) return false;
+  const bw = bx1 - bx0 + 1, bh = by1 - by0 + 1;
+  return bw >= 0.40 * box.w && bh >= 0.40 * box.h;
+}
+function vidRoMean(cs) {                   /* 段内各格均值（切段判同字用）*/
+  const f = new Float32Array(256);
+  for (const r of cs) for (let i = 0; i < 256; i++) f[i] += r.f[i] / cs.length;
+  return f;
+}
+function vidRoMed(cs) {                    /* 段内各格中位（分类用，抗单帧压缩噪声）*/
+  const f = new Float32Array(256), v = new Array(cs.length);
+  for (let i = 0; i < 256; i++) {
+    for (let j = 0; j < cs.length; j++) v[j] = cs[j].f[i];
+    v.sort((a, b) => a - b);
+    f[i] = v[v.length >> 1];
+  }
+  return f;
+}
+function vidRoHex(f) {                     /* 特征 → nibble-hex（与 KTPL 同编码）*/
+  let s = "";
+  for (let i = 0; i < 256; i++) {
+    const t = Math.max(0, Math.min(1, f[i]));
+    s += Math.round(t * 15).toString(16);
+  }
+  return s;
+}
+function vidRoClass(bm) {                  /* 站点既有分类器 + 读数条实拍原型（KTPL 不变）*/
+  const h0 = kHoles(bm), a0 = kAspect(bm), tp = kTpl(), out = [];
+  for (const ch in tp) {
+    const c = tp[ch];
+    let best = 1e9;
+    for (let i = 0; i < c.t.length; i++) {
+      const v = kDist(bm, c.t[i]) + 0.06 * Math.abs(c.h[i] - h0) + 0.05 * Math.abs(c.a[i] - a0);
+      if (v < best) best = v;
+    }
+    const ex = RO_TPL[ch] || [];
+    for (let i = 0; i < ex.length; i++) {
+      const f = new Float32Array(256);
+      for (let j = 0; j < 256; j++) f[j] = parseInt(ex[i].charAt(j), 16) / 15;
+      const v = kDist(bm, f) + 0.06 * Math.abs(kHoles(f) - h0) + 0.05 * Math.abs(kAspect(f) - a0);
+      if (v < best) best = v;
+    }
+    out.push([ch, best]);
+  }
+  out.sort((p, q) => p[1] - q[1]);
+  return out;
+}
+/* ==== 段三：逐帧读数（两遍：逐帧检测投票锁定字形格 → 全片同格取特征）==== */
+function vidRoExtract(frames) {
+  const det = [];
+  for (let i = 0; i < frames.length; i++) det.push(vidRoFrame(frames[i] && frames[i].slots));
+  const lock = vidRoLock(det);
+  for (let i = 0; i < frames.length; i++) {
+    const fr = frames[i];
+    if (!fr) continue;
+    if (!lock) { fr.ro = det[i]; continue; }
+    if (!fr.slots) { fr.ro = null; continue; }
+    const o = vidRoInk(fr.slots);
+    if (!vidRoFit(o, lock)) { fr.ro = null; continue; }
+    fr.ro = { box: lock, f: kNorm(o, lock), h: lock.h, n: det[i] ? det[i].n : 0, x1: lock.x0 + lock.w - 1 };
+  }
+  return lock;
+}
+/* ==== 段四：整片读数平台切分（±1 链修复） ==== */
+function vidRoScan(frames) {
+  const n = frames.length, step = Math.max(0.05, vid.step || 0.3);
+  vid.roLock = vidRoExtract(frames);
+  const segs = [];
+  let cur = null;
+  for (let i = 0; i < n; i++) {
+    const r = frames[i] && frames[i].ro;
+    if (!r) { if (cur) { segs.push(cur); cur = null; } continue; }
+    if (cur && i - cur.i1 <= 1) {
+      const ref = cur.ref || vidRoMean(cur.cs);
+      if (kDist(ref, r.f) <= VID_RO_GAP) {
+        cur.cs.push(r); cur.i1 = i;
+        if (cur.cs.length >= 5) cur.ref = vidRoMean(cur.cs.slice(0, 5));
+        continue;
+      }
+    }
+    if (cur) segs.push(cur);
+    cur = { i0: i, i1: i, cs: [r] };
+  }
+  if (cur) segs.push(cur);
+  const minF = Math.max(2, Math.round(0.5 / step));       /* 平台最短 0.5 秒 */
+  const plats = [], short = [];
+  for (const s of segs) {
+    const c = vidRoClass(vidRoMed(s.cs));
+    const nv = c[0][0] === "/" ? -1 : parseInt(c[0][0], 10);
+    const p = { i0: s.i0, i1: s.i1, t0: frames[s.i0].t, t1: frames[s.i1].t,
+                nv: nv, val: c[0][0], d1: c[0][1], d2: c[1][1],
+                cands: c.slice(0, 3), cs: s.cs, n: s.cs.length };
+    if (s.cs.length >= minF && nv >= 0) plats.push(p); else short.push(p);
+  }
+  const out = [];                          /* 同值且时间相邻的平台合并（亮度伪切段）*/
+  for (const p of plats) {
+    const q = out[out.length - 1];
+    if (q && q.nv === p.nv && (p.i0 - q.i1) <= Math.max(2, Math.round(1.0 / step))) {
+      q.i1 = p.i1; q.t1 = p.t1; q.cs = q.cs.concat(p.cs); q.n += p.n;
+    } else out.push(p);
+  }
+  for (let i = 1; i < out.length; i++) {   /* ±1 链修复：读数变化恒为 ±1（放置/撤离各一格）*/
+    const a = out[i - 1], b = out[i];
+    if (Math.abs(b.nv - a.nv) <= 1) continue;
+    let mid = null;
+    for (const s of short) {               /* ① 被丢弃的短段里是否有中间值 */
+      if (s.i0 <= a.i1 || s.i1 >= b.i0 || s.nv < 0) continue;
+      if (Math.abs(s.nv - a.nv) === 1 && Math.abs(b.nv - s.nv) === 1) { mid = s; break; }
+    }
+    if (mid) { out.splice(i, 0, mid); vid.roFix = (vid.roFix || 0) + 1; continue; }
+    let bs = null;                         /* ② 用候选字修正成 ±1（总距离最小）*/
+    a.cands.forEach((ca) => {
+      if (ca[0] === "/") return;
+      b.cands.forEach((cb) => {
+        if (cb[0] === "/") return;
+        if (Math.abs(parseInt(cb[0], 10) - parseInt(ca[0], 10)) !== 1) return;
+        const s = ca[1] + cb[1];
+        if (!bs || s < bs.s) bs = { s: s, a: ca, b: cb };
+      });
+    });
+    if (bs) {
+      a.nv = parseInt(bs.a[0], 10); a.val = bs.a[0]; a.d1 = bs.a[1];
+      b.nv = parseInt(bs.b[0], 10); b.val = bs.b[0]; b.d1 = bs.b[1];
+      vid.roFix = (vid.roFix || 0) + 1;
+      continue;
+    }
+    b.jump = true;                         /* 修不动就如实标记 */
+  }
+  return out;
+}
+function vidCellCountAt(t) {              /* 指定时刻「稳定档位」：向前回溯最近一段持续 >=1 秒的连续占用格数，
+                                            跳过卡片滑动动画造成的 <1s 瞬态（既有逐帧回溯会被该瞬态打断而返回 0） */
+  const s = (vid.geom && vid.geom.seq) || vid.dev || [];
+  if (!s.length) return 0;
+  const step = (vid.step && vid.step > 0) ? vid.step : 0.3;   /* 必须用真实步长换算帧号（下限 0.05 会把 <0.05s 步长的帧号算错） */
+  const K = Math.max(3, Math.round(1.0 / step));
+  const i = Math.min(s.length - 1, Math.max(0, Math.round(t / step)));
+  let j = i;
+  while (j >= 0) {
+    const v = s[j];
+    let a = j;
+    while (a >= 1 && s[a - 1] === v) a--;
+    if (j - a + 1 >= K) return v;
+    j = a - 1;
+  }
+  return s[i];
+}
+/* ==== 段五：读数平台序列 → 事件主信号与对局锚点（判定的唯一来源，p97）====
+   读数减少 = 放置干员（卡片从栏位移入战场）；读数增加 = 撤离干员（卡片回到栏位）。
+   开局 = 读数最大值平台的起点（合成一条开局记录，不截图）；结束 = 读数条连续 >=1 秒不再出现。
+   读数不可用（平台 < 2 或分类失败）时不生成任何事件，并如实报告「读数不可用」；
+   不再回落到干员栏位格数链路。 */
+function vidRoRun() {
+  const frames = vid.frames || [], n = frames.length;
+  vid.roFix = 0; vid.roSeq = vidRoScan(frames);
+  vid.roOk = false; vid.roNote = "";
+  vid.openN = 0; vid.closeN = 0; vid.jumpN = 0;
+  const seq = vid.roSeq;
+  if (seq.length < 2) {
+    vid.roNote = seq.length ? "读数条全程只有一种读数（无放置 / 撤离干员）" : RO_FAIL_TEXT;
+    return 0;
+  }
+  let mx = -1, top = seq[0];
+  for (const p of seq) if (p.nv > mx) { mx = p.nv; top = p; }   /* 首个最大值平台 = 开局 */
+  const evs = [];
+  for (let i = 1; i < seq.length; i++) {
+    const a = seq[i - 1], b = seq[i];
+    const d = b.nv - a.nv;
+    if (!d) continue;
+    const dir = d < 0 ? "down" : "up";
+    const ev = { idx: b.i0, t: b.t0, dir: dir, roFrom: a.nv, roTo: b.nv, roD: d, roJump: Math.abs(d) >= 2 };
+    /* 记录里的「变化前 → 变化后」直接取读数条的平台读数（a.nv → b.nv）；
+       p97 起不再用干员栏位格数（格数只用于裁出变化格干员照片）。 */
+    ev.from = a.nv; ev.to = b.nv;
+    evs.push(ev);
+  }
+  if (!evs.length) { vid.roNote = "读数条全程无变化（无放置 / 撤离干员）"; return 0; }
+  const last = seq[seq.length - 1];
+  const need = Math.max(3, Math.round(1.0 / Math.max(0.05, vid.step || 0.3)));
+  let ei = -1;                             /* 结束：读数条此后连续 >=1 秒不再出现 */
+  for (let i = last.i1 + 1; i < n; i++) {
+    if (frames[i] && frames[i].ro) continue;
+    let run = 0;
+    for (let j = i; j < n && !(frames[j] && frames[j].ro); j++) run++;
+    if (run >= need) { ei = i; break; }
+  }
+  const inWin = evs.filter((e) => e.t >= top.t1 - 1e-9 && (ei < 0 || e.t < frames[ei].t));
+  const after = evs.filter((e) => e.t >= top.t1 - 1e-9);
+  vid.openN = evs.length - after.length;              /* 开局前（读数爬到最大值之前的跳变）噪声 */
+  vid.closeN = after.length - inWin.length;           /* 结束后（读数条已消失）噪声 */
+  vid.jumpN = inWin.filter((e) => e.roJump).length;
+  vid.errN = 0; vid.dropN = 0; vid.winA = -1; vid.winB = -1;
+  vid.openT = top.t0;
+  vid.events = [{                        /* 开局记录：读数最多处（不截图） */
+    idx: top.i0, t: top.t0, dir: "up", from: top.nv, to: top.nv,
+    open: true, roFrom: top.nv, roTo: top.nv, roMax: top.nv
+  }].concat(inWin);
+  if (ei >= 0) {                         /* 结束记录：读数条消失（不截图） */
+    const le = vid.events[vid.events.length - 1];
+    vid.closeT = frames[ei].t;
+    vid.events.push({ idx: ei, t: frames[ei].t, dir: "down", from: le.to, to: le.to,
+                      close: true, endMark: true, roFrom: last.nv, roTo: last.nv, tHide: ei });
+  }
+  vid.roOk = true;
+  return vid.events.length;
+}
+function vidCalSlots(frames) {
+  const n = frames.length;
+  if (!(n >= 8)) return null;
+  const g0 = frames[Math.floor(n / 2)] && frames[Math.floor(n / 2)].cells;
+  if (!g0 || !(g0.w > 12 && g0.h > 6)) return null;
+  const w = g0.w, h = g0.h, x0 = Math.max(0, Math.round(w * 0.72));
+  /* ① 逐行开关性 → 卡片行带 */
+  const q = [];
+  for (let y = 0; y < h; y++) {
+    const a = [];
+    for (let i = 0; i < n; i++) {
+      const g = frames[i] && frames[i].cells;
+      if (!g) continue;
+      const px = g.px;
+      let s = 0, c = 0;
+      for (let x = x0; x < w - 1; x++) { const j = y * w + x; s += Math.abs(px[j + 1] - px[j]); c++; }
+      if (c) a.push(s / c);
+    }
+    if (a.length < 4) { q.push(null); continue; }
+    a.sort((p, r) => p - r);
+    q.push({ h9: a[Math.round(0.90 * (a.length - 1))], l1: a[Math.round(0.10 * (a.length - 1))] });
+  }
+  let b0 = -1, b1 = -1, cur = -1;
+  for (let y = 0; y <= h; y++) {
+    let on = false;
+    if (y < h && q[y]) {
+      const s = q[y].h9 - q[y].l1;
+      on = (s >= Math.max(6, 0.22 * q[y].h9)) && (q[y].h9 >= 2 * q[y].l1 + 2);
+    }
+    if (on && cur < 0) cur = y;
+    if (!on && cur >= 0) { if (b1 < 0 || (y - 1 - cur) > (b1 - b0)) { b0 = cur; b1 = y - 1; } cur = -1; }
+  }
+  if (b1 < 0 || (b1 - b0 + 1) < 10) return null;
+  const bandH = b1 - b0 + 1;
+  /* 行带须像「卡片矮条」再启用自校准：带高 ≈ 格距只在卡片条完整可见时成立。
+     卡片被画面下缘裁切时只能量到露出的窄带（旧参考视频即此情形：带高 23、格距 48），
+     此时按带高当格距会把格距算成一半、把 1 张卡片数成 2 张。
+     故带高不足 max(28, 0.30×区域高) 时判为「非卡片条」→ 返回 null，
+     退回既有固定比例口径（在旧视频与两张真机截图上已逐点核对）。 */
+  if (bandH < Math.max(28, 0.30 * h)) return null;
+  const regH = VID_CELL_REG.h || 0.30;
+  const oldP = Math.max(6, Math.round((h / regH) * 0.132));
+  let pitch = bandH;
+  if (Math.abs(bandH - oldP) <= 0.12 * oldP) pitch = oldP;
+  pitch = Math.max(14, Math.min(160, Math.round(pitch)));
+  const t0 = Math.max(0, b0 - 2), t1 = Math.min(h - 2, b0 + 7);
+  /* ② 逐格顶边强度 → 逐格 Otsu 阈值 → 卡片格 */
+  const K = Math.max(1, Math.min(8, Math.floor(w / pitch)));
+  const cells = [];
+  for (let k = 1; k <= K; k++) {
+    const xr = Math.min(w - 2, w - 1 - (k - 1) * pitch), xl = Math.max(0, w - k * pitch);
+    if (xr < xl) break;
+    const fr = new Float32Array(n);
+    for (let i = 0; i < n; i++) {
+      const g = frames[i] && frames[i].cells;
+      if (!g) continue;
+      const px = g.px;
+      let s = 0, c = 0;
+      for (let x = xl; x <= xr; x++) {
+        for (let y = t0; y <= t1; y++) { const j = y * w + x; s += Math.abs(px[j + w] - px[j]); c++; }
+      }
+      if (c) fr[i] = s / c;
+    }
+    const th = vidOtsu(fr);
+    let hs = 0, hc = 0;
+    for (let i = 0; i < n; i++) if (fr[i] > th) { hs += fr[i]; hc++; }
+    cells.push({ xl: xl, xr: xr, thr: th, hi: hc ? hs / hc : 0, fr: fr, card: false });
+  }
+  let mx = 0;
+  for (const c of cells) if (c.hi > mx) mx = c.hi;
+  let any = 0;
+  for (const c of cells) { c.card = !!(mx > 0 && c.hi >= 0.45 * mx); if (c.card) any++; }
+  if (!any) return null;
+  /* ③ 逐帧计数：自最右卡片格起连续被占用 */
+  const seq = new Array(n);
+  for (let i = 0; i < n; i++) {
+    let c = 0;
+    for (const cell of cells) {
+      if (!cell.card) break;
+      if (cell.fr[i] > cell.thr) c++; else break;
+    }
+    seq[i] = c;
+  }
+  return { band: [b0, b1], pitch: pitch, top: [t0, t1], cells: cells, seq: seq, w: w, h: h, n: n };
+}
+/* 读数区域采样宽度：按原分辨率（1:1）取样，数字字形不被重采样糊掉；
+   过窄的区域兜底放大到 24、过宽收敛到 640。 */
+function vidSlotsW(v) {
+  const reg = vid.regions && vid.regions.slots, vw = (v && v.videoWidth) || 0;
+  const native = (reg && vw) ? Math.round(reg.w * vw) : 0;
+  return Math.min(640, Math.max(24, native || 120));
+}
+/* 部署栏几何采样宽度（只服务变化格照片取景）：沿用原「整段下方区域」宽度口径 [160,640]。 */
+function vidCellW(v) {
+  const vw = (v && v.videoWidth) || 0;
+  const native = vw ? Math.round(VID_CELL_REG.w * vw) : 0;
+  return Math.min(640, Math.max(160, native || 640));
+}
+/* 返回区域内「被卡片占用的格子数」；0 表示这一行没有卡片（无纹理 / 无卡片行）。
+   注意：这是「固定比例」口径，只在自校准失败（或单图扫描）时使用；
+   视频整片走 vidSlotsCells → vidCalSlots 的自校准口径（见上方 vidCalSlots）。 */
+function vidCellCount(g) {
+  /* 部署栏 = 被干员卡片占用的格子个数（卡片行右端固定、左端随数量左移）。
+     输入是 VID_CELL_REG（固定＝整段视频下方区域）的灰度帧，与识别区域解耦；
+     按「区域相对画面高」把卡片主体行定位到画面固定高度（约 0.80H–0.92H），
+     只统计卡片主体行，避开区域上沿的地图 / UI 与下沿留边。 */
+  if (!g) return 0;
+  const w = g.w, h = g.h, px = g.px;
+  if (!(w > 12 && h > 6)) return 0;
+  const regH = VID_CELL_REG.h || 0.30;
+  const ya = Math.max(0, Math.min(h - 3, Math.floor(h * 0.333)));
+  const yb = Math.max(ya + 2, Math.min(h - 1, Math.ceil(h * 0.75) - 1));
+  const rows = yb - ya + 1;
+  /* 逐列竖向边缘强度 C[x] = 该列在卡片主体行上的平均 |dx| */
+  const col = new Float32Array(w);
+  for (let x = 0; x < w - 1; x++) {
+    let s = 0;
+    for (let y = ya; y <= yb; y++) {
+      const i = y * w + x;
+      s += Math.abs(px[i + 1] - px[i]);
+    }
+    col[x] = s / rows;
+  }
+  col[w - 1] = col[w - 2] || 0;
+  const sm = new Float32Array(w);
+  for (let x = 0; x < w; x++) {
+    let s = 0;
+    for (let d = -2; d <= 2; d++) {
+      const xx = x + d;
+      if (xx >= 0 && xx < w) s += col[xx];
+    }
+    sm[x] = s / 5;
+  }
+  /* 格距：画面高 × 0.132（＝旧卡片行高 0.15H × 0.88，不随区域框大小漂移） */
+  const pitch = Math.max(6, Math.round((h / regH) * 0.132));
+  const minrun = Math.max(3, Math.round(pitch * 0.35));
+  const gapLen = Math.max(3, Math.round(pitch * 0.45));
+  /* 阈值取列剖面 90 分位 × 0.30：随画面明暗自适应，只保留结构性最强的列 */
+  const sorted = Array.prototype.slice.call(sm).sort((a, b) => a - b);
+  const p90 = sorted[Math.min(sorted.length - 1, Math.round(0.90 * (sorted.length - 1)))];
+  const thr = Math.max(3, 0.30 * p90);
+  const ok = new Uint8Array(w);
+  for (let x = 0; x < w; x++) ok[x] = sm[x] >= thr ? 1 : 0;
+  /* 卡片行右端固定：从最右一列起向左找「能连续 >= minrun」的锚点 xR */
+  let xR = -1;
+  for (let i = w - 1; i >= 0; i--) {
+    if (!ok[i]) continue;
+    let j = i, n = 0;
+    while (j >= 0 && ok[j] && n < minrun) { j--; n++; }
+    if (n >= minrun) { xR = i; break; }
+  }
+  if (xR < 0) return 0;
+  /* 从 xR 向左扫：遇到 >= gapLen 段连续弱列，即认为卡片行左界到此为止 */
+  let xL = xR, weak = 0;
+  for (let x = xR; x >= 0; x--) {
+    if (ok[x]) { weak = 0; xL = x; }
+    else { weak++; if (weak >= gapLen) break; }
+  }
+  if (xR <= xL) return 0;
+  return Math.max(0, Math.round((xR - xL + 1) / pitch));
+}
+function vidSlotsCells(frames) {
+  const n = frames.length, out = new Array(n);
+  vid.geom = vidCalSlots(frames);             /* 逐片自校准几何（失败为 null → 走固定比例口径） */
+  if (vid.geom && vid.geom.seq) {
+    for (let i = 0; i < n; i++) out[i] = vid.geom.seq[i];
+    return out;
+  }
+  for (let i = 0; i < n; i++) out[i] = vidCellCount(frames[i] && frames[i].cells);
+  return out;
+}
+function vidDetectEvents() {
+  vid.events = []; vid.dev = []; vid.minStep = 0; vid.cellsMax = 0;
+  const frames = vid.frames, n = frames.length;
+  if (n < 5) { vidRenderEvents(); return 0; }
+  /* 部署栏几何（VID_CELL_REG，与识别区域解耦）只用于「变化格干员照片」取景（vidCellIdx / vidCellPix / vidCellCountAt）：
+     这里照旧算出逐帧占用格数与平滑档位，但不再据此生成任何事件，也不做任何锚点剔除。 */
+  const cnt = vidSlotsCells(frames);
+  vid.dev = cnt;
+  for (let i = 0; i < n; i++) if (cnt[i] > vid.cellsMax) vid.cellsMax = cnt[i];
+  vid.smSeq = vidMed3(cnt);                   /* 平滑后的档位序列（供照片取景回溯） */
+  /* 事件判定唯一来源：右下角「剩余可放置角色」读数（vidRoRun）。 */
+  vid.roSeq = []; vid.roOk = false; vid.roNote = ""; vid.roFix = 0; vid.roLock = null; vid.jumpN = 0;
+  try { vidRoRun(); }
+  catch (e) { vid.roOk = false; vid.roNote = RO_FAIL_TEXT; }
+  if (!vid.roOk) vid.events = [];          /* 读数不可用：如实报告，不回落到栏位格数链路 */
+  vidRenderEvents();
+  return vid.events.length;
+}
+/* ---- 变化格定位（只用于裁出该条记录的干员照片）：把部署栏格子换算成视频原图像素矩形 ----
+   部署栏卡片行右端锚定：被占用的格子 = 自右端起连续的 C 格（C 取变化前后的格数）。
+   索引自右端起算（0 = 最右一格），与 vidCalSlots 的 cells 顺序一致。
+   放置（dir=down，格数减少）：空出来的那一格 = 变化前最左占用格 = 索引 from-1；
+   撤离（dir=up，格数增加）：新出现的那一格 = 变化后最左占用格 = 索引 to-1。 */
+function vidCellIdx(e) {
+  if (!e || e.open || e.close) return -1;
+  const n = Math.max(1, vidCellCountAt(vidPhotoT(e)));
+  return Math.max(0, n - 1);
+}
+/* 部署栏区域（VID_CELL_REG，与识别区域解耦）-> 视频原图像素 的映射，与 vidGray 的取整规则逐句一致 */
+function vidRegionMap(v) {
+  const reg = VID_CELL_REG || { x: 0, y: 0.7, w: 1, h: 0.3 };
+  const vw = (v && v.videoWidth) || vid.vw || 0, vh = (v && v.videoHeight) || vid.vh || 0;
+  if (!(vw > 1 && vh > 1)) return null;
+  let sx = Math.round(reg.x * vw), sy = Math.round(reg.y * vh);
+  let sw = Math.round(reg.w * vw), sh = Math.round(reg.h * vh);
+  sx = Math.min(Math.max(0, sx), Math.max(0, vw - 2));
+  sy = Math.min(Math.max(0, sy), Math.max(0, vh - 2));
+  sw = Math.min(Math.max(2, sw), vw - sx);
+  sh = Math.min(Math.max(2, sh), vh - sy);
+  const dw = vidCellW(v);
+  const dh = Math.max(2, Math.round(dw * sh / sw));
+  return { sx: sx, sy: sy, sw: sw, sh: sh, dw: dw, dh: dh, kx: sw / dw, ky: sh / dh };
+}
+/* 记录 -> 变化格的视频原图像素矩形；无自校准几何时退回「固定比例」口径
+   （格距 / 行带与 vidCellCount 完全一致，使旧参考视频与单图路径也能定位）。 */
+function vidCellPix(e) {
+  const m = vidRegionMap($("#vid-player"));
+  if (!m) return null;
+  const ci = vidCellIdx(e);
+  if (ci < 0) return null;
+  const g = vid.geom;
+  let gx0, gx1, gy0, gy1;
+  if (g && g.cells && g.cells[ci]) {
+    gx0 = g.cells[ci].xl; gx1 = g.cells[ci].xr; gy0 = g.band[0]; gy1 = g.band[1];
+  } else {
+    const w = m.dw, h = m.dh;
+    if (!(w > 12 && h > 6)) return null;
+    const regH = VID_CELL_REG.h || 0.30;
+    const pitch = Math.max(6, Math.round((h / regH) * 0.132));
+    gx1 = Math.max(0, w - 2 - ci * pitch);
+    gx0 = Math.max(0, gx1 - pitch + 1);
+    gy0 = Math.max(0, Math.min(h - 3, Math.floor(h * 0.333)));
+    gy1 = Math.max(gy0 + 2, Math.min(h - 1, Math.ceil(h * 0.75) - 1));
+  }
+  let x = Math.round(m.sx + gx0 * m.kx), y = Math.round(m.sy + gy0 * m.ky);
+  let w2 = Math.max(4, Math.round((gx1 - gx0 + 1) * m.kx));
+  let h2 = Math.max(4, Math.round((gy1 - gy0 + 1) * m.ky));
+  x = Math.min(Math.max(0, x), Math.max(0, m.sx + m.sw - 4));
+  y = Math.min(Math.max(0, y), Math.max(0, m.sy + m.sh - 4));
+  w2 = Math.min(w2, m.sx + m.sw - x);
+  h2 = Math.min(h2, m.sy + m.sh - y);
+  if (!(w2 >= 4 && h2 >= 4)) return null;
+  return { x: x, y: y, w: w2, h: h2, ci: ci };
+}
+/* 取照片的时刻：放置看「变化前」（卡片还在格子里），撤离看「变化后」（卡片已回位）；
+   偏移取 stableK × 采样间隔，正好跨过卡片滑入 / 滑出的稳定窗口。 */
+function vidPhotoT(e) {
+  const step = vid.step || 0.3, k = Math.max(3, vid.stable || 3);
+  const t = e.dir === "down" ? e.t - k * step : e.t + k * step;
+  return Math.max(0, Math.min(t, Math.max(0, (vid.dur || 0) - 0.02)));
+}
+/* ---- 记录截图：在栏位变化时刻取整帧画面（纯视频像素，不含播放器控件水印） ---- */
+function vidShotBox() {
+  const v = $("#vid-player");
+  const sw = (v && v.videoWidth) || vid.vw || 0;
+  const sh = (v && v.videoHeight) || vid.vh || 0;
+  const w = Math.min(960, Math.max(1, Math.round(sw)));
+  const sc = sw ? w / sw : 1;
+  return { sw: sw, sh: sh, w: w, h: Math.max(1, Math.round(sh * sc)) };
+}
+function vidShotTotal() {                      /* 需要截图的记录数（开局与结束两条不截图） */
+  let n = 0;
+  for (const e of vid.events) if (!e.open && !e.close) n++;
+  return n;
+}
+function vidShotInfo() {
+  const n = vid.events.filter((e) => e && e.shot).length;
+  vid.shotN = n;
+  const el = $("#vid-shots-n"); if (el) el.textContent = String(n);
+  const nt = $("#vid-shots-note"); if (!nt) return;
+  if (!vid.events.length) {
+    nt.textContent = "记录截图：尚无记录。每次放置 / 撤离干员都会在变化那一刻截取一张该帧画面"
+      + "（开局那一条与结束对局那一条按规则不截图），并从该变化格裁出其中的干员头像照片；截图与照片都取自视频像素本身，不含播放器控件。";
+    return;
+  }
+  let t = "记录截图：已保存 " + n + " / " + vidShotTotal() + " 张（变化时刻整帧画面）";
+  if (vid.photoN) t += " \u00b7 变化格干员照片 " + vid.photoN + " 张";
+  const dtx = vidDropText();
+  if (dtx) t += " · " + dtx;
+  if (vid.shotFail) t += " · " + vid.shotFail + " 次截图失败";
+  nt.textContent = t + "。";
+}
+async function vidCaptureShots(v) {
+  vid.shotFail = 0; vid.photoN = 0; vid.photoFail = 0;
+  const es = vid.events.filter((e) => !e.shot && !e.open && !e.close);   /* 开局 / 结束两条不截图 */
+  if (!es.length) { vidShotInfo(); return 0; }
+  const box = vidShotBox();
+  if (box.sw < 2 || box.sh < 2 || !v) { vid.shotFail = es.length; vidShotInfo(); return 0; }
+  const cv = document.createElement("canvas");
+  cv.width = box.w; cv.height = box.h;
+  const cx = cv.getContext("2d");
+  let n = 0;
+  for (let i = 0; i < es.length; i++) {
+    const e = es[i];
+    try {
+      await vidSeek(v, e.t);
+      cx.clearRect(0, 0, cv.width, cv.height);
+      cx.drawImage(v, 0, 0, box.sw, box.sh, 0, 0, cv.width, cv.height);
+      const u = cv.toDataURL("image/jpeg", 0.72);
+      if (u && u.indexOf("data:image") === 0 && u.length > 200) {
+        e.shot = u; e.shotW = box.w; e.shotH = box.h; n++;
+      } else { e.shot = ""; vid.shotFail++; }
+      /* 变化格干员照片：同一帧的来源、同一支视频像素，另取一帧避免卡片滑入 / 滑出动画 */
+      e.photo = ""; e.ci = vidCellIdx(e);
+      const pr = vidCellPix(e);
+      if (pr) {
+        const pt = vidPhotoT(e);
+        await vidSeek(v, pt);
+        const pc = vid._pc || (vid._pc = document.createElement("canvas"));
+        const ow = Math.max(96, Math.min(240, Math.round(pr.w * 2)));
+        const oh = Math.max(4, Math.round(ow * pr.h / pr.w));
+        pc.width = ow; pc.height = oh;
+        const pctx = pc.getContext("2d");
+        pctx.imageSmoothingEnabled = true;
+        pctx.clearRect(0, 0, ow, oh);
+        pctx.drawImage(v, pr.x, pr.y, pr.w, pr.h, 0, 0, ow, oh);
+        const pu = pc.toDataURL("image/jpeg", 0.82);
+        if (pu && pu.indexOf("data:image") === 0 && pu.length > 120) {
+          e.photo = pu; e.photoW = ow; e.photoH = oh; e.photoT = pt; vid.photoN++;
+        } else vid.photoFail++;
+      } else vid.photoFail++;
+    } catch (err) { e.shot = ""; e.photo = ""; vid.shotFail++; }
+  }
+  vidShotInfo();
+  return n;
+}
+/* ---- 记录详情折叠：生成记录列表后，右栏说明与统计默认收起 ---- */
+function vidNotesSync() {
+  const box = $("#vid-notes"), btn = $("#vid-notes-btn"), s = $("#vid-notes-s");
+  if (!box) return;
+  const has = !!(vid.events && vid.events.length);
+  if (!has) box.classList.remove("collapsed");
+  else if (!vid.notesTouched) box.classList.add("collapsed");
+  const open = !box.classList.contains("collapsed");
+  if (btn) {
+    btn.textContent = open ? "收起详情" : "记录详情";
+    btn.setAttribute("aria-expanded", open ? "true" : "false");
+  }
+  if (s) s.textContent = has
+    ? (open ? "说明与统计（点「收起详情」隐藏）" : "说明与统计已收起，点「记录详情」查看")
+    : "解析完成后自动收起";
+}
+/* ---- 记录上的干员名（p90）：默认「未确认」，由站点既有名册点选或手输确认，存本机 ---- */
+/* 可点选的名册：复用站点已加载的干员表（state.opByName / state.ops），不额外拉取任何数据 */
+function vidOpNames() {
+  if (state.opByName && state.opByName.size) return Array.from(state.opByName.keys()).sort();
+  if (state.ops && state.ops.length) return state.ops.map((o) => o && o.name).filter(Boolean).sort();
+  return [];
+}
+/* 共享 datalist：名册条数变化时才重建（名册未加载时为空，输入框仍可自由输入） */
+function vidOpList() {
+  let dl = $("#vid-op-list");
+  if (!dl) {
+    dl = document.createElement("datalist");
+    dl.id = "vid-op-list";
+    (document.body || document.documentElement).appendChild(dl);
+  }
+  const ops = vidOpNames();
+  if (dl.__n !== ops.length) {
+    dl.textContent = "";
+    ops.forEach((n) => { const o = document.createElement("option"); o.value = n; dl.appendChild(o); });
+    dl.__n = ops.length;
+  }
+  return dl;
+}
+/* 记录键的视频段：优先取 BV / av 号，其次取视频文件名，都没有时按「本机视频」 */
+function vidOpVid() {
+  const u = vid.url || "";
+  const m = /(BV[0-9A-Za-z]{6,}|av\d{4,})/.exec(u) || /([^/?#]+\.(mp4|m3u8|flv)[^?#]*)/i.exec(u);
+  if (m) return m[1];
+  return u ? u.slice(-96) : "local";
+}
+function vidOpMap() {
+  let m = null;
+  try { m = JSON.parse(lsGet(LS_VOP) || "null"); } catch (err) { m = null; }
+  return (m && typeof m === "object" && !Array.isArray(m)) ? m : {};
+}
+function vidOpKey(e) {
+  return vidOpVid() + "|" + Number((e && e.t) || 0).toFixed(1) + "|" + (e && e.ci != null ? e.ci : -1);
+}
+function vidOpGet(e) { return String(vidOpMap()[vidOpKey(e)] || ""); }
+function vidOpSet(e, name) {
+  const val = String(name == null ? "" : name).trim().slice(0, 24);
+  const m = vidOpMap(), k = vidOpKey(e);
+  if (val) m[k] = val; else delete m[k];
+  lsSet(LS_VOP, JSON.stringify(m));
+  return val;
+}
+/* 已确认名字的记录数（说明行用） */
+function vidOpCount() {
+  const m = vidOpMap();
+  let n = 0;
+  vid.events.forEach((e) => {
+    if (e.open || e.close) return;
+    if (String(m[vidOpKey(e)] || "")) n++;
+  });
+  return n;
+}
+/* ---- 记录列表：按发生顺序逐条列出（时间 / 放置·撤离干员 / 击敌数 / 变化时刻截图） ---- */
+/* ---- 开场干员展示参照（p101）：从视频开头截一帧「干员展示」画面作每条记录的定名参照 ----
+   全程本机像素，不新增任何外部请求；记录干员名仍默认「未确认」，由名册点选 / 手输确认并本机保存。 */
+function vidRefT() {
+  const d = vid.dur || 0;
+  return d > 0 ? Math.min(1.6, d * 0.5) : 0;
+}
+function vidRefCap(t) {
+  const v = $("#vid-player"), img = $("#vid-ref-img"), nt = $("#vid-ref-note");
+  if (!img) return false;
+  const sw = (v && v.videoWidth) || vid.vw || 0, sh = (v && v.videoHeight) || vid.vh || 0;
+  if (!v || sw < 2 || sh < 2) {
+    if (nt) nt.textContent = "尚未载入可读画面的视频：载入视频后即可截取开场「干员展示」画面作参照。";
+    return false;
+  }
+  const w = Math.min(640, Math.max(1, Math.round(sw)));
+  const cv = vid._rc || (vid._rc = document.createElement("canvas"));
+  cv.width = w; cv.height = Math.max(1, Math.round(sh * w / sw));
+  const cx = cv.getContext("2d");
+  try {
+    cx.clearRect(0, 0, cv.width, cv.height);
+    cx.drawImage(v, 0, 0, sw, sh, 0, 0, cv.width, cv.height);
+    const u = cv.toDataURL("image/jpeg", 0.82);
+    if (!u || u.indexOf("data:image") !== 0 || u.length < 200) return false;
+    img.src = u; img.hidden = false; vid.refT = t;
+    if (nt) nt.textContent = "参照画面取自本视频 " + vidFmt(t) + " 一帧。对照它读出干员名，填到每条记录右侧的干员名框里"
+      + "（默认「未确认」，可点选名册或手输，结果存在本机）。";
+    return true;
+  } catch (err) {
+    if (nt) nt.textContent = "读取画面像素被浏览器拒绝（该视频直链未允许跨域），无法截取参照画面。";
+    return false;
+  }
+}
+async function vidRefAuto() {
+  const v = $("#vid-player");
+  if (!v || !vid.ready) return false;
+  const t = vidRefT();
+  try { await vidSeek(v, t); } catch (e) {}
+  return vidRefCap(t);
+}
+function vidRefBind() {
+  const b = $("#vid-ref-btn");
+  if (!b) return;
+  b.addEventListener("click", () => {
+    const v = $("#vid-player");
+    const t = (v && isFinite(v.currentTime)) ? v.currentTime : vidRefT();
+    if (!vidRefCap(t)) vidMsg("未能截取参照画面：请先载入视频并把画面停在「干员展示」处。", "warn");
+  });
+}
+function vidEvList() {
+  const box = $("#vid-events-list"), hint = $("#vid-list-hint");
+  const dtx = vidDropText();
+  if (hint) hint.textContent = vid.events.length
+    ? ("共 " + vid.events.length + " 次记录" + (dtx ? " · " + dtx : "")
+      + (vid.errList && vid.errList.length ? "（疑似识别错误时刻 " + vid.errList.join("、") + "）" : ""))
+    : "尚无记录";
+  if (!box) return;
+  box.textContent = "";
+  if (!vid.events.length) {
+    const em = document.createElement("div");
+    em.className = "vid-ev-none";
+    em.textContent = "尚无记录。载入视频并点「开始解读」后，每次放置 / 撤离干员都会在这里按发生顺序逐条列出。";
+    box.appendChild(em);
+    return;
+  }
+  vid.events.forEach((e, i) => {
+    const it = document.createElement("div");
+    it.className = "vid-ev";
+    const left = document.createElement("div");
+    left.className = "vid-ev-l";
+    const media = document.createElement("div");
+    media.className = "vid-ev-media";
+    const side = document.createElement("div");
+    side.className = "vid-ev-side";
+    if (e.shot) {
+      const im = document.createElement("img");
+      im.className = "vid-ev-shot";
+      im.src = e.shot;
+      im.alt = vidFmt(e.t) + " 变化时刻画面";
+      im.title = "点一下跳到该时刻并暂停 · 双击放大 / 再双击收回";
+      im.addEventListener("click", () => { vidTlJump(e.t); });
+      im.addEventListener("dblclick", () => {
+        const z = !im.classList.contains("zoom");
+        im.classList.toggle("zoom", z);
+        im.title = z ? "再双击收回（单击仍是跳到该时刻并暂停）" : "点一下跳到该时刻并暂停 · 双击放大 / 再双击收回";
+      });
+      media.appendChild(im);
+    } else {
+      const ph = document.createElement("div");
+      ph.className = "vid-ev-noimg";
+      ph.textContent = e.open ? "开局记录（不截图）" : (e.close ? "结束记录（不截图）" : "未取得截图");
+      media.appendChild(ph);
+    }
+    if (e.photo) {
+      const pw = document.createElement("div");
+      pw.className = "vid-ev-photo-wrap";
+      const pim = document.createElement("img");
+      pim.className = "vid-ev-photo";
+      pim.src = e.photo;
+      pim.alt = "变化格内的干员头像（取自本视频 " + vidFmt(e.photoT || 0) + " 帧）";
+      pim.title = "变化格内的干员头像（取自本视频 " + vidFmt(e.photoT || 0) + " 帧）";
+      pw.appendChild(pim);
+      const cap = document.createElement("div");
+      cap.className = "vid-ev-photo-cap";
+      cap.textContent = "变化格头像 · " + vidFmt(e.photoT || 0);
+      pw.appendChild(cap);
+      side.appendChild(pw);
+    }
+    if (!e.open && !e.close) {
+      const orow = document.createElement("div");
+      orow.className = "vid-ev-op";
+      const ost = document.createElement("div");
+      ost.className = "vid-ev-op-n";
+      const saved = vidOpGet(e);
+      ost.textContent = "干员：" + (saved || "未确认");
+      if (!saved) ost.classList.add("none");
+      const oin = document.createElement("input");
+      oin.className = "vid-ev-op-in";
+      oin.type = "text";
+      oin.value = saved;
+      oin.placeholder = "选 / 输入干员名";
+      oin.setAttribute("list", "vid-op-list");
+      oin.setAttribute("aria-label", "第 " + (i + 1) + " 条记录（" + vidFmt(e.t) + "）的干员名");
+      oin.addEventListener("change", () => {
+        const v2 = vidOpSet(e, oin.value);
+        oin.value = v2;
+        ost.textContent = "干员：" + (v2 || "未确认");
+        ost.classList.toggle("none", !v2);
+      });
+      orow.appendChild(ost);
+      orow.appendChild(oin);
+      side.appendChild(orow);
+      vidOpList();
+    }
+    if (side.children.length) media.appendChild(side);
+    left.appendChild(media);
+    const right = document.createElement("div");
+    right.className = "vid-ev-r";
+    const hd = document.createElement("div");
+    hd.className = "vid-ev-hd";
+    const seq = document.createElement("span");
+    seq.className = "vid-ev-i";
+    seq.textContent = "#" + (i + 1);
+    const tm = document.createElement("span");
+    tm.className = "vid-ev-t";
+    tm.textContent = vidFmt(e.t);
+    const dr = document.createElement("span");
+    dr.className = "vid-ev-d " + (e.dir === "down" ? "down" : "up");
+    dr.textContent = e.open ? "\u2191 开局" : (e.close ? "\u2193 结束对局"
+      : (e.dir === "down" ? "\u2193 放置干员" : "\u2191 撤离干员"));
+    hd.appendChild(seq); hd.appendChild(tm); hd.appendChild(dr);
+    if (!e.open && !e.close) {
+      const jb = document.createElement("button");
+      jb.type = "button";
+      jb.className = "vid-ev-jump";
+      jb.textContent = "\u2192 \u8df3\u5230\u8be5\u65f6\u523b";
+      jb.title = "\u628a\u89c6\u9891\u8df3\u5230 " + vidFmt(e.t) + " \u5e76\u6682\u505c\uff08\u65f6\u95f4\u8f74\u4e0a\u540c\u4e00\u4f4d\u7f6e\u7684\u65b9\u5757\u4e5f\u662f\u8fd9\u4e2a\u5165\u53e3\uff09";
+      jb.setAttribute("aria-label", "\u8df3\u5230\u7b2c " + (i + 1) + " \u6761\u8bb0\u5f55\uff08" + vidFmt(e.t) + "\uff09\u5e76\u6682\u505c");
+      jb.addEventListener("click", () => { vidTlJump(e.t); });
+      hd.appendChild(jb);
+    }
+    const kv = document.createElement("div");
+    kv.className = "vid-ev-k";
+    kv.textContent = e.kills && e.kills.str ? ("击敌数 " + e.kills.str) : "击敌数不可读";
+    right.appendChild(hd); right.appendChild(kv);
+    if (e.kills && e.kills.total) {
+      const tt = document.createElement("div");
+      tt.className = "vid-ev-sub";
+      tt.textContent = "敌人总数 " + e.kills.total + " · 该时刻已击 " + (e.kills.str || "—");
+      right.appendChild(tt);
+    }
+    const dp = document.createElement("div");
+    dp.className = "vid-ev-sub";
+    dp.textContent = e.endMark
+      ? "对局结束：右下角「剩余可放置角色」读数条消失"
+      : (e.open
+        ? "开局时刻：剩余可放置角色最多（" + ((e.roTo == null) ? e.to : e.roTo) + " 人可放）"
+        : ((e.roFrom == null || e.roTo == null)
+          ? "读数 " + e.from + " \u2192 " + e.to + "（读数条）"
+          : "剩余可放置角色 " + e.roFrom + " \u2192 " + e.roTo
+            + (e.dir === "down" ? "（减少 = 有一名干员被放置上场）" : "（增加 = 有一名干员被撤离回栏位）")
+            + (e.roJump ? " · 读数一次变动 " + e.roD + "，已按 ±1 标记" : "")));
+    right.appendChild(dp);
+    it.appendChild(left); it.appendChild(right);
+    box.appendChild(it);
+  });
+}
+function vidRenderEvents() {
+  const nEl = $("#vid-events-n"), note = $("#vid-events-note");
+  if (nEl) nEl.textContent = String(vid.events.length);
+  vidEvList();
+  vidNotesSync();
+  vidTlPaint();
+  if (!note) return;
+  if (!vid.events.length) {
+    note.textContent = vid.roNote
+      ? vid.roNote + "。"
+      : "尚无记录。载入视频并点「开始解读」后，每次放置 / 撤离干员都会在这里按时间列出。";
+    return;
+  }
+  const dtx = vidDropText();
+  note.textContent = (dtx
+    ? dtx + "（保留 "
+      + vidFmt(vid.events[0].t) + " → " + vidFmt(vid.events[vid.events.length - 1].t)
+      + " 共 " + vid.events.length + " 条）。"
+    : "")
+    + (vid.roNote ? vid.roNote + "。" : "")
+    + (vid.events[0] && vid.events[0].open
+      ? "开局 " + vidFmt(vid.events[0].t) + "（剩余可放置角色 "
+        + ((vid.events[0].roTo == null) ? vid.events[0].to : vid.events[0].roTo) + "）："
+      : "")
+    + "读数变化：" + vid.events.map((e) =>
+    vidFmt(e.t) + (e.open ? " ↑开局" : (e.close ? " ↓结束对局"
+      : (e.dir === "down" ? " ↓放置干员" : " ↑撤离干员")))
+    + (e.kills && e.kills.str ? "（击敌数 " + e.kills.str + "）" : "（击敌数不可读）")).join(" · ");
+}
+async function vidRun() {
+  const v = $("#vid-player");
+  if (!v || !vid.ready) { vidMsg("请先载入视频。", "err"); return; }
+  if (vid.running) return;
+  if (!vid.pixelSafe) { vidMsg("当前直链不允许跨域，浏览器禁止读取画面像素；请换成允许跨域的直链。", "err"); return; }
+  vid.running = true; vid.frames = []; vid.events = []; vid.dev = []; vidSetBar(0); vidButtons(); vid.shotN = 0; vid.shotFail = 0; vid.photoN = 0; vid.photoFail = 0;
+  vid.dropN = 0; vid.openN = 0; vid.openT = -1;
+  vid.closeN = 0; vid.closeT = -1; vid.errN = 0; vid.errList = [];
+  vid.winA = -1; vid.winB = -1; vid.notesTouched = false;
+  vidRenderEvents(); vidShotInfo(); vidTlPaint();
+  try { await vidRefAuto(); } catch (e) {}
+  const stepEl = $("#vid-step");
+  vid.step = parseFloat(stepEl && stepEl.value) || vid.step || 0.3;
+  const total = Math.max(1, Math.min(vid.maxFrames, Math.ceil(vid.dur / vid.step) + 1));
+  const t0 = performance.now();
+  let ok = true;
+  try { v.pause(); } catch (e) {}
+  try {
+    for (let i = 0; i < total; i++) {
+      const t = Math.min(Math.max(0, vid.dur - 0.02), i * vid.step);
+      await vidSeek(v, t);
+      let sl = null, kl = null, cl = null;
+      try {
+        sl = vidGray(v, vid.regions.slots, vidSlotsW(v));
+        kl = vidGray(v, vid.regions.kills, 200);
+        cl = vidGray(v, VID_CELL_REG, vidCellW(v));   /* 部署栏几何：只用于变化格照片取景 */
+      } catch (e) {
+        if (e && e.name === "SecurityError") {
+          vid.pixelSafe = false;
+          vidMsg("读取画面像素被浏览器拒绝：该视频直链未允许跨域（缺 Access-Control-Allow-Origin），canvas 已被污染。请改用允许跨域的直链。", "err");
+          ok = false; break;
+        }
+      }
+      if (sl && kl) vid.frames.push({ t: t, slots: sl, kills: kl, cells: cl });
+      if (i % 2 === 0 || i === total - 1) {
+        vidSetBar((i + 1) / total);
+        const fe = $("#vid-frames"); if (fe) fe.textContent = String(vid.frames.length);
+      }
+    }
+    if (ok) {
+      vidSetBar(1);
+      let evN = 0;
+      try { evN = vidDetectEvents(); } catch (e) { evN = 0; }
+      vidSetBar(0.7);
+      let kn = 0;
+      try { kn = await vidScanKills(v); } catch (e) { kn = 0; }
+      vidSetBar(0.85);
+      let sn = 0;
+      try { sn = await vidCaptureShots(v); } catch (e) { sn = 0; }
+      vidRenderEvents();                       /* 截图就绪后刷新记录列表缩略图 */
+      vidSetBar(1);
+      const dtx = vidDropText();
+      vidMsg("采样完成：共 " + vid.frames.length + " 帧（间隔 " + vid.step + " 秒，用时 "
+        + ((performance.now() - t0) / 1000).toFixed(1) + " 秒）。"
+        + (evN ? "检测到放置 / 撤离事件 " + evN + " 次（右下角「剩余可放置角色」读数）：减少 = 放置、增加 = 撤离。"
+          : (vid.roNote ? vid.roNote + "。" : "读数条无变化事件。"))
+        + (kn ? "击敌数读数 " + kn + " 条（总数 " + (vid.killsTotal || "—") + "）。" : "")
+        + (evN ? "记录截图 " + sn + "/" + vidShotTotal() + " 张。"
+          + (vid.photoN ? "变化格干员照片 " + vid.photoN + " 张。" : "") : "")
+        + (dtx ? dtx + "。" : ""), "ok");
+    }
+  } finally {
+    vid.running = false; vidButtons(); vidTlPaint();
+  }
+}
+/* ---- 从「可参考的攻略视频」列表一键解读：跳转 + 关联 + 自动解析 ---- */
+let vidParseFail = "";
+function vidFromCard(bv, title) {
+  bv = String(bv || "").trim();
+  title = String(title || "").trim();
+  if (!bv) { vidMsg("该条结果没有可用的 BV 号。", "err"); return; }
+  viewGo("video", true);                       /* 跳转到「解读视频」视图 */
+  vid.auto = { bv: bv, title: title, state: "start", resolved: "" };
+  vid.autoRun = false;
+  const input = $("#vid-url");
+  if (input) input.value = "https://www.bilibili.com/video/" + bv;
+  vidMsg("已关联《" + (title || bv) + "》，正在解析视频直链…", "warn");
+  vidAutoParse(bv, title);
+}
+async function vidAutoParse(bv, title) {
+  const label = title || bv;
+  let url = "";
+  vidParseFail = "";
+  try { url = await vidResolveDirect(bv); }
+  catch (e) { url = ""; vidParseFail = String((e && e.message) || e); }
+  if (!vid.auto) vid.auto = { bv: bv, title: title, state: "start", resolved: "" };
+  vid.auto.resolved = url || "";
+  const input = $("#vid-url");
+  if (!url) {
+    vid.auto.state = "failed";
+    vidMsg("已关联《" + label + "》，但未能解析出可直连的视频地址（" + (vidParseFail || "通道不可用")
+      + "）。可把视频直链 mp4 填到上方输入框后点「载入视频」，再点「开始解读」。", "err");
+    return;
+  }
+  if (input) input.value = url;
+  vid.auto.state = "loading";
+  vid.autoRun = true;                          /* 载入完成后自动开始逐帧解读 */
+  vidLoad();
+}
+/* BV → 直连播放地址：复用站点既有中继通道（与检索同一条链路），不引第三方库 */
+async function vidResolveDirect(bv) {
+  const chan = state.channel || (await resolveChannel(false));
+  const call = async (target) => {
+    const res = await fetchWithTimeout(buildUrl(chan || { direct: true }, target), 15000);
+    if (!res.ok) throw new Error("通道返回 HTTP " + res.status);
+    let j = null;
+    try { j = await res.json(); } catch (e) { j = null; }
+    if (!j || j.code !== 0) throw new Error("B 站接口 code " + ((j && j.code) != null ? j.code : "?"));
+    return j.data || {};
+  };
+  const d = await call("https://api.bilibili.com/x/web-interface/view?bvid=" + encodeURIComponent(bv));
+  const cid = (d.pages && d.pages[0] && d.pages[0].cid) || d.cid;
+  if (!cid) throw new Error("未取到 cid");
+  const p = await call("https://api.bilibili.com/x/player/playurl?bvid=" + encodeURIComponent(bv)
+    + "&cid=" + cid + "&qn=64&fnval=1&fourk=1&platform=html5");
+  const durl = (p.durl && p.durl[0] && p.durl[0].url) || "";
+  const dash = (p.dash && p.dash.video && p.dash.video[0] && p.dash.video[0].baseUrl) || "";
+  const u = durl || dash;
+  if (!u) throw new Error("接口未返回播放地址");
+  return u;
+}
+function videoInit() {
+  vidRegLoad();
+  vidBindMedia();
+  vidBindCal();
+  vidTlBind();
+  vidRefBind();
+  const on = (sel, ev, fn) => { const el = $(sel); if (el) el.addEventListener(ev, fn); };
+  on("#vid-load", "click", vidLoad);
+  on("#vid-run", "click", vidRun);
+  on("#vid-cal-btn", "click", () => vidCalToggle());
+  on("#vid-reset", "click", () => {
+    vid.regions = JSON.parse(JSON.stringify(VREG_DEFAULT));
+    vidRegSave(); vidRegPaint(); vidMsg("已恢复默认区域。", "ok");
+  });
+  on("#vid-cal-target", "change", (e) => { vid.calTarget = e.target.value; vidRegPaint(); });
+  on("#vid-step", "change", (e) => { vid.step = parseFloat(e.target.value) || 0.3; });
+  on("#vid-notes-btn", "click", () => {
+    const box = $("#vid-notes");
+    if (!box) return;
+    vid.notesTouched = true;
+    box.classList.toggle("collapsed");
+    vidNotesSync();
+  });
+  on("#vid-url", "keydown", (e) => { if (e.key === "Enter") vidLoad(); });
+  vidButtons(); vidRegPaint(); vidNotesSync(); vidTlPaint();
+}
+
 /* ------------------------- 启动 ------------------------- */
 loadLocal();
 themeInit();
@@ -6074,6 +8028,7 @@ bind();
 skInit();
 growthInit();
 wikiInit();
+videoInit();
 fillHelpCode();
 $("#result-body").innerHTML = '<div class="empty"><div class="spin spin-lg" role="status" aria-label="正在读取数据"></div><div style="margin-top:12px">正在读取干员与关卡数据…</div><div class="sub" style="margin-top:6px">首次约 35 MB，之后读浏览器缓存，秒开。</div></div>';
 bootData();
