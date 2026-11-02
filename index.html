@@ -1257,6 +1257,7 @@ html[data-mode="light"] #fx{--fx-rgb:0,150,190}
 .vid-tl-marks{position:absolute;inset:0}
 .vid-tl-mk{position:absolute;top:50%;width:8px;height:8px;min-width:0;padding:0;margin:-4px 0 0 -4px;border-radius:2px;transform:rotate(45deg);border:1px solid var(--panel);background:var(--ok);cursor:pointer}
 .vid-tl-mk.up{background:var(--warn)}
+.vid-tl-mk.skill{background:var(--accent)}
 .vid-tl-mk:hover,.vid-tl-mk:focus-visible{outline:2px solid var(--txt);outline-offset:2px}
 
 .vid-kv{display:flex;justify-content:space-between;gap:10px;font-size:15px;color:var(--txt-mute);padding:3px 0}
@@ -1285,6 +1286,8 @@ html[data-mode="light"] #fx{--fx-rgb:0,150,190}
 .vid-ev-d{padding:1px 8px;border-radius:99px;border:1px solid var(--line);font-size:15px;color:var(--txt-dim)}
 .vid-ev-d.up{color:var(--ok);border-color:var(--ok)}
 .vid-ev-d.down{color:var(--bad-txt);border-color:var(--bad-txt)}
+.vid-ev-d.skill{color:var(--accent);border-color:var(--accent)}
+.vid-ev.skill{border-left:3px solid var(--accent);background:linear-gradient(90deg,rgba(var(--accent-rgb),.10),transparent 44%),var(--inset)}
 .vid-ev-jump{padding:2px 9px;border-radius:99px;border:1px solid var(--line-hi);background:var(--btn-hi);color:var(--txt);font-size:15px;line-height:1.5;cursor:pointer}
 .vid-ev-jump:hover{border-color:var(--accent);color:var(--accent)}
 .vid-ev-jump:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
@@ -1653,9 +1656,9 @@ html[data-mode="light"] #fx{--fx-rgb:0,150,190}
                 <span class="vid-notes-s" id="vid-notes-s">解析完成后自动收起</span>
               </div>
               <div id="vid-notes">
-                <p class="vid-note" id="vid-events-note">尚无记录。载入视频并点「开始解读」后，每次放置 / 撤离干员都会在这里按时间列出。</p>
+                <p class="vid-note" id="vid-events-note">尚无记录。载入视频并点「开始解读」后，每次放置 / 撤离干员、以及每次技能开启都会在这里按时间列出。</p>
                 <p class="vid-note" id="vid-kills-note">击敌数识别：尚无数据。载入视频并点「开始解读」后，会取变化时刻的画面读出击敌数。</p>
-                <p class="vid-note" id="vid-shots-note">记录截图：尚无记录。每次放置 / 撤离干员都会先打开该干员的详情面板，站点在变化点前几帧里定位到面板帧后截取整幅画面；截图取自视频像素本身，不含播放器控件。</p>
+                <p class="vid-note" id="vid-shots-note">记录截图：尚无记录。每次放置 / 撤离干员都会先打开该干员的详情面板，站点在变化点前几帧里定位到面板帧后截取整幅画面；每次技能开启（左侧干员详情面板出现但剩余可放置角色读数不变）也会截取该次面板开启里最完整的一帧；截图取自视频像素本身，不含播放器控件。</p>
                 <p class="vid-note">放置 / 撤离判定只看画面右下角「剩余可放置角色」读数：读数减少＝放置干员、读数增加＝撤离干员；读数不可读时如实说明并给出零记录，不猜。「剩余可放置角色」区域默认就是画面右下角那条读数本身（标签＋数量数字，约占画面 x 0.82–1.00、y 0.70–0.80），读数即在该区域内按原分辨率取样识别。每条记录的截图取的是该次操作的「干员详情面板」整帧画面：面板左上角自上而下是干员名与 Lv 等级，站点会直接读出该姓名（全在本机完成、不发请求）自动填到右侧姓名框，读不出时留空待手填，再按姓名对应显示干员图片，不再裁取任何头像。击敌数默认取正中间上方（形如 0/400）。点「校准区域」后，在画面上拖出方框即可重设；区域保存在本机。</p>
                 <p class="vid-note">直链必须允许跨域（响应带 Access-Control-Allow-Origin），否则浏览器会禁止读取画面像素。</p>
               </div>
@@ -6256,10 +6259,10 @@ function vidTlMarks() {
     const e = x.e, i = x.i;
     const b = document.createElement("button");
     b.type = "button";
-    b.className = "vid-tl-mk " + (e.dir === "down" ? "down" : "up");
+    b.className = "vid-tl-mk " + (e.skill ? "skill" : (e.dir === "down" ? "down" : "up"));
     b.style.left = vidTlPct(vidTlRatio(e.t)).toFixed(3) + "%";
     b.dataset.t = String(e.t);
-    b.title = "#" + (i + 1) + " \u00b7 " + (e.dir === "down" ? "\u653e\u7f6e" : "\u64a4\u79bb")
+    b.title = "#" + (i + 1) + " \u00b7 " + (e.skill ? "\u6280\u80fd\u5f00\u542f" : (e.dir === "down" ? "\u653e\u7f6e" : "\u64a4\u79bb"))
       + " \u00b7 " + vidFmt(e.t) + " \u00b7 \u70b9\u4e00\u4e0b\u8df3\u5230\u8be5\u65f6\u523b\u5e76\u6682\u505c";
     b.setAttribute("aria-label", "\u8df3\u5230\u7b2c " + (i + 1) + " \u6761\u8bb0\u5f55\uff08" + vidFmt(e.t) + "\uff09\u5e76\u6682\u505c");
     b.addEventListener("pointerdown", (ev) => { ev.preventDefault(); ev.stopPropagation(); });
@@ -7252,6 +7255,8 @@ function vidRoRun() {
     vid.events.push({ idx: ei, t: frames[ei].t, dir: "down", from: le.to, to: le.to,
                       close: true, endMark: true, roFrom: last.nv, roTo: last.nv, tHide: ei });
   }
+  /* 技能开启记录：读数不变的「面板出现」区间（判据与护栏见 vidSkillRun），插在结束记录之前 */
+  if (vid.events.length) { try { vidSkillRun(); } catch (e) { vid.skillN = 0; } }
   vid.roOk = true;
   return vid.events.length;
 }
@@ -7513,6 +7518,104 @@ const VID_PANEL_REG = {                        /* 四条文字带：x 归一区�
   stat: { x: [0.008, 0.100], y: [0.312, 0.360], rows: 3 },
   tab: { x: [0.005, 0.215], y: [0.575, 0.620], rows: 8 }
 };
+/* ---- 干员「技能开启」判定（本轮新增）----
+   判据（用户要求）：出现左侧干员详情面板，但右下角「剩余可放置角色」读数不变 —— 与放置 / 撤离（读数 ±1）明确互斥。
+   真值实测（ref.mp4 / ref4 逐帧扫描，素材与本口径一致）：放置 / 撤离都是「先点开干员、面板出现约 0.6–0.9 秒后读数才变」，
+   而技能开启是「点开场上干员、面板出现且读数自始至终不变」；因此「面板出现但读数不变」还须排除「紧邻读数变化点」的那次
+   面板开启（否则 4 次放置干员的面板都会被算成技能）。判定链路：
+     ①逐帧标记：对四条文字带的并集区域取一次灰度（宽度按 min(480, 帧宽) × 0.21 定标，与站点「整帧 480 宽」口径等效），
+       算四条带亮行数并与 vidPanelHit 同阈值判定 → 命中帧即「该帧有干员详情面板」；
+     ②区间合并：连续命中帧合成一次「面板开启」，间隔 ≤ VID_SKILL_GAP 的两次命中仍算同一次（吸收单帧抖动）；
+     ③一次面板开启只产出一条记录（同一次开启内不重复判定）；
+     ④归属护栏：区间必须整段落在同一个读数平台内（该段读数全程不变）；区间必须在首次读数变化点之后（排除开场名册 / 加载画面）；
+       区间与任一读数变化点的距离须 > VID_SKILL_NEAR 秒，否则归放置 / 撤离；命中帧的亮行数不得高到像「整屏 UI」
+       （名册 / 编队画面实测姓名 14 行、Lv 15 行，战斗面板 ≤10 行；阈值取 12 作上界）。
+   技能记录的截图与姓名识别：取该次面板开启里「四条带亮行数之和最大」的那一帧（面板最完整），不走向前回溯
+   （回溯会漂到上一条操作的面板、串成别人的名字）；姓名走同一套本机识别链路，读不出如实标注、绝不猜名。 */
+const VID_SKILL_BOX = { x: 0.005, y: 0.195, w: 0.210, h: 0.425 };  /* 四条文字带的并集区域（归一） */
+const VID_SKILL_W = 0.21;        /* 并集区域采样宽 = min(480, 帧宽) × 0.21（与「整帧 480 宽」口径等效） */
+const VID_SKILL_NEAR = 1.5;      /* 与读数变化点的归属护栏（秒）：区间落在此窗口内 → 归放置 / 撤离 */
+const VID_SKILL_GAP = 0.5;       /* 同一次面板开启允许的采样空隙（秒）：≤ 该值仍算同一次 */
+const VID_SKILL_ROW_MAX = 12;    /* 面板亮行数上界：≥ 该值判为「整屏 UI」（名册 / 编队画面），不算技能 */
+const VID_SKILL_BANDS = (() => { /* 四条带在并集区域内的局部归一坐标（供「整区间一次取样」口径使用） */
+  const B = VID_SKILL_BOX, R = VID_PANEL_REG;
+  const cx = (x) => Math.max(0, Math.min(1, (x - B.x) / B.w));
+  const cy = (y) => Math.max(0, Math.min(1, (y - B.y) / B.h));
+  const f = (b) => ({ x: [cx(b.x[0]), cx(b.x[1])], y: [cy(b.y[0]), cy(b.y[1])] });
+  return { name: f(R.name), lv: f(R.lv), stat: f(R.stat), tab: f(R.tab) };
+})();
+function vidSkillW(v) {                       /* 并集区域采样宽：分辨率无关（按帧宽归一），与站点整帧 480 宽口径等效 */
+  const vw = (v && v.videoWidth) || 0;
+  return Math.max(32, Math.round(Math.min(480, vw || 480) * VID_SKILL_W));
+}
+function vidSkillFeat(g) {                    /* 并集区域灰度的四条带亮行数（vidPanelRows 同口径）+ 面板判据 */
+  if (!g || !(g.w > 8 && g.h > 8) || !g.px || g.px.length < g.w * g.h) return null;
+  const f = {
+    name: vidPanelRows(g, VID_SKILL_BANDS.name), lv: vidPanelRows(g, VID_SKILL_BANDS.lv),
+    stat: vidPanelRows(g, VID_SKILL_BANDS.stat), tab: vidPanelRows(g, VID_SKILL_BANDS.tab)
+  };
+  if (f.name < 0 || f.lv < 0 || f.stat < 0 || f.tab < 0) return null;
+  const r = VID_PANEL_REG;
+  f.hit = (f.name >= r.name.rows) && (f.lv >= r.lv.rows) && (f.stat >= r.stat.rows) && (f.tab >= r.tab.rows);
+  return f;
+}
+/* 技能开启判定：读 vid.frames（逐帧 pf 标记）+ vid.roSeq（读数平台），把结果按时间插进 vid.events。
+   只在读数链路可用（roOk、已生成开局 / 结束记录）时生效；读数不可用时一条技能也不产出（读数是否「不变」无从判定）。 */
+function vidSkillRun() {
+  const frames = vid.frames || [], n = frames.length;
+  vid.skillN = 0; vid.skillPlate = 0; vid.skillNear = 0; vid.skillEarly = 0; vid.skillFull = 0;
+  const seq = vid.roSeq || [];
+  if (n < 5 || seq.length < 2 || !vid.events || !vid.events.length) return 0;
+  let firstChg = -1;                          /* 首次读数变化点：技能只可能发生在「已有干员上场」之后 */
+  for (let i = 1; i < seq.length; i++) { if (seq[i].nv !== seq[i - 1].nv) { firstChg = seq[i].t0; break; } }
+  if (!(firstChg >= 0)) return 0;
+  const step = Math.max(0.05, vid.step || 0.3);
+  const gap = Math.max(1, Math.round(VID_SKILL_GAP / step));
+  const runs = [];                            /* ①逐帧标记 → 连续命中区间（含允许的采样空隙） */
+  let cur = null;
+  for (let i = 0; i < n; i++) {
+    const hit = !!(frames[i] && frames[i].pf && frames[i].pf.hit);
+    if (hit) {
+      if (cur && i - cur.i1 <= gap) cur.i1 = i;
+      else { if (cur) runs.push(cur); cur = { i0: i, i1: i }; }
+      continue;
+    }
+    if (cur && i - cur.i1 > gap) { runs.push(cur); cur = null; }
+  }
+  if (cur) runs.push(cur);
+  if (!runs.length) return 0;
+  const sum = (f) => (f ? f.name + f.lv + f.stat + f.tab : 0);
+  const out = [];
+  runs.forEach((r) => {
+    let pi = -1;                              /* ④区间必须整段落在同一个读数平台内（读数全程不变） */
+    for (let k = 0; k < seq.length; k++) { if (seq[k].i0 <= r.i0 && r.i1 <= seq[k].i1) { pi = k; break; } }
+    if (pi < 0) { vid.skillPlate++; return; }
+    let ib = r.i0, best = -1;                 /* 取该次面板开启里「四条带亮行数之和最大」的一帧 */
+    for (let i = r.i0; i <= r.i1; i++) { const s = sum(frames[i] && frames[i].pf); if (s > best) { best = s; ib = i; } }
+    const f = frames[ib] && frames[ib].pf, tb = frames[ib].t;
+    const t0 = frames[r.i0].t, t1 = frames[r.i1].t;
+    if (tb < firstChg - 1e-9) { vid.skillEarly++; return; }        /* ④开场名册 / 加载画面 */
+    if (f && (f.name >= VID_SKILL_ROW_MAX || f.lv >= VID_SKILL_ROW_MAX)) { vid.skillFull++; return; }  /* 整屏 UI */
+    let near = -1;                            /* ④紧邻读数变化点 → 该次面板开启属于放置 / 撤离 */
+    for (let i = 1; i < seq.length; i++) {
+      if (seq[i].nv === seq[i - 1].nv) continue;
+      const c = seq[i].t0;
+      if (c >= t0 - VID_SKILL_NEAR - 1e-9 && c <= t1 + VID_SKILL_NEAR + 1e-9) { near = c; break; }
+    }
+    if (near >= 0) { vid.skillNear++; return; }
+    out.push({ idx: ib, t: tb, dir: "skill", skill: true, panel: true, panelHit: true, panelT: tb,
+               roFrom: seq[pi].nv, roTo: seq[pi].nv, from: seq[pi].nv, to: seq[pi].nv,
+               skillT0: t0, skillT1: t1 });   /* ③一次面板开启只产出一条记录 */
+  });
+  out.forEach((e) => {                        /* 按时间插进 vid.events；开局记录置首、结束记录恒在最后 */
+    let at = vid.events.length;
+    if (at > 1 && vid.events[at - 1] && vid.events[at - 1].close) at--;
+    while (at > 1 && vid.events[at - 1].t > e.t) at--;
+    vid.events.splice(at, 0, e);
+  });
+  vid.skillN = out.length;
+  return vid.skillN;
+}
 /* ---- 干员名自动识别（p107）：把面板帧左上角的「干员名」读出来，自动填到记录右侧的干员名框 ----
    本机完成：不发请求、不引外部库、不写任何外链；只用「站点已加载的干员表姓名」当候选词表。
    版式依据（用户参考图 + 两张真值素材实测）：姓名行在「职业图标框」之下、「Lv + 等级行」之上；
@@ -7871,10 +7974,12 @@ function vidShotInfo() {
   if (!vid.events.length) {
     nt.textContent = "记录截图：尚无记录。每次放置 / 撤离干员都会先打开该干员的详情面板，"
       + "站点在变化点前几帧里定位到面板帧后截取整幅画面，并顺带读出画面左上角 Lv 等级上方的干员姓名自动填到右侧姓名框（读不出则留空待手填），"
-      + "再按姓名显示对应干员图片；开局那一条与结束对局那一条按规则不截图，截图取自视频像素本身，不含播放器控件。";
+      + "再按姓名显示对应干员图片；每次技能开启（面板出现但剩余可放置角色读数不变）也会截取该次面板开启里最完整的一帧；"
+      + "开局那一条与结束对局那一条按规则不截图，截图取自视频像素本身，不含播放器控件。";
     return;
   }
   let t = "记录截图：已保存 " + n + " / " + vidShotTotal() + " 张（该次操作的干员详情面板整帧画面）";
+  if (vid.skillN) t += " \u00b7 其中技能开启 " + vid.skillN + " 条（面板出现但读数不变，判据见右栏说明）";
   if (vid.panelN) t += " \u00b7 面板帧定位成功 " + vid.panelN + " 条";
   if (vid.panelMiss) t += " \u00b7 未找到面板帧、退回变化时刻整帧 " + vid.panelMiss + " 条";
   if (vid.ocrN) t += " \u00b7 自动识别出干员名 " + vid.ocrN + " 条";
@@ -7902,8 +8007,10 @@ async function vidCaptureShots(v) {
     e.shot = ""; e.shotT = e.t; e.panelHit = false; e.panelT = -1; e.panelSkip = false;
     try {
       /* 先定位该次操作的干员详情面板帧（变化点前几帧里四条文字带同时成立的那一帧）；
-         未命中则退回变化时刻整帧并如实标注，绝不用上一段视频 / 上一张旧图冒充。 */
-      const pt = await vidPanelT(v, e);
+         未命中则退回变化时刻整帧并如实标注，绝不用上一段视频 / 上一张旧图冒充。
+         技能开启记录不做回溯：面板就是它自己的判定区间（vidSkillT0–T1），本条时刻即取该区间里
+         「四条带亮行数之和最大」的那一帧；回溯只会漂到上一条操作的面板、把姓名串成别人。 */
+      const pt = e.skill ? e.t : await vidPanelT(v, e);
       if (pt >= 0) { e.panelHit = true; e.panelT = pt; vid.panelN++; }
       else { e.panelSkip = true; vid.panelMiss++; }
       const st = pt >= 0 ? pt : e.t;
@@ -7938,11 +8045,13 @@ async function vidCaptureShots(v) {
                 /* 同名同状态去重：本条读出的姓名与「放置 / 撤离」状态若跟相邻的上一条完全相同，
                    就向后继续逐帧识别，直到读到不同姓名（或越过下一条操作 / 往后窗口上限 / 视频末尾）。
                    读到不同姓名 → 采纳该姓名并把截图同步换成命中那帧；
-                   一直读不出不同姓名 → 不填名、如实标注 dup，并退回本条变化时刻整帧，绝不重复填同名、绝不猜名。 */
+                   一直读不出不同姓名 → 不填名、如实标注 dup，并退回本条变化时刻整帧，绝不重复填同名、绝不猜名。
+                    该规则只针对放置 / 撤离（同状态连做两次、面板叠在一起才需要向后找）；技能开启记录不做这条去重，
+                    因为技能条目的时刻与截图本来就是它自己那次面板开启里最完整的一帧。 */
                 const gi = (vid.events || []).indexOf(e);
                 const prevE = gi > 0 ? vid.events[gi - 1] : null;
                 const prevName = prevE ? vidOpGet(prevE) : "";
-                if (prevE && prevName && prevName === r.name && prevE.dir === e.dir) {
+                if (!e.skill && prevE && !prevE.skill && prevName && prevName === r.name && prevE.dir === e.dir) {
                   const nx = (vid.events && gi + 1 < vid.events.length) ? vid.events[gi + 1] : null;
                   const alt = await vidDupForward(v, st, r.name, nx ? nx.t : null);
                   if (alt) {
@@ -8446,13 +8555,13 @@ function vidEvList() {
   if (!vid.events.length) {
     const em = document.createElement("div");
     em.className = "vid-ev-none";
-    em.textContent = "尚无记录。载入视频并点「开始解读」后，每次放置 / 撤离干员都会在这里按发生顺序逐条列出。";
+    em.textContent = "尚无记录。载入视频并点「开始解读」后，每次放置 / 撤离干员、以及每次技能开启（左侧干员详情面板出现但剩余可放置角色读数不变）都会在这里按发生顺序逐条列出。";
     box.appendChild(em);
     return;
   }
   vid.events.forEach((e, i) => {
     const it = document.createElement("div");
-    it.className = "vid-ev";
+    it.className = e.skill ? "vid-ev skill" : "vid-ev";   /* 技能开启记录用与放置 / 撤离区分的卡片样式 */
     const left = document.createElement("div");
     left.className = "vid-ev-l";
     const media = document.createElement("div");
@@ -8533,9 +8642,9 @@ function vidEvList() {
     tm.className = "vid-ev-t";
     tm.textContent = vidFmt(e.t);
     const dr = document.createElement("span");
-    dr.className = "vid-ev-d " + (e.dir === "down" ? "down" : "up");
+    dr.className = "vid-ev-d " + (e.skill ? "skill" : (e.dir === "down" ? "down" : "up"));
     dr.textContent = e.open ? "\u2191 开局" : (e.close ? "\u2193 结束对局"
-      : (e.dir === "down" ? "\u2193 放置干员" : "\u2191 撤离干员"));
+      : (e.skill ? "\u25c6 技能开启" : (e.dir === "down" ? "\u2193 放置干员" : "\u2191 撤离干员")));
     hd.appendChild(seq); hd.appendChild(tm); hd.appendChild(dr);
     if (!e.open && !e.close) {
       const jb = document.createElement("button");
@@ -8559,15 +8668,19 @@ function vidEvList() {
     }
     const dp = document.createElement("div");
     dp.className = "vid-ev-sub";
+    const roNow = (e.roFrom == null) ? e.from : e.roFrom;
     dp.textContent = e.endMark
       ? "对局结束：右下角「剩余可放置角色」读数条消失"
       : (e.open
         ? "开局时刻：剩余可放置角色最多（" + ((e.roTo == null) ? e.to : e.roTo) + " 人可放）"
-        : ((e.roFrom == null || e.roTo == null)
-          ? "读数 " + e.from + " \u2192 " + e.to + "（读数条）"
-          : "剩余可放置角色 " + e.roFrom + " \u2192 " + e.roTo
-            + (e.dir === "down" ? "（减少 = 有一名干员被放置上场）" : "（增加 = 有一名干员被撤离回栏位）")
-            + (e.roJump ? " · 读数一次变动 " + e.roD + "，已按 ±1 标记" : "")));
+        : (e.skill
+          ? "技能开启：左侧干员详情面板自 " + vidFmt(e.skillT0) + " 起出现，至 " + vidFmt(e.skillT1)
+            + " 面板关闭（同一次面板开启只记一条）；全场剩余可放置角色始终为 " + roNow + " 人，读数没有变化"
+          : ((e.roFrom == null || e.roTo == null)
+            ? "读数 " + e.from + " \u2192 " + e.to + "（读数条）"
+            : "剩余可放置角色 " + e.roFrom + " \u2192 " + e.roTo
+              + (e.dir === "down" ? "（减少 = 有一名干员被放置上场）" : "（增加 = 有一名干员被撤离回栏位）")
+              + (e.roJump ? " · 读数一次变动 " + e.roD + "，已按 ±1 标记" : ""))));
     right.appendChild(dp);
     it.appendChild(left); it.appendChild(right);
     box.appendChild(it);
@@ -8583,7 +8696,7 @@ function vidRenderEvents() {
   if (!vid.events.length) {
     note.textContent = vid.roNote
       ? vid.roNote + "。"
-      : "尚无记录。载入视频并点「开始解读」后，每次放置 / 撤离干员都会在这里按时间列出。";
+      : "尚无记录。载入视频并点「开始解读」后，每次放置 / 撤离干员、以及每次技能开启都会在这里按时间列出。";
     return;
   }
   const dtx = vidDropText();
@@ -8611,6 +8724,7 @@ async function vidRun() {
   vid.dropN = 0; vid.openN = 0; vid.openT = -1;
   vid.closeN = 0; vid.closeT = -1; vid.errN = 0; vid.errList = [];
   vid.winA = -1; vid.winB = -1; vid.notesTouched = false;
+  vid.skillN = 0; vid.skillPlate = 0; vid.skillNear = 0; vid.skillEarly = 0; vid.skillFull = 0;
   vidRenderEvents(); vidShotInfo(); vidTlPaint();
   try { await vidRefAuto(); } catch (e) {}
   const stepEl = $("#vid-step");
@@ -8623,11 +8737,13 @@ async function vidRun() {
     for (let i = 0; i < total; i++) {
       const t = Math.min(Math.max(0, vid.dur - 0.02), i * vid.step);
       await vidSeek(v, t);
-      let sl = null, kl = null, cl = null;
+      let sl = null, kl = null, cl = null, pf = null;
       try {
         sl = vidGray(v, vid.regions.slots, vidSlotsW(v));
         kl = vidGray(v, vid.regions.kills, 200);
         cl = vidGray(v, VID_CELL_REG, vidCellW(v));   /* 部署栏几何：历史口径，只用于逐帧占用格数 / 档位采样 */
+        /* 面板逐帧标记（技能开启判定用）：并集区域一次取样 → 四条带亮行数 → 该帧是否有干员详情面板 */
+        pf = vidSkillFeat(vidGray(v, VID_SKILL_BOX, vidSkillW(v)));
       } catch (e) {
         if (e && e.name === "SecurityError") {
           vid.pixelSafe = false;
@@ -8635,7 +8751,7 @@ async function vidRun() {
           ok = false; break;
         }
       }
-      if (sl && kl) vid.frames.push({ t: t, slots: sl, kills: kl, cells: cl });
+      if (sl && kl) vid.frames.push({ t: t, slots: sl, kills: kl, cells: cl, pf: pf });
       if (i % 2 === 0 || i === total - 1) {
         vidSetBar((i + 1) / total);
         const fe = $("#vid-frames"); if (fe) fe.textContent = String(vid.frames.length);
@@ -8659,6 +8775,7 @@ async function vidRun() {
         + (evN ? "检测到放置 / 撤离事件 " + evN + " 次（右下角「剩余可放置角色」读数）：减少 = 放置、增加 = 撤离。"
           : (vid.roNote ? vid.roNote + "。" : "读数条无变化事件。"))
         + (kn ? "击敌数读数 " + kn + " 条（总数 " + (vid.killsTotal || "—") + "）。" : "")
+        + (vid.skillN ? "技能开启 " + vid.skillN + " 次（左侧干员详情面板出现、剩余可放置角色读数不变；同一次面板开启只记一条）。" : "")
         + (evN ? "记录截图 " + sn + "/" + vidShotTotal() + " 张（干员详情面板整帧画面）。"
           + (vid.panelN ? "面板帧定位成功 " + vid.panelN + " 条。" : "")
           + (vid.panelMiss ? "未找到面板帧、退回变化时刻整帧 " + vid.panelMiss + " 条。" : "") : "")
