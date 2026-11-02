@@ -1268,7 +1268,7 @@ html[data-mode="light"] #fx{--fx-rgb:0,150,190}
 .vid-ref-hd{display:flex;flex-wrap:wrap;align-items:center;gap:8px;line-height:1.5}
 .vid-ref-t{font-size:15px;color:var(--txt);font-weight:600}
 .vid-ref-note{flex:1 1 240px;min-width:200px;font-size:15px;color:var(--txt-mute);line-height:1.5;margin:0}
-.vid-ref-img{display:block;margin-top:8px;width:min(420px,100%);height:auto;border-radius:6px;border:1px solid var(--line-soft);background:var(--inset-3)}
+.vid-ref-img{display:block;margin-top:8px;width:min(640px,100%);height:auto;border-radius:6px;border:1px solid var(--line-soft);background:var(--inset-3)}
 .vid-ref-img[hidden]{display:none}
 .vid-events-wrap{margin-top:12px}
 .vid-events{display:grid;gap:10px;margin-top:8px}
@@ -1293,19 +1293,21 @@ html[data-mode="light"] #fx{--fx-rgb:0,150,190}
 .vid-ev-k{font-family:var(--mono);color:var(--txt-dim);font-size:15px;margin-top:6px}
 .vid-ev-sub{font-size:15px;color:var(--txt-mute);line-height:1.5;margin-top:4px;word-break:break-word}
 @media (max-width:820px){.vid-ev-shot,.vid-ev-noimg{width:100%}}
-/* 记录右栏（p90）：截图右侧放「变化格干员头像 + 干员名点选」——干员名默认「未确认」 */
+/* 记录右栏（p90 / 本轮）：截图右侧放「干员图片（按填写的姓名对应） + 干员名点选」——干员名默认「未确认」；
+   变化格头像照片链路已按本轮要求移除，.vid-ev-opimg* 只展示「按姓名查到的干员头像」，查不到时给出待确认提示。 */
 .vid-ev-media{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-start}
 .vid-ev-media>.vid-ev-shot,.vid-ev-media>.vid-ev-noimg{flex:0 1 auto;min-width:0;max-width:min(64vw,100%)}
 .vid-ev-side{flex:0 0 220px;max-width:100%;display:flex;flex-direction:column;gap:8px}
-.vid-ev-photo-wrap{display:flex;flex-direction:column;gap:4px}
-.vid-ev-photo{display:block;width:100%;max-width:132px;border-radius:6px;border:1px solid var(--line);background:var(--inset-3)}
-.vid-ev-photo-cap{font-size:15px;color:var(--txt-mute);line-height:1.5}
+.vid-ev-opimg-wrap{display:flex;flex-direction:column;gap:4px}
+.vid-ev-opimg{display:block;width:100%;max-width:132px;border-radius:6px;border:1px solid var(--line);background:var(--inset-3)}
+.vid-ev-opimg-cap{font-size:15px;color:var(--txt-mute);line-height:1.5}
+.vid-ev-opimg-none{font-size:15px;color:var(--txt-mute);line-height:1.5;padding:6px 8px;border:1px dashed var(--line);border-radius:6px}
 .vid-ev-op{display:flex;flex-direction:column;gap:6px}
 .vid-ev-op-n{font-size:15px;color:var(--txt);font-weight:600;line-height:1.5}
 .vid-ev-op-n.none{color:var(--txt-mute);font-weight:400}
 .vid-ev-op-in{font:inherit;font-size:15px;line-height:1.4;padding:5px 7px;border-radius:6px;border:1px solid var(--line);background:var(--inset-2);color:var(--txt);width:100%;min-width:0;box-sizing:border-box}
 .vid-ev-op-in:focus{outline:2px solid var(--ok);outline-offset:1px}
-@media (max-width:820px){.vid-ev-side{flex:1 1 100%}.vid-ev-photo{max-width:100%}}
+@media (max-width:820px){.vid-ev-side{flex:1 1 100%}.vid-ev-opimg{max-width:100%}}
 
 /* 记录详情折叠（p50）：生成记录列表后，右栏「说明与统计」默认收起，点「记录详情」展开 */
 .vid-notes-bar{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
@@ -1653,8 +1655,8 @@ html[data-mode="light"] #fx{--fx-rgb:0,150,190}
               <div id="vid-notes">
                 <p class="vid-note" id="vid-events-note">尚无记录。载入视频并点「开始解读」后，每次放置 / 撤离干员都会在这里按时间列出。</p>
                 <p class="vid-note" id="vid-kills-note">击敌数识别：尚无数据。载入视频并点「开始解读」后，会取变化时刻的画面读出击敌数。</p>
-                <p class="vid-note" id="vid-shots-note">记录截图：尚无记录。每次放置 / 撤离干员都会在变化那一刻截取一张该帧画面，截图取自视频像素本身，不含播放器控件。</p>
-                <p class="vid-note">放置 / 撤离判定只看画面右下角「剩余可放置角色」读数：读数减少＝放置干员、读数增加＝撤离干员；读数不可读时如实说明并给出零记录，不猜。「剩余可放置角色」区域默认就是画面右下角那条读数本身（标签＋数量数字，约占画面 x 0.82–1.00、y 0.70–0.80），读数即在该区域内按原分辨率取样识别；每条记录里的「变化格干员照片」另按部署栏的固定相对位置取景，不依赖该区域。击敌数默认取正中间上方（形如 0/400）。点「校准区域」后，在画面上拖出方框即可重设；区域保存在本机。</p>
+                <p class="vid-note" id="vid-shots-note">记录截图：尚无记录。每次放置 / 撤离干员都会先打开该干员的详情面板，站点在变化点前几帧里定位到面板帧后截取整幅画面；截图取自视频像素本身，不含播放器控件。</p>
+                <p class="vid-note">放置 / 撤离判定只看画面右下角「剩余可放置角色」读数：读数减少＝放置干员、读数增加＝撤离干员；读数不可读时如实说明并给出零记录，不猜。「剩余可放置角色」区域默认就是画面右下角那条读数本身（标签＋数量数字，约占画面 x 0.82–1.00、y 0.70–0.80），读数即在该区域内按原分辨率取样识别。每条记录的截图取的是该次操作的「干员详情面板」整帧画面：面板左上角自上而下是干员名与 Lv 等级，站点会直接读出该姓名（全在本机完成、不发请求）自动填到右侧姓名框，读不出时留空待手填，再按姓名对应显示干员图片，不再裁取任何头像。击敌数默认取正中间上方（形如 0/400）。点「校准区域」后，在画面上拖出方框即可重设；区域保存在本机。</p>
                 <p class="vid-note">直链必须允许跨域（响应带 Access-Control-Allow-Origin），否则浏览器会禁止读取画面像素。</p>
               </div>
             </div>
@@ -1667,11 +1669,11 @@ html[data-mode="light"] #fx{--fx-rgb:0,150,190}
         <div class="panel-h"><span class="step-n">&#9670;</span><h2>记录列表 · 按发生顺序</h2><span class="hint" id="vid-list-hint">尚无记录</span></div>
         <div class="vid-ref" id="vid-ref">
           <div class="vid-ref-hd">
-            <span class="vid-ref-t">开场干员展示参照</span>
+            <span class="vid-ref-t">开场干员截图</span>
             <button class="btn btn-sm btn-ghost" id="vid-ref-btn" type="button">截取当前画面</button>
-            <p class="vid-ref-note" id="vid-ref-note">载入视频并点「开始解读」后，会自动截取视频开头的「干员展示」画面；也可把视频拖到该画面后点「截取当前画面」。对照它读出的干员名，填到每条记录右侧的干员名框里（默认「未确认」，可点选名册或手输，结果存在本机）。</p>
+            <p class="vid-ref-note" id="vid-ref-note">载入视频并点「开始解读」后，会按「名册画面特征（亮底 + 卡牌列距）」在开场 0:00–0:40 内定位干员名册（编队 / 干员界面）时刻，并截取整幅画面（含干员卡牌与右侧助战 / 开始行动面板，画面不裁切）；定位不到时不自动出图，可把视频拖到该画面后点「截取当前画面」。每条记录右侧的干员名框优先由「面板截图自动识别」填入并标注（自动识别），识别不出时默认「未确认」；也可点选名册或手输覆盖，结果存在本机；识别不出时在该条标注原因（干员数据未加载 / 未取到干员面板帧 / 该帧未认出姓名）。</p>
           </div>
-          <img class="vid-ref-img" id="vid-ref-img" alt="开场干员展示参照画面（取自本视频像素）" hidden>
+          <img class="vid-ref-img" id="vid-ref-img" alt="自动截取的开场干员截图（整幅名册 / 编队画面：干员卡牌与右侧助战 / 开始行动面板，取自本视频像素）" hidden>
         </div>
         <div class="vid-events" id="vid-events-list" aria-live="polite"></div>
       </div>
@@ -6080,8 +6082,8 @@ const VREG_DEFAULT = {
   kills: { x: 0.385, y: 0.018, w: 0.230, h: 0.085 }    /* 正中间上方「击敌数」 */
 };
 const VREG_NAME = { slots: "剩余可放置角色", kills: "击敌数" };
-/* 部署栏几何（与识别区域解耦）：只服务「变化格干员照片」取景，不参与读数识别；
-   默认沿用原「整段视频下方区域」口径，保证照片取景口径不变。 */
+/* 部署栏几何（与识别区域解耦）：历史口径，只用于逐帧「占用格数 / 档位序列」采样（探针回归与读数对齐用），
+   不参与读数识别，也不再服务任何干员头像取景——头像截图链路已整体移除。 */
 const VID_CELL_REG = { x: 0.000, y: 0.700, w: 1.000, h: 0.300 };
 const KTPL = {
   '0': ["000007dfffb400000003cfebbdff8000001df810003cf700008f60000001be2001ec000000004f9005f7000000000dd008f3000000000bf00af10000000009f00af10000000009f009f3000000000af006f8000000001dd003ee200000006f90009f90000003ef40003ef920005efa000005effcbdffb200000048cefeb61000"],
@@ -6103,7 +6105,7 @@ const vid = {
   events: [], dev: [], sens: 1, stable: 5, minStep: 0, cellsMax: 0,
   reads: [], killsTotal: "", readOk: 0, readFail: 0,
   shotN: 0, shotFail: 0, dropN: 0, winA: -1, winB: -1, notesTouched: false,
-  photoN: 0, photoFail: 0, opN: 0,
+  panelN: 0, panelMiss: 0, opN: 0, ocrDup: 0,
   roOk: false, roNote: "", roSeq: [], roFix: 0, roLock: null, jumpN: 0,
   openAt: -1, roTplN: 5,
   tlDrag: false, tlT: 0, refT: 0
@@ -6833,7 +6835,7 @@ function vidPostKills() {                 /* 总数取众数 → 逐条校正 �
    方向 = 读数减少（放置干员）/ 读数增加（撤离干员）；|Δ|≥2 由读数 ±1 链修复或如实标记。
    不再使用任何「干员栏位格数」判据：p50 的击敌数区间过滤、p91 的「全片格数最大值＝开局」、
    「栏位区域边缘强度塌陷＝结束」、以及「格数变化量 ≥2 视为识别错误」的单步修正都已整体移除。
-   干员栏位几何只保留给「变化格干员照片」取景（vidCellIdx / vidCellPix）。
+   干员栏位几何只保留为历史口径采样（逐帧占用格数 / 档位序列，探针回归用），不再用于任何头像取景。
    读数不可用时如实报告「读数不可用」并输出零记录，不再回落到栏位格数链路。 */
 function vidAnchors() {                        /* 已停用：判定全部在 vidRoRun 内完成，此处不再改写记录 */
   return (vid.events && vid.events.length) || 0;
@@ -6850,12 +6852,12 @@ function vidDropText() {                       /* 剔除 / 修正情况的分项
 }
 
 
-/* ---- 部署栏几何（右下角格子计数）：只用于定位「变化格」并裁出该格干员照片（p97；p99 起与识别区域解耦）----
+/* ---- 部署栏几何（右下角格子计数）：历史口径，只用于逐帧「占用格数 / 档位序列」采样（p97；p99 起与识别区域解耦）----
    口径：把 VID_CELL_REG（固定＝整段视频下方区域，与识别区域解耦）内卡片主体行（约画面 0.80H–0.92H）按「竖向边缘强度」切成格子，
    数出「被卡片占用的格子数」＝ 该时刻栏位上已放置（占用）的格数。
    放置一名干员 → 对应格子变空 → 格数减少；撤离一名干员 → 卡片回到栏位 → 格数增加。
-   p97 起：放置 / 撤离干员的判定只依据读数条（见 vidRoRun）；这里的格数只用于定位「变化格」的像素矩形，
-   供 vidCellIdx / vidCellPix 裁出该条记录的干员照片，不再参与方向与计数判定，也不再据此记事件。
+   p97 起：放置 / 撤离干员的判定只依据读数条（见 vidRoRun）；这里的格数只用于逐帧占用格数与档位采样
+   （探针回归与读数对齐），不再参与方向与计数判定，也不再据此记事件，更不再用于任何干员头像取景。
    格数是整数、一次变化至少 ±1，定位变化格时自最右格起取连续占用格数，抗压缩噪声与画面动画。
    计数只用本机像素（不发请求、不引外部库）：
    区域灰度 → 卡片主体行逐列水平梯度 → 5 点平滑 → 90 分位自适应阈值 →
@@ -7219,7 +7221,7 @@ function vidRoRun() {
     const dir = d < 0 ? "down" : "up";
     const ev = { idx: b.i0, t: b.t0, dir: dir, roFrom: a.nv, roTo: b.nv, roD: d, roJump: Math.abs(d) >= 2 };
     /* 记录里的「变化前 → 变化后」直接取读数条的平台读数（a.nv → b.nv）；
-       p97 起不再用干员栏位格数（格数只用于裁出变化格干员照片）。 */
+       p97 起不再用干员栏位格数（格数只作历史口径采样，与任何头像取景无关）。 */
     ev.from = a.nv; ev.to = b.nv;
     evs.push(ev);
   }
@@ -7294,10 +7296,10 @@ function vidCalSlots(frames) {
      退回既有固定比例口径（在旧视频与两张真机截图上已逐点核对）。 */
   if (bandH < Math.max(28, 0.30 * h)) return null;
   const regH = VID_CELL_REG.h || 0.30;
-  const oldP = Math.max(6, Math.round((h / regH) * 0.132));
-  let pitch = bandH;
-  if (Math.abs(bandH - oldP) <= 0.12 * oldP) pitch = oldP;
-  pitch = Math.max(14, Math.min(160, Math.round(pitch)));
+  /* 格距只按「画面高比例」定标（区域高 / 区域占比 = 画面高，故与视频分辨率无关）：
+     实测部署栏格子近方形、格距 60px ＝ 0.1667×画面高（360p），右端贴齐区域右缘。
+     不再用「带高/旧 0.132H」当格距——带高只用于定位纵向行带，量偏就会把裁框横向错位到两格交界。 */
+  const pitch = Math.max(6, Math.min(320, Math.round((h / regH) * 0.1667)));
   const t0 = Math.max(0, b0 - 2), t1 = Math.min(h - 2, b0 + 7);
   /* ② 逐格顶边强度 → 逐格 Otsu 阈值 → 卡片格 */
   const K = Math.max(1, Math.min(8, Math.floor(w / pitch)));
@@ -7336,7 +7338,48 @@ function vidCalSlots(frames) {
     }
     seq[i] = c;
   }
-  return { band: [b0, b1], pitch: pitch, top: [t0, t1], cells: cells, seq: seq, w: w, h: h, n: n };
+  /* ④ 取景几何：右端锚定 + 格距按画面高比例定标（pitch，见上）。
+     旧口径「pitch=带高、右端 w-2」会系统性左偏（带高 61 vs 真格距 60 → 逐格左偏 1/2/3/4px、右缘切 1–3px）。
+     实测卡片行右端贴齐区域右缘，故统一以「右端锚 w-1」铺格。
+     注意：卡片行内竖向边缘最强处是立绘内部细节而非卡片边框，故此处不做「最强边缘」吸附。 */
+  for (let k = 0; k < cells.length; k++) {
+    const xr = Math.max(0, Math.min(w - 1, w - 1 - k * pitch));
+    cells[k].xr = xr;
+    cells[k].xl = Math.max(0, xr - pitch + 1);
+  }
+  /* 纵向：卡片上下边框行才是真边界——自校准带比卡片实际行高 2 行，其下沿会切掉卡片底 2 行。
+     判据用「最右一格列的逐行灰度块」：卡片在时该列明显亮于栏背景（实测卡内 108–190 vs 栏背景 30 / 画面底 16），
+     从带内向上下两侧外扩到灰度块边界（**只外扩不内收**），再各留 1px 余量，保证不切到卡片本体。 */
+  const padY = Math.max(3, Math.round(0.06 * bandH));
+  const xr0 = Math.max(0, w - pitch);
+  const gq = new Float64Array(h);
+  for (let y = 0; y < h; y++) {
+    let s = 0, c = 0;
+    for (let i = 0; i < n; i++) {
+      if (seq[i] < 1) continue;                /* 只统计最右格被占用的帧 */
+      const g = frames[i] && frames[i].cells;
+      if (!g) continue;
+      const px = g.px;
+      let sg = 0, cc = 0;
+      for (let x = xr0; x < w; x++) { sg += px[y * w + x]; cc++; }
+      if (cc) { s += sg / cc; c++; }
+    }
+    gq[y] = c ? s / c : 0;
+  }
+  let gmax = 0, gmin = 1e9;
+  for (let y = Math.max(0, b0 - padY); y <= Math.min(h - 1, b1 + padY); y++) {
+    if (gq[y] > gmax) gmax = gq[y];
+    if (gq[y] < gmin) gmin = gq[y];
+  }
+  const gth = gmin + 0.35 * (gmax - gmin);
+  let cy0 = b0, cy1 = b1;
+  if (gmax - gmin >= 12) {                     /* 块内 / 块外对比足够才启用外扩 */
+    while (cy0 > 0 && gq[cy0 - 1] >= gth) cy0--;
+    while (cy1 < h - 1 && gq[cy1 + 1] >= gth) cy1++;
+  }
+  const nb0 = Math.max(0, cy0 - 1);
+  const nb1 = Math.min(h - 1, cy1 + 1);
+  return { band: [nb0, nb1], pitch: pitch, top: [t0, t1], cells: cells, seq: seq, w: w, h: h, n: n };
 }
 /* 读数区域采样宽度：按原分辨率（1:1）取样，数字字形不被重采样糊掉；
    过窄的区域兜底放大到 24、过宽收敛到 640。 */
@@ -7345,7 +7388,7 @@ function vidSlotsW(v) {
   const native = (reg && vw) ? Math.round(reg.w * vw) : 0;
   return Math.min(640, Math.max(24, native || 120));
 }
-/* 部署栏几何采样宽度（只服务变化格照片取景）：沿用原「整段下方区域」宽度口径 [160,640]。 */
+/* 部署栏几何采样宽度（历史口径，只服务逐帧占用格数 / 档位采样）：沿用原「整段下方区域」宽度口径 [160,640]。 */
 function vidCellW(v) {
   const vw = (v && v.videoWidth) || 0;
   const native = vw ? Math.round(VID_CELL_REG.w * vw) : 0;
@@ -7428,12 +7471,13 @@ function vidDetectEvents() {
   vid.events = []; vid.dev = []; vid.minStep = 0; vid.cellsMax = 0;
   const frames = vid.frames, n = frames.length;
   if (n < 5) { vidRenderEvents(); return 0; }
-  /* 部署栏几何（VID_CELL_REG，与识别区域解耦）只用于「变化格干员照片」取景（vidCellIdx / vidCellPix / vidCellCountAt）：
-     这里照旧算出逐帧占用格数与平滑档位，但不再据此生成任何事件，也不做任何锚点剔除。 */
+  /* 部署栏几何（VID_CELL_REG，与识别区域解耦）只用于逐帧占用格数与平滑档位（读数平台的历史口径与探针回归）：
+     这里照旧算出逐帧占用格数与平滑档位，但不再据此生成任何事件，也不做任何锚点剔除，
+     更不再用于任何「变化格干员照片」取景——头像截图链路已按用户要求整体移除。 */
   const cnt = vidSlotsCells(frames);
   vid.dev = cnt;
   for (let i = 0; i < n; i++) if (cnt[i] > vid.cellsMax) vid.cellsMax = cnt[i];
-  vid.smSeq = vidMed3(cnt);                   /* 平滑后的档位序列（供照片取景回溯） */
+  vid.smSeq = vidMed3(cnt);                   /* 平滑后的档位序列（历史口径，供探针与读数对齐） */
   /* 事件判定唯一来源：右下角「剩余可放置角色」读数（vidRoRun）。 */
   vid.roSeq = []; vid.roOk = false; vid.roNote = ""; vid.roFix = 0; vid.roLock = null; vid.jumpN = 0;
   try { vidRoRun(); }
@@ -7442,70 +7486,370 @@ function vidDetectEvents() {
   vidRenderEvents();
   return vid.events.length;
 }
-/* ---- 变化格定位（只用于裁出该条记录的干员照片）：把部署栏格子换算成视频原图像素矩形 ----
-   部署栏卡片行右端锚定：被占用的格子 = 自右端起连续的 C 格（C 取变化前后的格数）。
-   索引自右端起算（0 = 最右一格），与 vidCalSlots 的 cells 顺序一致。
-   放置（dir=down，格数减少）：空出来的那一格 = 变化前最左占用格 = 索引 from-1；
-   撤离（dir=up，格数增加）：新出现的那一格 = 变化后最左占用格 = 索引 to-1。 */
-function vidCellIdx(e) {
-  if (!e || e.open || e.close) return -1;
-  const n = Math.max(1, vidCellCountAt(vidPhotoT(e)));
-  return Math.max(0, n - 1);
+/* ================= 干员详情面板取景（本轮口径，取代原「变化格干员照片」取景） =================
+   依据（用户提供的参考图 + 真值视频实测）：放置 / 撤离干员时，视频都会先打开该干员的详情面板再执行操作，
+   面板左上角自上而下依次是「干员名」（如「凛御银灰」）与「Lv 等级」（姓名在等级上方），下方是攻击 / 防御 / 法抗 / 阻挡，
+   再往下是「技能 · 特性 · 天赋」页签行。这四条文字带构成面板判据；战场帧（无面板）在四条带内没有任何亮字，故判据几乎零误判。
+   坐标全部按帧宽 / 帧高归一，取自参考图实测（1552×863 截图）：
+     姓名行 y 0.196–0.242 · Lv 行 y 0.279–0.304 · 属性块 y 0.317–0.349 · 页签行 y 0.579–0.615（x 左界 0.011 起）
+   取帧：从变化点按 0.1s 步长向前回溯（最多 VID_PANEL_BACK 秒），取「判据通过且最接近变化点」的一帧
+   （此时面板已完整展开）；回溯下限是「上一次操作的变化点」，一旦触到即停，绝不越过上一次操作去取到
+   上一名干员的面板帧；向前找不到再向后小窗口兜底（兼容「先操作、随后才弹出面板」的剪法）；
+   都找不到就退回变化时刻整帧，并在记录与统计里如实标注（不出错图、不裁框）。
+真值复核（参考视频 ref.mp4 四个放置事件，0.1s 逐帧扫描，按站点实际采样宽 480 计）：
+      面板帧出现在变化点前 0.4–0.7s，取「判据通过且最接近变化点」的一帧 →
+      15.47→14.97、24.23→23.53、33.53→33.03、42.23→41.83；
+      该采样宽下四条带亮行数为 姓名 8–9 / Lv 6–9 / 属性 4–6 / 页签 13，而战场帧（距变化点 ≥2s）四条带一律为 0，
+      过渡帧被拒（15.07 页签 2；32.53 / 33.43 姓名 0 或 Lv 0 与属性 0）；阈值取 3/3/3/8，尚余 1.3–2.7 倍余量。
+      带宽比参考图上的字形范围略宽（如 Lv 带 y 0.268–0.318 包住字形 0.279–0.304 的上下留白），
+      用于吸收缩放后的边缘行丢失；x 到 0.10 即可，实测加宽到 0.13 对行数没有增益。 */
+const VID_PANEL_BACK = 6.0;                    /* 向前回溯窗口（秒）——放宽到 6.0，但以「上一次操作的变化点」为下限，越过即停 */
+const VID_PANEL_FWD = 1.5;                     /* 向后兜底窗口（秒） */
+const VID_PANEL_STEP = 0.1;                    /* 回溯 / 前探步长（秒） */
+const VID_PANEL_LUM = 170;                     /* 面板内亮字阈值（灰度） */
+const VID_PANEL_REG = {                        /* 四条文字带：x 归一区间 + y 归一区间 + 最少亮行数 */
+  name: { x: [0.008, 0.100], y: [0.195, 0.245], rows: 3 },
+  lv: { x: [0.008, 0.100], y: [0.268, 0.318], rows: 3 },
+  stat: { x: [0.008, 0.100], y: [0.312, 0.360], rows: 3 },
+  tab: { x: [0.005, 0.215], y: [0.575, 0.620], rows: 8 }
+};
+/* ---- 干员名自动识别（p107）：把面板帧左上角的「干员名」读出来，自动填到记录右侧的干员名框 ----
+   本机完成：不发请求、不引外部库、不写任何外链；只用「站点已加载的干员表姓名」当候选词表。
+   版式依据（用户参考图 + 两张真值素材实测）：姓名行在「职业图标框」之下、「Lv + 等级行」之上；
+     参考截图（1552×863）姓名行 y 0.279–0.304，参考视频（640×360）姓名行 y 0.253–0.278
+     —— 两套 UI 比例下位置不完全一致，故取并集区间 y 0.222–0.330、x 0.004–0.204 作搜索区，再按行判别。
+   算法：搜索区取灰度 → 以 150 二值化 → 行游程切出文本行（向上下扩张到无亮像素）→ 取包围盒
+     → 行高 / 宽高比按「2–6 个汉字」过滤 → 目标位图线性插值归一化到 28px 高
+     → 与「全部候选姓名 × 3 套系统 CJK 字体」渲染的模板做 ±4px 平移的 Pearson 相关
+     → 跨字体 / 跨行取全局最佳。
+   判定：最佳分 ≥ 0.45 且对次佳余量 ≥ 0.07 才采纳；否则留空由用户手填，不猜、不产错名。
+     离线段落验证（同一算法的 Python 参考实现，素材同为本机帧像素）：
+       真值姓名 5/5 采纳 —— 凛御银灰 0.672/+0.268、棘刺 0.664/+0.276、月见夜 0.570/+0.292、
+       安赛尔 0.563/+0.188、米格鲁 0.628/+0.298；无面板的战场帧 6/6 不填（最高分 0.209、最高余量 +0.030）。
+   模板一次性建好并缓存（每种字体按块建精灵图，每块只取一次像素），之后每帧只做数组运算。 */
+const VID_OCR_REG = { x: 0.004, y: 0.222, w: 0.200, h: 0.108 };  /* 姓名带搜索区（归一）*/
+const VID_OCR_THR = 150;        /* 亮字阈值（灰度）*/
+const VID_OCR_TH = 28;          /* 目标 / 模板统一高度（px）*/
+const VID_OCR_DX = 4;           /* 水平平移搜索半径（px）*/
+const VID_OCR_MINH = 0.12;      /* 文本行高下限（占搜索区高）*/
+const VID_OCR_MAXH = 0.55;      /* 文本行高上限（占搜索区高）*/
+const VID_OCR_SMIN = 0.45;      /* 采纳：最佳相关分数下限 */
+const VID_OCR_MMIN = 0.07;      /* 采纳：对次佳的余量下限 */
+const VID_OCR_MAXW = 640;       /* 姓名带绘制宽上限 */
+const VID_OCR_CHUNK = 128;      /* 精灵图分块：每块候选数（控住单张画布面积）*/
+const VID_OCR_THR2 = 100;       /* 补充口径：低阈值（仅在主口径读不出时启用，见 vidOcrFrame）*/
+const VID_OCR_FLOOR2 = 70;      /* 补充口径：灰度背景底（低于它按背景处理）*/
+const VID_DEDUP_FWD = 6.0;      /* 同名同状态去重：最多向后继续识别的秒数（另受「下一条变化点」与视频末尾限制）*/
+const VID_OCR_FONTS = [
+  'SimHei, "Heiti SC", "黑体", "Noto Sans CJK SC", sans-serif',
+  '"Microsoft YaHei", "PingFang SC", "Hiragino Sans GB", sans-serif',
+  'SimSun, "Songti SC", "宋体", serif'
+];
+/* 双线性缩放（与离线参考实现同口径）*/
+function vidOcrResize(src, sw, sh, dw, dh) {
+  const P = src.px || src;                     /* 允许传 {w,h,px} 或裸像素数组 */
+  const out = new Float32Array(dw * dh);
+  for (let y = 0; y < dh; y++) {
+    let sy = (y + 0.5) * sh / dh - 0.5;
+    sy = sy < 0 ? 0 : (sy > sh - 1 ? sh - 1 : sy);
+    const y0 = Math.floor(sy), y1 = Math.min(sh - 1, y0 + 1), fy = sy - y0;
+    for (let x = 0; x < dw; x++) {
+      let sx = (x + 0.5) * sw / dw - 0.5;
+      sx = sx < 0 ? 0 : (sx > sw - 1 ? sw - 1 : sx);
+      const x0 = Math.floor(sx), x1 = Math.min(sw - 1, x0 + 1), fx = sx - x0;
+      const a = P[y0 * sw + x0], b = P[y0 * sw + x1];
+      const c = P[y1 * sw + x0], d = P[y1 * sw + x1];
+      out[y * dw + x] = (a + (b - a) * fx) * (1 - fy) + (c + (d - c) * fx) * fy;
+    }
+  }
+  return { w: dw, h: dh, px: out };
 }
-/* 部署栏区域（VID_CELL_REG，与识别区域解耦）-> 视频原图像素 的映射，与 vidGray 的取整规则逐句一致 */
-function vidRegionMap(v) {
-  const reg = VID_CELL_REG || { x: 0, y: 0.7, w: 1, h: 0.3 };
-  const vw = (v && v.videoWidth) || vid.vw || 0, vh = (v && v.videoHeight) || vid.vh || 0;
-  if (!(vw > 1 && vh > 1)) return null;
+/* 零均值 + 单位标准差，便于后续直接用 Pearson 相关比较 */
+function vidOcrNorm(t) {
+  const px = t.px, n = px.length;
+  let s = 0;
+  for (let i = 0; i < n; i++) s += px[i];
+  const m = s / n;
+  let v = 0;
+  for (let i = 0; i < n; i++) { const d = px[i] - m; v += d * d; }
+  const sd = Math.sqrt(v / n) || 1e-6;
+  const f = new Float32Array(n);
+  for (let i = 0; i < n; i++) f[i] = (px[i] - m) / sd;
+  return { w: t.w, h: t.h, f: f };
+}
+/* Pearson 相关：模板在 ±DX 内水平平移，两侧都按「N = 目标面积」归一（与离线实现逐项一致）*/
+function vidOcrScore(tn, tc) {
+  const W = tn.w, N = W * tn.h, tw = tn.f, cf = tc.f, cw = tc.w;
+  let best = -2;
+  for (let dx = -VID_OCR_DX; dx <= VID_OCR_DX; dx++) {
+    let s1 = 0, s2 = 0, dot = 0, any = false;
+    for (let i = 0; i < cf.length; i++) {
+      const x = i % cw, xx = x + dx;
+      if (xx < 0 || xx >= W) continue;
+      const y = (i - x) / cw, v = cf[i];
+      s1 += v; s2 += v * v; dot += tw[y * W + xx] * v; any = true;
+    }
+    if (!any) continue;
+    const mc = s1 / N, varc = s2 / N - mc * mc;
+    if (varc <= 1e-9) continue;
+    const r = dot / (N * Math.sqrt(varc));
+    if (r > best) best = r;
+  }
+  return best;
+}
+/* 模板库：按字体分块渲染「候选姓名」精灵图，一次取像素后切成归一化模板；结果常驻缓存 */
+let VID_OCRV = null;
+function vidOcrTpls() {
+  if (VID_OCRV) return VID_OCRV;
+  const out = [];
+  const names = (typeof vidOpNames === "function") ? vidOpNames() : [];
+  if (!names.length) return out;                 /* 干员表还没加载成功：先不缓存，等表就绪后再建，避免「一次建空、整轮再也识别不出」*/
+  const FS = Math.round(VID_OCR_TH * 1.25);      /* 字号口径与离线参考实现一致 */
+  const ROWH = VID_OCR_TH * 2, PADX = 4, PADY = Math.round((ROWH - VID_OCR_TH * 1.25) / 2);
+  let maxw = 8;
+  for (const n of names) if (n.length * FS > maxw) maxw = n.length * FS;
+  const W = maxw + PADX * 2 + 8;
+  for (const fam of VID_OCR_FONTS) {
+    const by = new Map();                         /* 字数 → [{ name, w, f }] */
+    for (let s0 = 0; s0 < names.length; s0 += VID_OCR_CHUNK) {
+      const part = names.slice(s0, s0 + VID_OCR_CHUNK);
+      const H = part.length * ROWH;
+      const c = document.createElement("canvas");
+      c.width = W; c.height = H;
+      const cx = c.getContext("2d", { willReadFrequently: true });
+      cx.fillStyle = "#000"; cx.fillRect(0, 0, W, H);
+      cx.fillStyle = "#fff"; cx.textBaseline = "top"; cx.font = FS + "px " + fam;
+      for (let i = 0; i < part.length; i++) cx.fillText(part[i], PADX, i * ROWH + PADY);
+      const d = cx.getImageData(0, 0, W, H).data;
+      for (let i = 0; i < part.length; i++) {
+        const y0 = i * ROWH, y1 = y0 + ROWH;
+        let xa = W, xb = -1, ya = ROWH, yb = -1;
+        for (let y = y0; y < y1; y++) {
+          for (let x = 0; x < W; x++) {
+            const p = (y * W + x) * 4;
+            if (((d[p] * 77 + d[p + 1] * 150 + d[p + 2] * 29) >> 8) > 100) {
+              if (x < xa) xa = x;
+              if (x > xb) xb = x;
+              const ry = y - y0; if (ry < ya) ya = ry; if (ry > yb) yb = ry;
+            }
+          }
+        }
+        if (xb < xa || yb < ya) continue;
+        const sw = xb - xa + 1, sh = yb - ya + 1;
+        const raw = new Float32Array(sw * sh);
+        for (let y = 0; y < sh; y++) {
+          for (let x = 0; x < sw; x++) {
+            const p = ((y0 + ya + y) * W + xa + x) * 4;
+            raw[y * sw + x] = (d[p] * 77 + d[p + 1] * 150 + d[p + 2] * 29) >> 8;
+          }
+        }
+        const nz = vidOcrNorm(vidOcrResize({ w: sw, h: sh, px: raw }, sw, sh,
+          Math.max(1, Math.round(sw * VID_OCR_TH / sh)), VID_OCR_TH));
+        if (!by.has(part[i].length)) by.set(part[i].length, []);
+        by.get(part[i].length).push({ name: part[i], w: nz.w, f: nz.f });
+      }
+    }
+    out.push({ fam: fam, by: by });
+  }
+  VID_OCRV = out;
+  return out;
+}
+/* 姓名带灰度：直接画「搜索区」区域（原生分辨率，宽度上限 640）；跨域污染会抛 SecurityError 由调用方捉 */
+function vidOcrGray(src, vw, vh) {
+  const reg = VID_OCR_REG;
   let sx = Math.round(reg.x * vw), sy = Math.round(reg.y * vh);
   let sw = Math.round(reg.w * vw), sh = Math.round(reg.h * vh);
   sx = Math.min(Math.max(0, sx), Math.max(0, vw - 2));
   sy = Math.min(Math.max(0, sy), Math.max(0, vh - 2));
   sw = Math.min(Math.max(2, sw), vw - sx);
   sh = Math.min(Math.max(2, sh), vh - sy);
-  const dw = vidCellW(v);
+  const dw = Math.min(VID_OCR_MAXW, Math.max(64, sw));
   const dh = Math.max(2, Math.round(dw * sh / sw));
-  return { sx: sx, sy: sy, sw: sw, sh: sh, dw: dw, dh: dh, kx: sw / dw, ky: sh / dh };
+  const c = vid._cv2 || (vid._cv2 = document.createElement("canvas"));
+  c.width = dw; c.height = dh;
+  const cx = c.getContext("2d", { willReadFrequently: true });
+  cx.drawImage(src, sx, sy, sw, sh, 0, 0, dw, dh);
+  const d = cx.getImageData(0, 0, dw, dh).data;
+  const out = new Uint8Array(dw * dh);
+  for (let i = 0, p = 0; i < out.length; i++, p += 4) out[i] = (d[p] * 77 + d[p + 1] * 150 + d[p + 2] * 29) >> 8;
+  return { w: dw, h: dh, px: out };
 }
-/* 记录 -> 变化格的视频原图像素矩形；无自校准几何时退回「固定比例」口径
-   （格距 / 行带与 vidCellCount 完全一致，使旧参考视频与单图路径也能定位）。 */
-function vidCellPix(e) {
-  const m = vidRegionMap($("#vid-player"));
-  if (!m) return null;
-  const ci = vidCellIdx(e);
-  if (ci < 0) return null;
-  const g = vid.geom;
-  let gx0, gx1, gy0, gy1;
-  if (g && g.cells && g.cells[ci]) {
-    gx0 = g.cells[ci].xl; gx1 = g.cells[ci].xr; gy0 = g.band[0]; gy1 = g.band[1];
-  } else {
-    const w = m.dw, h = m.dh;
-    if (!(w > 12 && h > 6)) return null;
-    const regH = VID_CELL_REG.h || 0.30;
-    const pitch = Math.max(6, Math.round((h / regH) * 0.132));
-    gx1 = Math.max(0, w - 2 - ci * pitch);
-    gx0 = Math.max(0, gx1 - pitch + 1);
-    gy0 = Math.max(0, Math.min(h - 3, Math.floor(h * 0.333)));
-    gy1 = Math.max(gy0 + 2, Math.min(h - 1, Math.ceil(h * 0.75) - 1));
+/* 行游程切文本行：≥2 亮像素的行起段，再向上下扩张到「还有亮像素」的相邻行（避免切掉字形的极亮边行）*/
+function vidOcrBands(g, thr, gray) {
+  const TH = thr > 0 ? thr : VID_OCR_THR;       /* 亮字阈值；补充口径可传入更低的阈值 */
+  const W = g.w, H = g.h, m = new Uint8Array(W * H);
+  for (let i = 0; i < m.length; i++) m[i] = g.px[i] > TH ? 1 : 0;
+  const cnt = new Int32Array(H);
+  for (let y = 0; y < H; y++) { let c = 0; for (let x = 0; x < W; x++) if (m[y * W + x]) c++; cnt[y] = c; }
+  const out = [];
+  let y = 0;
+  while (y < H) {
+    if (cnt[y] < 2) { y++; continue; }
+    let y0 = y;
+    while (y + 1 < H && cnt[y + 1] >= 2) y++;
+    let y1 = y;
+    while (y0 > 0 && cnt[y0 - 1] >= 1) y0--;
+    while (y1 + 1 < H && cnt[y1 + 1] >= 1) y1++;
+    const h = y1 - y0 + 1;
+    if (h >= VID_OCR_MINH * H && h <= VID_OCR_MAXH * H) {
+      let xa = W, xb = -1;
+      for (let yy = y0; yy <= y1; yy++) {
+        for (let xx = 0; xx < W; xx++) if (m[yy * W + xx]) { if (xx < xa) xa = xx; if (xx > xb) xb = xx; }
+      }
+      if (xb >= xa) {
+        const w = xb - xa + 1, k = Math.round(w / h);
+        if (w >= 0.06 * W && w / h >= 1.6 && w / h <= 6.8 && k >= 2 && k <= 6) {
+          const raw = new Float32Array(w * h);
+          for (let yy = 0; yy < h; yy++) {
+            for (let xx = 0; xx < w; xx++) {
+              const si = (y0 + yy) * W + xa + xx;
+              /* 主口径：二值（与既有实现逐项一致）；补充口径：保留灰度强度，利于笔画细 / 暗的姓名 */
+              raw[yy * w + xx] = gray ? Math.max(0, g.px[si] - VID_OCR_FLOOR2) : m[si];
+            }
+          }
+          out.push({ y: y0, w: w, h: h, raw: raw });
+        }
+      }
+    }
+    y = y1 + 1;
   }
-  let x = Math.round(m.sx + gx0 * m.kx), y = Math.round(m.sy + gy0 * m.ky);
-  let w2 = Math.max(4, Math.round((gx1 - gx0 + 1) * m.kx));
-  let h2 = Math.max(4, Math.round((gy1 - gy0 + 1) * m.ky));
-  x = Math.min(Math.max(0, x), Math.max(0, m.sx + m.sw - 4));
-  y = Math.min(Math.max(0, y), Math.max(0, m.sy + m.sh - 4));
-  w2 = Math.min(w2, m.sx + m.sw - x);
-  h2 = Math.min(h2, m.sy + m.sh - y);
-  if (!(w2 >= 4 && h2 >= 4)) return null;
-  return { x: x, y: y, w: w2, h: h2, ci: ci };
+  return out;
 }
-/* 取照片的时刻：放置看「变化前」（卡片还在格子里），撤离看「变化后」（卡片已回位）；
-   偏移取 stableK × 采样间隔，正好跨过卡片滑入 / 滑出的稳定窗口。 */
-function vidPhotoT(e) {
-  const step = vid.step || 0.3, k = Math.max(3, vid.stable || 3);
-  const t = e.dir === "down" ? e.t - k * step : e.t + k * step;
-  return Math.max(0, Math.min(t, Math.max(0, (vid.dur || 0) - 0.02)));
+/* 判定：跨字体 / 跨候选行取全局最佳；分数与余量双阈值都过才采纳 */
+function vidOcrPick(bands, tpls) {
+  const tiers = tpls || vidOcrTpls();
+  let best = { ok: false, name: "", score: -9, margin: 0, y: -1, tier: "", n: bands.length };
+  if (!tiers.length || !bands.length) return best;
+  for (const b of bands) {
+    const dw = Math.max(1, Math.round(b.w * VID_OCR_TH / b.h));
+    const tn = vidOcrNorm(vidOcrResize({ w: b.w, h: b.h, px: b.raw }, b.w, b.h, dw, VID_OCR_TH));
+    const k = Math.round(b.w / b.h);
+    for (const tier of tiers) {
+      const pool = tier.by.get(k);
+      if (!pool || !pool.length) continue;
+      let b1 = -9, b2 = -9, n1 = "", n2 = "";
+      for (const t of pool) {
+        const s = vidOcrScore(tn, t);
+        if (s > b1) { b2 = b1; n2 = n1; b1 = s; n1 = t.name; }
+        else if (s > b2) { b2 = s; n2 = t.name; }
+      }
+      if (b1 > best.score) best = { ok: false, name: n1, score: b1, margin: b1 - b2, y: b.y, tier: tier.fam, n: bands.length, rival: n2 };
+    }
+  }
+  best.ok = (best.score >= VID_OCR_SMIN) && (best.margin >= VID_OCR_MMIN);
+  if (!best.ok) best.name = "";
+  return best;
 }
-/* ---- 记录截图：在栏位变化时刻取整帧画面（纯视频像素，不含播放器控件水印） ---- */
+/* 当前帧识别（同步）：src 可以是 video 元素或已加载的 img（探针 / 自检用）*/
+function vidOcrFrame(src) {
+  const vw = src && (src.videoWidth || src.naturalWidth) || 0;
+  const vh = src && (src.videoHeight || src.naturalHeight) || 0;
+  if (!vw || !vh) return null;
+  const g = vidOcrGray(src, vw, vh);        /* 跨域 → SecurityError，由调用方如实处理 */
+  const tpls = vidOcrTpls();
+  const r1 = vidOcrPick(vidOcrBands(g), tpls);
+  if (r1 && r1.ok && r1.name) return r1;
+  /* 主口径（二值 / 150）读不出时，再用「低阈值 + 灰度」补读一遍：部分真实视频里姓名笔画更细更暗，
+     主口径会把字形上下外沿各吃掉一行，归一化到统一高度后纵横比失真、字数档也随之错一档，真名进不了候选池。
+     补口径只在主口径失败时启用，主口径已采纳的结果不受影响。*/
+  const r2 = vidOcrPick(vidOcrBands(g, VID_OCR_THR2, true), tpls);
+  if (r2 && r2.ok && r2.name) return r2;
+  return r1 || r2;
+}
+/* 灰度帧（vidGray 的产物）→ 某条带的「亮行数」：一行为亮 = 该行内亮像素 ≥2 个；帧不可用返回 -1 */
+function vidPanelRows(g, band) {
+  if (!g || !(g.w > 8 && g.h > 8) || !g.px || g.px.length < g.w * g.h) return -1;
+  const W = g.w, H = g.h, px = g.px;
+  const x0 = Math.max(0, Math.floor(band.x[0] * W)), x1 = Math.min(W, Math.ceil(band.x[1] * W));
+  const y0 = Math.max(0, Math.floor(band.y[0] * H)), y1 = Math.min(H, Math.ceil(band.y[1] * H));
+  if (!(x1 > x0 && y1 > y0)) return -1;
+  let rows = 0;
+  for (let y = y0; y < y1; y++) {
+    let c = 0;
+    for (let x = x0; x < x1; x++) { if (px[y * W + x] > VID_PANEL_LUM) { c++; if (c >= 2) { rows++; break; } } }
+  }
+  return rows;
+}
+/* 面板特征：四条文字带的亮行数；帧不可用返回 null（不误判） */
+function vidPanelFeat(g) {
+  if (!g || !(g.w > 8 && g.h > 8) || !g.px) return null;
+  const f = {
+    name: vidPanelRows(g, VID_PANEL_REG.name), lv: vidPanelRows(g, VID_PANEL_REG.lv),
+    stat: vidPanelRows(g, VID_PANEL_REG.stat), tab: vidPanelRows(g, VID_PANEL_REG.tab)
+  };
+  if (f.name < 0 || f.lv < 0 || f.stat < 0 || f.tab < 0) return null;
+  return f;
+}
+/* 面板判据：四条文字带的亮行数同时达标才算「干员详情面板」；未达标返回 null（不产错图） */
+function vidPanelHit(g) {
+  const f = vidPanelFeat(g);
+  if (!f) return null;
+  const r = VID_PANEL_REG;
+  return (f.name >= r.name.rows) && (f.lv >= r.lv.rows) && (f.stat >= r.stat.rows) && (f.tab >= r.tab.rows) ? f : null;
+}
+/* 面板帧时刻：向前逐帧回溯取「最接近变化点且判据通过」的一帧；向前无命中再向后兜底；都无则 -1。
+   采样一律走 vidSeek + vidGray（本机像素，不发请求）；跨域读不到像素时抛出的错误由调用方如实捕获。 */
+async function vidPanelT(v, e) {
+  if (!v || !e || !(vid.dur > 0)) return -1;
+  const dur = Math.max(0, vid.dur - 0.02);
+  const gw = () => Math.min(480, Math.max(80, Math.round(v.videoWidth || 480)));
+  const at = (x) => Math.max(0, Math.min(x, dur));
+  const hit = async (t) => {
+    await vidSeek(v, t);
+    const g = vidGray(v, { x: 0, y: 0, w: 1, h: 1 }, gw());
+    return g ? !!vidPanelHit(g) : false;
+  };
+  const nB = Math.max(1, Math.round(VID_PANEL_BACK / VID_PANEL_STEP));
+  /* 回溯下限 lo = 上一条变化点（本条面板所属的那一次操作一定在它之后）。
+     触到 lo 立即停止：宁可退回变化时刻整帧如实标注，也绝不越过上一次操作去取到别的干员的面板帧。
+     取不到「上一条」（本条是第一条可截图记录 / 事件对象不在 vid.events 里）时下限为 0，不设限。 */
+  let lo = 0;
+  const gi = (vid.events || []).indexOf(e);
+  if (gi > 0 && vid.events[gi - 1] && isFinite(vid.events[gi - 1].t)) lo = Math.max(0, Number(vid.events[gi - 1].t));
+  for (let i = 1; i <= nB; i++) {              /* 向前：放置 / 撤离都是「先开面板、再操作」 */
+    const t = at(e.t - i * VID_PANEL_STEP);
+    if (lo > 0 && t <= lo + 1e-6) break;       /* 到达上一次操作 → 立即停止，绝不越过 */
+    if (await hit(t)) return t;                /* 取最接近变化点的一帧：面板已完整展开 */
+    if (t <= 0) break;
+  }
+  const nF = Math.max(1, Math.round(VID_PANEL_FWD / VID_PANEL_STEP));
+  for (let i = 1; i <= nF; i++) {              /* 向后兜底：兼容「先操作、画面里才弹出面板」的剪法 */
+    const t = at(e.t + i * VID_PANEL_STEP);
+    if (await hit(t)) return t;
+    if (t >= dur) break;
+  }
+  return -1;
+}
+/* 同名同状态去重的「向后继续识别」：本条读出的姓名与「放置 / 撤离」状态若跟相邻的上一条完全相同，
+   就从本条面板帧起按 0.1s 步长向后继续找面板帧并读名，取第一个「与上一条姓名不同」的结果。
+   停止条件：①读到不同姓名（命中返回）②越过下一条操作的变化点 ③到达向后窗口上限 VID_DEDUP_FWD
+   ④到达视频末尾。只读本机像素；一直读不出不同姓名时返回 null，由调用方如实标注、绝不重复填同名、绝不猜名。 */
+async function vidDupForward(v, st, dupName, nextT) {
+  if (!v || !(vid.dur > 0)) return null;
+  const dur = Math.max(0, vid.dur - 0.02);
+  const gw = () => Math.min(480, Math.max(80, Math.round(v.videoWidth || 480)));
+  const lim = Math.min(dur, st + VID_DEDUP_FWD, (nextT != null && isFinite(nextT) ? nextT - VID_PANEL_STEP : dur));
+  const nF = Math.max(1, Math.round(VID_DEDUP_FWD / VID_PANEL_STEP));
+  for (let i = 1; i <= nF; i++) {
+    const t = st + i * VID_PANEL_STEP;
+    if (t > lim + 1e-6) break;                 /* 越过下一条操作 / 到达上限 / 视频末尾 → 停止 */
+    await vidSeek(v, t);
+    const g = vidGray(v, { x: 0, y: 0, w: 1, h: 1 }, gw());
+    if (!g || !vidPanelHit(g)) continue;       /* 非面板帧：跳过，不读名 */
+    const r = vidOcrFrame(v);
+    if (r && r.ok && r.name && r.name !== dupName) return { name: r.name, t: t };
+  }
+  return null;
+}
+/* 记录截图取帧：跳到 t 帧、整幅送入画布、回 JPEG dataURL（与主截帧同一口径；失败返回 ""，不产错图） */
+async function vidShotGrab(v, cv, cx, box, t) {
+  await vidSeek(v, t);
+  cx.clearRect(0, 0, cv.width, cv.height);
+  cx.drawImage(v, 0, 0, box.sw, box.sh, 0, 0, cv.width, cv.height);
+  const u = cv.toDataURL("image/jpeg", 0.72);
+  return (u && u.indexOf("data:image") === 0 && u.length > 200) ? u : "";
+}
+/* ---- 记录截图：取该次操作的「干员详情面板」整帧画面（纯视频像素，不含播放器控件水印） ---- */
 function vidShotBox() {
   const v = $("#vid-player");
   const sw = (v && v.videoWidth) || vid.vw || 0;
@@ -7525,19 +7869,25 @@ function vidShotInfo() {
   const el = $("#vid-shots-n"); if (el) el.textContent = String(n);
   const nt = $("#vid-shots-note"); if (!nt) return;
   if (!vid.events.length) {
-    nt.textContent = "记录截图：尚无记录。每次放置 / 撤离干员都会在变化那一刻截取一张该帧画面"
-      + "（开局那一条与结束对局那一条按规则不截图），并从该变化格裁出其中的干员头像照片；截图与照片都取自视频像素本身，不含播放器控件。";
+    nt.textContent = "记录截图：尚无记录。每次放置 / 撤离干员都会先打开该干员的详情面板，"
+      + "站点在变化点前几帧里定位到面板帧后截取整幅画面，并顺带读出画面左上角 Lv 等级上方的干员姓名自动填到右侧姓名框（读不出则留空待手填），"
+      + "再按姓名显示对应干员图片；开局那一条与结束对局那一条按规则不截图，截图取自视频像素本身，不含播放器控件。";
     return;
   }
-  let t = "记录截图：已保存 " + n + " / " + vidShotTotal() + " 张（变化时刻整帧画面）";
-  if (vid.photoN) t += " \u00b7 变化格干员照片 " + vid.photoN + " 张";
+  let t = "记录截图：已保存 " + n + " / " + vidShotTotal() + " 张（该次操作的干员详情面板整帧画面）";
+  if (vid.panelN) t += " \u00b7 面板帧定位成功 " + vid.panelN + " 条";
+  if (vid.panelMiss) t += " \u00b7 未找到面板帧、退回变化时刻整帧 " + vid.panelMiss + " 条";
+  if (vid.ocrN) t += " \u00b7 自动识别出干员名 " + vid.ocrN + " 条";
+  if (vid.ocrMiss) t += " \u00b7 未能自动识别、留待手填 " + vid.ocrMiss + " 条";
+  if (vid.ocrDup) t += " \u00b7 与上一条同名同状态、向后仍未认出不同姓名 " + vid.ocrDup + " 条";
+  if (vid.ocrNoOps) t += " \u00b7 干员数据未加载、暂无法自动识别 " + vid.ocrNoOps + " 条";
   const dtx = vidDropText();
   if (dtx) t += " · " + dtx;
   if (vid.shotFail) t += " · " + vid.shotFail + " 次截图失败";
   nt.textContent = t + "。";
 }
 async function vidCaptureShots(v) {
-  vid.shotFail = 0; vid.photoN = 0; vid.photoFail = 0;
+  vid.shotFail = 0; vid.panelN = 0; vid.panelMiss = 0; vid.ocrN = 0; vid.ocrMiss = 0; vid.ocrNoOps = 0; vid.ocrDup = 0;
   const es = vid.events.filter((e) => !e.shot && !e.open && !e.close);   /* 开局 / 结束两条不截图 */
   if (!es.length) { vidShotInfo(); return 0; }
   const box = vidShotBox();
@@ -7546,36 +7896,74 @@ async function vidCaptureShots(v) {
   cv.width = box.w; cv.height = box.h;
   const cx = cv.getContext("2d");
   let n = 0;
+  try { await vidOpsEnsure(); } catch (e) {}   /* 干员表未就绪：就地兜底重取一次，避免整轮名字全读不出 */
   for (let i = 0; i < es.length; i++) {
     const e = es[i];
+    e.shot = ""; e.shotT = e.t; e.panelHit = false; e.panelT = -1; e.panelSkip = false;
     try {
-      await vidSeek(v, e.t);
+      /* 先定位该次操作的干员详情面板帧（变化点前几帧里四条文字带同时成立的那一帧）；
+         未命中则退回变化时刻整帧并如实标注，绝不用上一段视频 / 上一张旧图冒充。 */
+      const pt = await vidPanelT(v, e);
+      if (pt >= 0) { e.panelHit = true; e.panelT = pt; vid.panelN++; }
+      else { e.panelSkip = true; vid.panelMiss++; }
+      const st = pt >= 0 ? pt : e.t;
+      await vidSeek(v, st);
       cx.clearRect(0, 0, cv.width, cv.height);
       cx.drawImage(v, 0, 0, box.sw, box.sh, 0, 0, cv.width, cv.height);
       const u = cv.toDataURL("image/jpeg", 0.72);
       if (u && u.indexOf("data:image") === 0 && u.length > 200) {
-        e.shot = u; e.shotW = box.w; e.shotH = box.h; n++;
+        e.shot = u; e.shotT = st; e.shotW = box.w; e.shotH = box.h; n++;
+        /* 同一帧顺带读出左上角干员名（p107），自动填到右侧姓名框：用户已填过就不动，读不出留空不猜。
+           识别链路整段隔离：读不出 / 抛错只计「未识别」，绝不影响已经取到的那张截图。 */
+        e.ocrN = ""; e.ocrWhy = ""; e.ocrT = st;
+        try {
+          if (!vidOpGet(e)) {
+            /* 识别要一整套候选姓名（森空岛干员表）才成立：表还没加载成功时如实标注原因，不当作「读不出」。*/
+            const hasPool = (typeof vidOpNames === "function") && vidOpNames().length > 0;
+            if (!hasPool) { e.ocrWhy = "noops"; vid.ocrNoOps++; }
+            else {
+              /* 先在面板帧上读；读不出就在前 / 后各 1~2 帧补读（面板展开的边帧上名字可能更完整），取第一个达标的帧；
+                 仍不达标就留空并标注原因，绝不猜名。*/
+              let r = vidOcrFrame(v);
+              if (!(r && r.ok && r.name)) {
+                for (const k of [1, -1, 2, -2]) {
+                  const t2 = Math.max(0, Math.min(vid.dur - 0.02, st + k * VID_PANEL_STEP));
+                  if (Math.abs(t2 - st) < 0.02) continue;
+                  await vidSeek(v, t2);
+                  r = vidOcrFrame(v);
+                  if (r && r.ok && r.name) { e.ocrT = t2; break; }
+                }
+              }
+              if (r && r.ok && r.name) {
+                /* 同名同状态去重：本条读出的姓名与「放置 / 撤离」状态若跟相邻的上一条完全相同，
+                   就向后继续逐帧识别，直到读到不同姓名（或越过下一条操作 / 往后窗口上限 / 视频末尾）。
+                   读到不同姓名 → 采纳该姓名并把截图同步换成命中那帧；
+                   一直读不出不同姓名 → 不填名、如实标注 dup，并退回本条变化时刻整帧，绝不重复填同名、绝不猜名。 */
+                const gi = (vid.events || []).indexOf(e);
+                const prevE = gi > 0 ? vid.events[gi - 1] : null;
+                const prevName = prevE ? vidOpGet(prevE) : "";
+                if (prevE && prevName && prevName === r.name && prevE.dir === e.dir) {
+                  const nx = (vid.events && gi + 1 < vid.events.length) ? vid.events[gi + 1] : null;
+                  const alt = await vidDupForward(v, st, r.name, nx ? nx.t : null);
+                  if (alt) {
+                    let s2 = "";
+                    try { s2 = await vidShotGrab(v, cv, cx, box, alt.t); } catch (err3) { s2 = ""; }
+                    e.ocrN = vidOpSet(e, alt.name); e.ocrT = alt.t; vid.ocrN++;
+                    if (s2) { e.shot = s2; e.shotT = alt.t; e.shotW = box.w; e.shotH = box.h; }
+                  } else {
+                    let s3 = "";
+                    try { s3 = await vidShotGrab(v, cv, cx, box, e.t); } catch (err4) { s3 = ""; }
+                    e.ocrWhy = "dup"; vid.ocrDup++; vid.ocrMiss++;
+                    if (s3) { e.shot = s3; e.shotT = e.t; e.shotW = box.w; e.shotH = box.h; }
+                  }
+                } else { e.ocrN = vidOpSet(e, r.name); vid.ocrN++; }
+              }
+              else { e.ocrWhy = e.panelSkip ? "nopanel" : "nohit"; vid.ocrMiss++; }
+            }
+          }
+        } catch (err2) { e.ocrWhy = "err"; vid.ocrMiss++; }
       } else { e.shot = ""; vid.shotFail++; }
-      /* 变化格干员照片：同一帧的来源、同一支视频像素，另取一帧避免卡片滑入 / 滑出动画 */
-      e.photo = ""; e.ci = vidCellIdx(e);
-      const pr = vidCellPix(e);
-      if (pr) {
-        const pt = vidPhotoT(e);
-        await vidSeek(v, pt);
-        const pc = vid._pc || (vid._pc = document.createElement("canvas"));
-        const ow = Math.max(96, Math.min(240, Math.round(pr.w * 2)));
-        const oh = Math.max(4, Math.round(ow * pr.h / pr.w));
-        pc.width = ow; pc.height = oh;
-        const pctx = pc.getContext("2d");
-        pctx.imageSmoothingEnabled = true;
-        pctx.clearRect(0, 0, ow, oh);
-        pctx.drawImage(v, pr.x, pr.y, pr.w, pr.h, 0, 0, ow, oh);
-        const pu = pc.toDataURL("image/jpeg", 0.82);
-        if (pu && pu.indexOf("data:image") === 0 && pu.length > 120) {
-          e.photo = pu; e.photoW = ow; e.photoH = oh; e.photoT = pt; vid.photoN++;
-        } else vid.photoFail++;
-      } else vid.photoFail++;
-    } catch (err) { e.shot = ""; e.photo = ""; vid.shotFail++; }
+    } catch (err) { e.shot = ""; vid.shotFail++; }   /* 跨域读不到像素等：如实计失败，不产错图 */
   }
   vidShotInfo();
   return n;
@@ -7602,6 +7990,27 @@ function vidOpNames() {
   if (state.opByName && state.opByName.size) return Array.from(state.opByName.keys()).sort();
   if (state.ops && state.ops.length) return state.ops.map((o) => o && o.name).filter(Boolean).sort();
   return [];
+}
+/* 识别前的干员表兜底（p108）：页面初次加载失败 / 尚未就绪时，就地重取一次（限时 8s），
+   避免「表没就绪 → 整轮名字全读不出」；仍取不到就照旧如实标注「干员数据未加载」，绝不猜名。 */
+async function vidOpsEnsure(ms) {
+  if (vidOpNames().length) return true;
+  if (typeof fetchTable !== "function" || typeof normalizeOps !== "function") return false;
+  const wait = Math.max(1000, Math.round(ms || 8000));
+  try {
+    const r = await Promise.race([
+      fetchTable("characters"),
+      new Promise((res) => setTimeout(() => res(null), wait))
+    ]);
+    if (!r || !r.data) return false;
+    const ops = normalizeOps(r.data);
+    if (ops && ops.length) {
+      state.ops = ops;
+      state.opByName = new Map(ops.map((o) => [o.name, o]));
+      if (state.loaded) state.loaded.characters = true;
+    }
+  } catch (e) {}
+  return vidOpNames().length > 0;
 }
 /* 共享 datalist：名册条数变化时才重建（名册未加载时为空，输入框仍可自由输入） */
 function vidOpList() {
@@ -7653,53 +8062,377 @@ function vidOpCount() {
   return n;
 }
 /* ---- 记录列表：按发生顺序逐条列出（时间 / 放置·撤离干员 / 击敌数 / 变化时刻截图） ---- */
-/* ---- 开场干员展示参照（p101）：从视频开头截一帧「干员展示」画面作每条记录的定名参照 ----
-   全程本机像素，不新增任何外部请求；记录干员名仍默认「未确认」，由名册点选 / 手输确认并本机保存。 */
+/* ---- 开场干员截图（p105）：按「名册画面特征」定位开场的干员名册（编队 / 干员界面）时刻，截图取整幅画面 ----
+    名册画面＝两行干员卡牌（每卡含立绘、等级数字、干员名、职业图标）
+    ＋右侧「助战干员」槽与「开始行动」按钮（用户提供的参照截图样式）。
+    p105 定位口径（内容优先，不再依赖「最长静止段」——黑屏 / 加载页往往比名册更「静止」）：
+      1) 在 0..min(时长,40s) 按 1s 粗采样，逐帧算「画面内容区」特征：亮底、高细节、卡牌列距自相关；
+      2) 名册判定＝亮底 + 高细节 + 列距自相关落区间（四个真值视频标定；加载页 / 黑屏 / 地图 / 战斗帧均被排除）；
+      3) 取最早的一段「连续 ≥2 帧确认名册」的时刻段（只有孤立命中时，在该时刻 ±1.5s 内精采样复核）；
+      4) 在名册段内 ±0.5s 按 0.25s 精采样，取「卡牌网格自检通过 → 最静止」的一帧（避开跃迁 / 动态模糊）；
+      5) 定位不到名册时不产错图，改为如实提示（可把画面停在名册处手截）。
+    取帧一律整幅画面（用户要求「画面全放上去」），不做裁框；全程本机像素，不新增任何外部请求。 */
+const VID_OPEN_PITCH = [55, 95];          /* 名册卡牌列距合理区间（按画面宽 640 归一化） */
+const VID_OPEN_STILL = 6.0;               /* 判定「静止」的相邻帧差阈值 */
+const VID_OPEN_WIN = 40;                  /* 开场定位窗口：0..40s（名册必在第一次「开始行动」之前） */
+const VID_OPEN_COARSE = 1.0;              /* 粗采样步长（秒） */
+const VID_OPEN_FINE = 0.25;               /* 精采样步长（秒） */
+const VID_ROSTER = { lum: 105, vr: 4000, dx: 8, ac0: 0.22, ac1: 0.75 };  /* 名册画面特征阈值 */
+/* 两帧灰度抽样差均值（只用粗粒度采样，够判静止段） */
+function vidOpenDiff(a, b) {
+  if (!a || !b || a.w !== b.w || a.h !== b.h) return 255;
+  let s = 0, n = 0;
+  for (let y = 0; y < a.h; y += 3) {
+    for (let x = 0; x < a.w; x += 3) { s += Math.abs(a.px[y * a.w + x] - b.px[y * a.w + x]); n++; }
+  }
+  return n ? s / n : 255;
+}
+/* 自视频起点起最长的「静止段」：返回 {t, i0, i1}（段中点时刻 / 段首末取样下标）；
+   没有 ≥1s 的静止段时返回 null（交给固定回退时刻） */
+function vidOpenSeg(ss) {
+  if (!ss || ss.length < 3) return null;
+  let a = 0, bA = -1, bB = -1;
+  for (let i = 1; i <= ss.length; i++) {
+    const d = (i < ss.length) ? vidOpenDiff(ss[i - 1].g, ss[i].g) : 255;
+    if (d <= VID_OPEN_STILL) continue;
+    if (ss[i - 1].t - ss[a].t >= 1.0 && (i - 1) - a >= 2 && (i - 1 - a) > (bB - bA)) { bA = a; bB = i - 1; }
+    a = i;
+  }
+  return bA < 0 ? null : { t: (ss[bA].t + ss[bB].t) / 2, i0: bA, i1: bB };
+}
+/* 画面内容区：去掉上下 / 左右黑边（竖屏或带边框的录屏），返回非黑区域；整帧全黑或内容区过小返回 null */
+function vidOpenBox(g) {
+  if (!g || !(g.w > 20 && g.h > 20)) return null;
+  const w = g.w, h = g.h, px = g.px;
+  const lumRow = new Float32Array(h), lumCol = new Float32Array(w);
+  for (let y = 0; y < h; y++) { let s = 0; for (let x = 0; x < w; x++) s += px[y * w + x]; lumRow[y] = s / w; }
+  for (let x = 0; x < w; x++) { let s = 0; for (let y = 0; y < h; y++) s += px[y * w + x]; lumCol[x] = s / h; }
+  const TH = 18;                           /* 平均亮度低于此值，判为该行 / 列为「黑边」 */
+  let x0 = 0, x1 = w - 1, y0 = 0, y1 = h - 1;
+  while (x0 < x1 && lumCol[x0] < TH) x0++;
+  while (x1 > x0 && lumCol[x1] < TH) x1--;
+  while (y0 < y1 && lumRow[y0] < TH) y0++;
+  while (y1 > y0 && lumRow[y1] < TH) y1--;
+  const bw = x1 - x0 + 1, bh = y1 - y0 + 1;
+  if (bw < w * 0.3 || bh < h * 0.3) return null;
+  return { x0: x0, y0: y0, bw: bw, bh: bh };
+}
+/* 画面内容区特征：亮底 / 高细节 / 卡牌列距自相关（名册判定的全部依据，只在本机像素上算） */
+function vidOpenFeat(g) {
+  if (!g || !(g.w > 60 && g.h > 40)) return null;
+  const box = vidOpenBox(g);
+  if (!box) return null;
+  const w = g.w, px = g.px, x0 = box.x0, y0 = box.y0, bw = box.bw, bh = box.bh;
+  let dxs = 0, dys = 0, s = 0, s2 = 0, m = 0;
+  for (let y = y0; y < y0 + bh; y++) {
+    for (let x = x0; x < x0 + bw; x++) {
+      const v = px[y * w + x];
+      s += v; s2 += v * v; m++;
+      if (x + 1 < x0 + bw) dxs += Math.abs(v - px[y * w + x + 1]);
+      if (y + 1 < y0 + bh) dys += Math.abs(v - px[y * w + x + w]);
+    }
+  }
+  const lum = s / m, vr = Math.max(0, s2 / m - lum * lum);
+  const dx = dxs / Math.max(1, (bw - 1) * bh), dy = dys / Math.max(1, (bh - 1) * bw);
+  /* 卡牌列距自相关：名册卡牌所在带（内容区中部 0.40H..0.72H）上的横向 |dx| 序列 */
+  const cA = y0 + Math.round(bh * 0.40), cB = y0 + Math.round(bh * 0.72);
+  const col = new Float32Array(bw);
+  let cm = 0;
+  for (let i = 0; i < bw - 1; i++) {
+    let t = 0;
+    for (let y = cA; y < cB; y++) t += Math.abs(px[y * w + (x0 + i) + 1] - px[y * w + (x0 + i)]);
+    col[i] = t / Math.max(1, cB - cA); cm += col[i];
+  }
+  col[bw - 1] = col[bw - 2] || 0; cm = (cm + col[bw - 1]) / bw;
+  const lo = Math.max(6, Math.round(bw * VID_OPEN_PITCH[0] / 640));
+  const hi = Math.max(lo + 2, Math.round(bw * VID_OPEN_PITCH[1] / 640));
+  let bs = 0, bl = 0;
+  for (let lag = lo; lag <= hi; lag++) {
+    let t = 0, n = 0;
+    for (let i = 0; i + lag < bw; i++) { t += (col[i] - cm) * (col[i + lag] - cm); n++; }
+    t = n ? t / n : 0;
+    if (t > bs) { bs = t; bl = lag; }
+  }
+  return { lum: lum, vr: vr, dx: dx, dy: dy, ac: bs / Math.max(1, cm * cm), pitch: bl, bw: bw, bh: bh, box: box };
+}
+/* 名册判定：亮底 + 高细节 + 卡牌列距自相关落在区间（是名册返回特征对象，不是则返回 null） */
+function vidRoster(g) {
+  const f = vidOpenFeat(g);
+  if (!f) return null;
+  if (f.lum < VID_ROSTER.lum) return null;
+  if (f.vr < VID_ROSTER.vr) return null;
+  if (f.dx < VID_ROSTER.dx) return null;
+  if (!(f.ac >= VID_ROSTER.ac0 && f.ac <= VID_ROSTER.ac1)) return null;
+  if (!(f.pitch > 0)) return null;
+  return f;
+}
+/* 整帧灰度 → 名册识别：判定这一帧是不是「两行卡牌 + 右侧面板」的干员名册画面（不是则返回 null）；
+   返回的几何只用于确认识别结果，截图本身按用户要求出整幅画面，不做裁剪。 */
+function vidOpenRect(g) {
+  if (!g || !(g.w > 60 && g.h > 40)) return null;
+  const w = g.w, h = g.h, px = g.px;
+  const yA = Math.round(h * 0.18), yB = Math.round(h * 0.78);
+  const col = new Float32Array(w - 1);
+  let cm = 0;
+  for (let x = 0; x < w - 1; x++) {
+    let s = 0;
+    for (let y = yA; y < yB; y++) s += Math.abs(px[y * w + x + 1] - px[y * w + x]);
+    col[x] = s / (yB - yA); cm += col[x];
+  }
+  cm /= col.length;
+  const cardZone = Math.max(8, Math.round(w * 0.85));    /* 卡牌网格只找画面左侧 85% */
+  const lo = Math.max(6, Math.round(w * VID_OPEN_PITCH[0] / 640));
+  const hi = Math.max(lo + 2, Math.round(w * VID_OPEN_PITCH[1] / 640));
+  let bl = 0, bs = 0;
+  for (let lag = lo; lag <= hi; lag++) {
+    let s = 0, n = 0;
+    for (let i = 0; i + lag < cardZone; i++) { s += (col[i] - cm) * (col[i + lag] - cm); n++; }
+    s = n ? s / n : 0;
+    if (s > bs) { bs = s; bl = lag; }
+  }
+  if (!(bl > 0 && bs > cm * cm * 0.30)) return null;     /* 相关性太弱：不是名册卡牌网格 */
+  let ph = 0, ps = -1;                                   /* 网格相位：让 col 在 o + k·bl 上最对齐 */
+  for (let o = 0; o < bl; o++) {
+    let s = 0;
+    for (let k = 0; o + k * bl < cardZone; k++) s += col[o + k * bl];
+    if (s > ps) { ps = s; ph = o; }
+  }
+  const gx = [];
+  for (let k = 0; ph + k * bl < cardZone; k++) gx.push(ph + k * bl);
+  if (gx.length < 3) return null;
+  const left = gx[0], gridRight = gx[gx.length - 1];
+  /* 行带：横向强边配对，间距落在 0.22H..0.52H（正好夹住两行卡牌的那一对最强）*/
+  const row = new Float32Array(h - 1);
+  const xB = Math.max(2, Math.round(w * 0.8));
+  let rm = 0;
+  for (let y = 0; y < h - 1; y++) {
+    let s = 0;
+    for (let x = 0; x < xB; x++) s += Math.abs(px[(y + 1) * w + x] - px[y * w + x]);
+    row[y] = s / xB; rm += row[y];
+  }
+  rm /= row.length;
+  const pk = [];
+  for (let y = 1; y < row.length - 1; y++) {
+    if (row[y] > rm * 1.8 && row[y] >= row[y - 1] && row[y] >= row[y + 1]) pk.push(y);
+  }
+  /* 行带：横向强边配对，间距 0.22H..0.52H、带中心落在画面中上部（名册两行所在），
+     并计入「两行之间的分隔强边」——上缘、分隔、下缘三条边都强才算两行卡牌 */
+  let band = null;
+  for (let i = 0; i < pk.length; i++) {
+    for (let j = i + 1; j < pk.length; j++) {
+      const a = pk[i], b = pk[j], d = b - a;
+      if (d < h * 0.22 || d > h * 0.52) continue;
+      if ((a + b) / 2 < h * 0.30 || (a + b) / 2 > h * 0.66) continue;
+      let div = 0;
+      for (let y = Math.round(a + d * 0.30); y <= Math.round(a + d * 0.70); y++) {
+        if (row[y] > div) div = row[y];
+      }
+      const sc = row[a] + row[b] + div * 0.6;
+      if (!band || sc > band.sc) band = { a: a, b: b, sc: sc };
+    }
+  }
+  if (!band) return null;
+  /* 右侧面板（助战干员 / 开始行动）：卡牌区右缘之外的最右竖向强边 */
+  let panel = -1;
+  for (let x = Math.max(1, Math.round(w * 0.78)); x < col.length; x++) {
+    if (col[x] > cm * 1.6) panel = x;
+  }
+  const mx = Math.max(2, Math.round(w * 0.012)), my = Math.max(2, Math.round(h * 0.018));
+  const x0 = Math.max(0, left - mx);
+  const x1 = Math.min(w - 1, (panel > 0 ? panel : gridRight + bl) + mx);
+  const y0 = Math.max(0, band.a - my), y1 = Math.min(h - 1, band.b + my);
+  if (x1 - x0 < w * 0.4 || y1 - y0 < h * 0.15) return null;
+  return { x: x0 / w, y: y0 / h, w: (x1 - x0) / w, h: (y1 - y0) / h, pitch: bl, cols: gx.length };
+}
+/* 整幅画面出图（宽 ≤680、等比、只缩不放大）：用户要求「画面全放上去」，一律不裁框 */
+function vidOpenShot(v) {
+  const vw = (v && v.videoWidth) || 0, vh = (v && v.videoHeight) || 0;
+  if (!(vw > 1 && vh > 1)) return null;
+  const dw = Math.min(680, Math.max(1, Math.round(vw))), dh = Math.max(1, Math.round(vh * dw / vw));
+  const cv = vid._rc || (vid._rc = document.createElement("canvas"));
+  cv.width = dw; cv.height = dh;
+  const cx = cv.getContext("2d");
+  cx.clearRect(0, 0, dw, dh);
+  cx.drawImage(v, 0, 0, vw, vh, 0, 0, dw, dh);
+  const u = cv.toDataURL("image/jpeg", 0.85);
+  return (u && u.indexOf("data:image") === 0 && u.length > 200) ? u : null;
+}
+/* 兜底时刻：静止段定位不到时沿用既有口径（视频 1.6s 或中点） */
 function vidRefT() {
   const d = vid.dur || 0;
   return d > 0 ? Math.min(1.6, d * 0.5) : 0;
 }
-function vidRefCap(t) {
+/* 写入开场截图：整幅画面 + 如实说明本帧是否已确认为「干员名册」画面 */
+function vidRefCap(t, isRoster) {
   const v = $("#vid-player"), img = $("#vid-ref-img"), nt = $("#vid-ref-note");
   if (!img) return false;
   const sw = (v && v.videoWidth) || vid.vw || 0, sh = (v && v.videoHeight) || vid.vh || 0;
   if (!v || sw < 2 || sh < 2) {
-    if (nt) nt.textContent = "尚未载入可读画面的视频：载入视频后即可截取开场「干员展示」画面作参照。";
+    if (nt) nt.textContent = "尚未载入可读画面的视频：载入视频后即可自动截取开场干员截图。";
     return false;
   }
-  const w = Math.min(640, Math.max(1, Math.round(sw)));
-  const cv = vid._rc || (vid._rc = document.createElement("canvas"));
-  cv.width = w; cv.height = Math.max(1, Math.round(sh * w / sw));
-  const cx = cv.getContext("2d");
   try {
-    cx.clearRect(0, 0, cv.width, cv.height);
-    cx.drawImage(v, 0, 0, sw, sh, 0, 0, cv.width, cv.height);
-    const u = cv.toDataURL("image/jpeg", 0.82);
-    if (!u || u.indexOf("data:image") !== 0 || u.length < 200) return false;
+    const u = vidOpenShot(v);
+    if (!u) return false;
     img.src = u; img.hidden = false; vid.refT = t;
-    if (nt) nt.textContent = "参照画面取自本视频 " + vidFmt(t) + " 一帧。对照它读出干员名，填到每条记录右侧的干员名框里"
-      + "（默认「未确认」，可点选名册或手输，结果存在本机）。";
+    if (nt) nt.textContent = "开场干员截图取自本视频 " + vidFmt(t) + " 的干员名册（编队 / 干员界面）画面，整幅画面全部纳入"
+      + "（含干员卡牌与右侧助战 / 开始行动面板）"
+      + (isRoster ? "" : "；本帧未确认为名册画面，请核对画面内容")
+      + "。对照它读出干员名，填到每条记录右侧的干员名框里（默认「未确认」，可点选名册或手输，结果存在本机）。";
     return true;
   } catch (err) {
-    if (nt) nt.textContent = "读取画面像素被浏览器拒绝（该视频直链未允许跨域），无法截取参照画面。";
+    if (nt) nt.textContent = "读取画面像素被浏览器拒绝（该视频直链未允许跨域），无法截取开场干员截图。";
     return false;
   }
 }
-async function vidRefAuto() {
-  const v = $("#vid-player");
+/* 隐藏并清空旧截图：跨域读不到像素 / 定位不到名册时，都不许上一段视频的旧图留在界面上误导 */
+function vidRefHide() {
+  const img = $("#vid-ref-img");
+  if (img) {
+    img.hidden = true;
+    try { if (img.removeAttribute) img.removeAttribute("src"); else img.src = ""; } catch (e) {}
+  }
+  vid.refT = -1;
+}
+/* 定位不到名册：不产错图——隐藏旧截图并如实说明（可把画面停在名册处手截） */
+function vidRefMiss() {
+  const nt = $("#vid-ref-note");
+  vidRefHide();
+  if (nt) nt.textContent = "未能在本视频开场 " + vidFmt(VID_OPEN_WIN) + " 内按「名册画面特征」定位到干员名册（编队 / 干员界面）画面，"
+    + "为避免给出错误画面，这里不自动出图；把视频拖到干员名册画面后点「截取当前画面」即可（仍为整幅画面）。";
+  return false;
+}
+/* 自动截取：0..40s 粗采样找「名册段」→ 段内 ±0.5s（0.25s 步长）精采样 → 取「卡牌自检通过且最静止」的一帧 → 截整幅画面 */
+async function vidOpenAuto() {
+  const v = $("#vid-player"), nt = $("#vid-ref-note");
   if (!v || !vid.ready) return false;
-  const t = vidRefT();
-  try { await vidSeek(v, t); } catch (e) {}
-  return vidRefCap(t);
+  vid.openGeo = false; vid.openSeg = -1; vid.openT = -1;
+  const d = vid.dur || 0;
+  const gw = () => Math.min(480, Math.max(80, Math.round(v.videoWidth || 480)));
+  const win = Math.min(Math.max(0, d > 0 ? d - 0.06 : VID_OPEN_WIN), VID_OPEN_WIN);
+  const ss = [];
+  const nC = Math.max(3, Math.floor(win / VID_OPEN_COARSE) + 1);
+  try {
+    for (let i = 0; i < nC; i++) {
+      const t = Math.min(win, Math.round(i * VID_OPEN_COARSE * 100) / 100);
+      if (nt && i % 8 === 0) nt.textContent = "正在按「名册画面特征」定位开场干员名册…（已扫描 " + vidFmt(t) + " / " + vidFmt(win) + "）";
+      await vidSeek(v, t);
+      ss.push({ t: t, g: vidGray(v, { x: 0, y: 0, w: 1, h: 1 }, gw()), hit: false });
+      if (ss[i].g) ss[i].hit = !!vidRoster(ss[i].g);
+    }
+  } catch (e) {
+    if (e && e.name === "SecurityError") {
+      vidRefHide();
+      if (nt) nt.textContent = "读取画面像素被浏览器拒绝（该视频直链未允许跨域），无法截取开场干员截图。";
+      return false;
+    }
+    return vidRefMiss();
+  }
+  /* 粗采样里最早的「连续 ≥2 帧命中」段；只有孤立命中时先记下，交给精采样复核 */
+  const hitIdx = [];
+  for (let i = 0; i < ss.length; i++) if (ss[i].hit) hitIdx.push(i);
+  let grp = null;
+  for (let k = 0; k < hitIdx.length; k++) {
+    const run = [hitIdx[k]];
+    while (hitIdx[k + 1] !== undefined && hitIdx[k + 1] - hitIdx[k] <= 2) { k++; run.push(hitIdx[k]); }
+    if (run.length >= 2) { grp = run; break; }
+    if (!grp) grp = run;
+  }
+  if (!grp) {                                   /* 整段窗口都没命中：不产错图，如实提示 */
+    const seg = vidOpenSeg(ss);
+    vid.openSeg = seg ? seg.t : -1;
+    try { await vidSeek(v, vidRefT()); } catch (e) {}
+    return vidRefMiss();
+  }
+  /* 精采样：命中段内 ±0.5s（孤立命中放宽到 ±1.5s），步长 0.25s */
+  const pad = grp.length >= 2 ? 0.5 : 1.5;
+  const t0 = Math.max(0, ss[grp[0]].t - pad), t1 = Math.min(win, ss[grp[grp.length - 1]].t + pad);
+  const fine = [];
+  try {
+    for (let t = t0; t <= t1 + 1e-6; t = t + VID_OPEN_FINE) {
+      const tt = Math.min(win, Math.round(t * 100) / 100);
+      await vidSeek(v, tt);
+      const g = vidGray(v, { x: 0, y: 0, w: 1, h: 1 }, gw());
+      fine.push({ t: tt, g: g, f: g ? vidRoster(g) : null });
+    }
+  } catch (e2) {
+    if (e2 && e2.name === "SecurityError") {
+      vidRefHide();
+      if (nt) nt.textContent = "读取画面像素被浏览器拒绝（该视频直链未允许跨域），无法截取开场干员截图。";
+      return false;
+    }
+    return vidRefMiss();
+  }
+  /* 择优：先取「卡牌网格自检（vidOpenRect）通过」，再取与相邻帧差最小（最静止）的一帧 */
+  let pick = null;
+  for (let i = 0; i < fine.length; i++) {
+    if (!fine[i].f) continue;
+    const gp = fine[i - 1] ? fine[i - 1].g : null, gn = fine[i + 1] ? fine[i + 1].g : null;
+    const dm = Math.max(gp ? vidOpenDiff(gp, fine[i].g) : 0, gn ? vidOpenDiff(gn, fine[i].g) : 0);
+    const geo = !!vidOpenRect(fine[i].g);
+    const sc = (geo ? 0 : 1000) + dm;
+    if (!pick || sc < pick.sc) pick = { t: fine[i].t, sc: sc, geo: geo };
+  }
+  if (!pick) {                                  /* 精采样复核不通过：仍不产错图 */
+    const seg = vidOpenSeg(ss);
+    vid.openSeg = seg ? seg.t : -1;
+    try { await vidSeek(v, vidRefT()); } catch (e) {}
+    return vidRefMiss();
+  }
+  vid.openGeo = true; vid.openT = pick.t;
+  vid.openSeg = (ss[grp[0]].t + ss[grp[grp.length - 1]].t) / 2;
+  try { await vidSeek(v, pick.t); } catch (e) {}
+  return vidRefCap(pick.t, true);
+}
+async function vidRefAuto() {
+  return vidOpenAuto();
 }
 function vidRefBind() {
   const b = $("#vid-ref-btn");
   if (!b) return;
-  b.addEventListener("click", () => {
+  b.addEventListener("click", () => {        /* 手截：停在任意画面都是整幅画面 */
     const v = $("#vid-player");
     const t = (v && isFinite(v.currentTime)) ? v.currentTime : vidRefT();
-    if (!vidRefCap(t)) vidMsg("未能截取参照画面：请先载入视频并把画面停在「干员展示」处。", "warn");
+    let g = null;
+    try { g = v ? vidGray(v, { x: 0, y: 0, w: 1, h: 1 }, Math.min(480, Math.max(80, Math.round(v.videoWidth || 480)))) : null; } catch (e) { g = null; }
+    const gate = g ? !!vidRoster(g) : false;    /* 只用于说明本帧是否确认为名册，截图仍为整幅 */
+    vid.openGeo = gate;
+    if (!vidRefCap(t, gate)) vidMsg("未能截取开场干员截图：请先载入视频并把画面停在「干员名册」处。", "warn");
   });
+}
+/* ---- 姓名 → 干员图片：姓名由用户读「干员详情面板」截图左上角（Lv 等级上方）后填入记录，
+   站点只按这个姓名在森空岛干员表（state.opByName，data/characters）里精确匹配，再用既有 CDN 头像口径显示头像。 ---- */
+function vidOpImgOp(name) {
+  const k = String(name == null ? "" : name).trim();
+  if (!k || !state.opByName) return null;
+  try { return state.opByName.get(k) || null; } catch (e) { return null; }
+}
+function vidOpImgFill(wrap, name) {
+  if (!wrap) return;
+  const k = String(name == null ? "" : name).trim();
+  const op = vidOpImgOp(k);
+  wrap.textContent = "";
+  wrap.classList.remove("vid-ev-opimg-none");
+  if (!op) {
+    wrap.classList.add("vid-ev-opimg-none");
+    wrap.textContent = "干员图片：" + (k
+      ? "「" + k + "」不在干员数据里，请检查名字写法（截图左上角 Lv 等级上方）"
+      : "填写姓名后自动对应干员图片（姓名读自上方截图左上角 Lv 等级上方）");
+    return;
+  }
+  const im = document.createElement("img");
+  im.className = "vid-ev-opimg";
+  im.alt = "干员图片 · " + (op.name || k);
+  im.title = "干员图片 · " + (op.name || k);
+  im.setAttribute("data-cid", String(op.id == null ? "" : op.id));
+  im.setAttribute("data-base", "0");
+  im.addEventListener("error", () => imgFallback(im));
+  im.src = avatarUrl(op);
+  wrap.appendChild(im);
+  const cap = document.createElement("div");
+  cap.className = "vid-ev-opimg-cap";
+  cap.textContent = "干员图片 · 按姓名对应：" + (op.name || k);
+  wrap.appendChild(cap);
 }
 function vidEvList() {
   const box = $("#vid-events-list"), hint = $("#vid-list-hint");
@@ -7730,9 +8463,9 @@ function vidEvList() {
       const im = document.createElement("img");
       im.className = "vid-ev-shot";
       im.src = e.shot;
-      im.alt = vidFmt(e.t) + " 变化时刻画面";
+      im.alt = "干员详情面板画面（含干员名，取自本视频 " + vidFmt(e.shotT == null ? e.t : e.shotT) + " 帧）";
       im.title = "点一下跳到该时刻并暂停 · 双击放大 / 再双击收回";
-      im.addEventListener("click", () => { vidTlJump(e.t); });
+      im.addEventListener("click", () => { vidTlJump(e.shotT == null ? e.t : e.shotT); });
       im.addEventListener("dblclick", () => {
         const z = !im.classList.contains("zoom");
         im.classList.toggle("zoom", z);
@@ -7745,44 +8478,45 @@ function vidEvList() {
       ph.textContent = e.open ? "开局记录（不截图）" : (e.close ? "结束记录（不截图）" : "未取得截图");
       media.appendChild(ph);
     }
-    if (e.photo) {
-      const pw = document.createElement("div");
-      pw.className = "vid-ev-photo-wrap";
-      const pim = document.createElement("img");
-      pim.className = "vid-ev-photo";
-      pim.src = e.photo;
-      pim.alt = "变化格内的干员头像（取自本视频 " + vidFmt(e.photoT || 0) + " 帧）";
-      pim.title = "变化格内的干员头像（取自本视频 " + vidFmt(e.photoT || 0) + " 帧）";
-      pw.appendChild(pim);
-      const cap = document.createElement("div");
-      cap.className = "vid-ev-photo-cap";
-      cap.textContent = "变化格头像 · " + vidFmt(e.photoT || 0);
-      pw.appendChild(cap);
-      side.appendChild(pw);
-    }
     if (!e.open && !e.close) {
+      /* 干员图片：按填写的姓名对应（截图已把姓名拍在里面，姓名位于画面左上角 Lv 等级上方） */
+      const iwrap = document.createElement("div");
+      iwrap.className = "vid-ev-opimg-wrap";
+      iwrap.setAttribute("data-role", "opimg");
       const orow = document.createElement("div");
       orow.className = "vid-ev-op";
       const ost = document.createElement("div");
       ost.className = "vid-ev-op-n";
       const saved = vidOpGet(e);
-      ost.textContent = "干员：" + (saved || "未确认");
+      const auto = !!(saved && e.ocrN && saved === e.ocrN);   /* 名字由截图自动读出 */
+      const why = saved ? "" : (e.ocrWhy === "noops" ? "（干员数据未加载）"
+        : e.ocrWhy === "nopanel" ? "（未取到干员面板帧）"
+        : e.ocrWhy === "nohit" ? "（该帧未认出姓名）"
+        : e.ocrWhy === "dup" ? "（与上一条同名同状态，向后仍未认出不同姓名）"
+        : e.ocrWhy === "err" ? "（读取画面失败）"
+        : vid.running ? "（识别中…，稍候）"
+        : (e.shot ? "（未自动识别，可点选或手输）" : "（未取到截图画面，未能识别）"));
+      ost.textContent = "干员：" + (saved || "未确认") + (auto ? "（自动识别）" : why);
       if (!saved) ost.classList.add("none");
       const oin = document.createElement("input");
       oin.className = "vid-ev-op-in";
       oin.type = "text";
       oin.value = saved;
-      oin.placeholder = "选 / 输入干员名";
+      oin.placeholder = "选 / 输入干员名（自动识别，可改）";
       oin.setAttribute("list", "vid-op-list");
       oin.setAttribute("aria-label", "第 " + (i + 1) + " 条记录（" + vidFmt(e.t) + "）的干员名");
+      vidOpImgFill(iwrap, saved);
       oin.addEventListener("change", () => {
         const v2 = vidOpSet(e, oin.value);
+        e.ocrN = "";                       /* 用户改过就不再标「自动识别」*/
         oin.value = v2;
         ost.textContent = "干员：" + (v2 || "未确认");
         ost.classList.toggle("none", !v2);
+        vidOpImgFill(iwrap, v2);          /* 姓名一变，就地换成对应干员图片 */
       });
       orow.appendChild(ost);
       orow.appendChild(oin);
+      side.appendChild(iwrap);
       side.appendChild(orow);
       vidOpList();
     }
@@ -7873,7 +8607,7 @@ async function vidRun() {
   if (!v || !vid.ready) { vidMsg("请先载入视频。", "err"); return; }
   if (vid.running) return;
   if (!vid.pixelSafe) { vidMsg("当前直链不允许跨域，浏览器禁止读取画面像素；请换成允许跨域的直链。", "err"); return; }
-  vid.running = true; vid.frames = []; vid.events = []; vid.dev = []; vidSetBar(0); vidButtons(); vid.shotN = 0; vid.shotFail = 0; vid.photoN = 0; vid.photoFail = 0;
+  vid.running = true; vid.frames = []; vid.events = []; vid.dev = []; vidSetBar(0); vidButtons(); vid.shotN = 0; vid.shotFail = 0; vid.panelN = 0; vid.panelMiss = 0; vid.ocrNoOps = 0; vid.ocrDup = 0;
   vid.dropN = 0; vid.openN = 0; vid.openT = -1;
   vid.closeN = 0; vid.closeT = -1; vid.errN = 0; vid.errList = [];
   vid.winA = -1; vid.winB = -1; vid.notesTouched = false;
@@ -7893,7 +8627,7 @@ async function vidRun() {
       try {
         sl = vidGray(v, vid.regions.slots, vidSlotsW(v));
         kl = vidGray(v, vid.regions.kills, 200);
-        cl = vidGray(v, VID_CELL_REG, vidCellW(v));   /* 部署栏几何：只用于变化格照片取景 */
+        cl = vidGray(v, VID_CELL_REG, vidCellW(v));   /* 部署栏几何：历史口径，只用于逐帧占用格数 / 档位采样 */
       } catch (e) {
         if (e && e.name === "SecurityError") {
           vid.pixelSafe = false;
@@ -7925,8 +8659,9 @@ async function vidRun() {
         + (evN ? "检测到放置 / 撤离事件 " + evN + " 次（右下角「剩余可放置角色」读数）：减少 = 放置、增加 = 撤离。"
           : (vid.roNote ? vid.roNote + "。" : "读数条无变化事件。"))
         + (kn ? "击敌数读数 " + kn + " 条（总数 " + (vid.killsTotal || "—") + "）。" : "")
-        + (evN ? "记录截图 " + sn + "/" + vidShotTotal() + " 张。"
-          + (vid.photoN ? "变化格干员照片 " + vid.photoN + " 张。" : "") : "")
+        + (evN ? "记录截图 " + sn + "/" + vidShotTotal() + " 张（干员详情面板整帧画面）。"
+          + (vid.panelN ? "面板帧定位成功 " + vid.panelN + " 条。" : "")
+          + (vid.panelMiss ? "未找到面板帧、退回变化时刻整帧 " + vid.panelMiss + " 条。" : "") : "")
         + (dtx ? dtx + "。" : ""), "ok");
     }
   } finally {
