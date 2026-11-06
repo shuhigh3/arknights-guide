@@ -1300,7 +1300,7 @@ html[data-mode="light"] #fx{--fx-rgb:0,150,190}
 .vid-ev-hd{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
 .vid-ev-i{font-family:var(--mono);color:var(--accent);font-size:16px;font-weight:700}
 .vid-ev-t{font-family:var(--mono);color:var(--txt);font-weight:600;font-size:15px}
-/* 操作字幕（放置干员 / 撤离干员 / 技能开启）：放大加粗，并按类型给底色 —— 扫一眼即可分辨每一步操作 */
+/* 操作字幕（放置干员 / 干员离场 / 技能开启）：放大加粗，并按类型给底色 —— 扫一眼即可分辨每一步操作 */
 .vid-ev-d{padding:3px 14px;border-radius:99px;border:1px solid var(--line);font-size:20px;font-weight:700;line-height:1.4;color:var(--txt-dim)}
 .vid-ev-d.up{color:var(--ok);border-color:var(--ok);background:rgba(var(--ok-rgb),.14)}
 .vid-ev-d.down{color:var(--bad-txt);border-color:var(--bad-txt);background:rgba(var(--bad-rgb),.14)}
@@ -1389,7 +1389,7 @@ html[data-mode="light"] #fx{--fx-rgb:0,150,190}
       <button class="nvb" id="nv-home" type="button" aria-current="page" title="主页：选关卡 / 录练度 / 发起检索 / 看结果列表"><span class="nvb-ic" aria-hidden="true">◈</span><span class="nvb-txt"><span class="nvb-t">主页</span><span class="nvb-s">选关卡 · 录练度 · 检索</span></span></button>
       <button class="nvb" id="nv-growth" type="button" title="养成推荐：登录森空岛后，按账号练度给出养成与抽取优先级"><span class="nvb-ic" aria-hidden="true">✦</span><span class="nvb-txt"><span class="nvb-t">养成推荐</span><span class="nvb-s">账号练度 · 养成 / 抽取</span></span></button>
       <button class="nvb" id="nv-wiki" type="button" title="技能 Wiki：干员技能 / 天赋 / 模组速查（星级 / 职业 / 位置 / 词缀筛选 + 仅看有模组 + 搜索）"><span class="nvb-ic" aria-hidden="true">❖</span><span class="nvb-txt"><span class="nvb-t">技能 Wiki</span><span class="nvb-s">技能 · 天赋 · 模组速查</span></span></button>
-      <button class="nvb" id="nv-video" type="button" title="解读视频：载入视频直链，本机逐帧采样，读右下角「剩余可放置角色」的增减（减少＝放置干员、增加＝撤离干员）与正中间上方「击敌数」，并在变化时刻截图"><span class="nvb-ic" aria-hidden="true">▶</span><span class="nvb-txt"><span class="nvb-t">解读视频</span><span class="nvb-s">放置 / 撤离 · 击敌数</span></span></button>
+      <button class="nvb" id="nv-video" type="button" title="解读视频：载入视频直链，本机逐帧采样，读右下角「剩余可放置角色」的增减（减少＝放置干员、增加＝干员离场（撤离或被击倒））与正中间上方「击敌数」，并在变化时刻截图"><span class="nvb-ic" aria-hidden="true">▶</span><span class="nvb-txt"><span class="nvb-t">解读视频</span><span class="nvb-s">放置 / 撤离 · 击敌数</span></span></button>
       <button class="nvb" id="nv-settings" type="button" title="设置：合格练度标准 / 检索设置（通道、翻页、间隔）"><span class="nvb-ic" aria-hidden="true">⚙</span><span class="nvb-txt"><span class="nvb-t">设置</span><span class="nvb-s">合格练度标准 · 检索设置</span></span></button>
       <button class="nvb" id="nv-login" type="button" title="登录：森空岛账号（扫码 / 凭证导入，读取账号干员与练度）"><span class="nvb-ic" aria-hidden="true">◇</span><span class="nvb-txt"><span class="nvb-t">登录</span><span class="nvb-s">森空岛账号 · 扫码 / 凭证</span></span></button>
     </nav>
@@ -1685,7 +1685,7 @@ html[data-mode="light"] #fx{--fx-rgb:0,150,190}
               <div id="vid-notes">
                 <p class="vid-note" id="vid-events-note">尚无记录。载入视频并点「开始解读」后，每次放置 / 撤离干员、以及每次技能开启都会在这里按时间列出。</p>
                 <p class="vid-note" id="vid-kills-note">击敌数识别：尚无数据。载入视频并点「开始解读」后，会取变化时刻的画面读出击敌数。</p>
-                <p class="vid-note" id="vid-shots-note">记录截图：尚无记录。每次放置 / 撤离与技能开启都会截取该次「干员详情面板」整帧画面；召唤物记录不需要照片，缺图不算失败。</p>
+                <p class="vid-note" id="vid-shots-note">记录截图：尚无记录。每次放置 / 撤离与技能开启都会尽量截取该次「干员详情面板」整帧画面；若该时刻游戏没有打开详情面板（画面里没有干员姓名文字），就如实截取当时整帧并标注「未取到面板帧」，不猜姓名。召唤物记录不需要照片，缺图不算失败。</p>
                 <p class="vid-note">直链必须允许跨域（响应带 Access-Control-Allow-Origin），否则浏览器会禁止读取画面像素。</p>
               </div>
             </div>
@@ -8945,14 +8945,14 @@ function vidShotInfo() {
   const el = $("#vid-shots-n"); if (el) el.textContent = String(n);
   const nt = $("#vid-shots-note"); if (!nt) return;
   if (!vid.events.length) {
-    nt.textContent = "记录截图：尚无记录。每次放置 / 撤离干员都会先打开该干员的详情面板，"
-      + "站点在变化点前几帧里定位到面板帧后截取整幅画面，并顺带读出画面左上角 Lv 等级上方的干员姓名自动填到右侧姓名框（读不出则留空待手填），"
-      + "再按姓名显示对应干员图片；放置的是召唤物（「棋子」「“弦惊”」「风雪之眼」这类 Token 单位或可操作的召唤物）时同样读出召唤物名填入并标注「召唤物」，"
-      + "这类记录不需要干员照片、缺图不算失败；每次技能开启（面板出现但剩余可放置角色读数不变）也会截取该次面板开启里最完整的一帧；"
+    nt.textContent = "记录截图：尚无记录。每次放置 / 撤离干员、以及每次技能开启，站点都会尽量截取该次操作的「干员详情面板」整帧画面，"
+      + "并顺带读出画面左上角 Lv 等级上方的干员姓名自动填到右侧姓名框（读不出则留空待手填），再按姓名显示对应干员图片；"
+      + "若该时刻游戏没有打开干员详情面板（例如干员已离场），画面里没有姓名文字，站点会如实截取当时整帧、并标注「未取到面板帧」，绝不猜名；"
+      + "放置的是召唤物（「棋子」「“弦惊”」「风雪之眼」这类 Token 单位或可操作的召唤物）时同样读出召唤物名填入并标注「召唤物」，这类记录不需要干员照片、缺图不算失败；"
       + "开局那一条与结束对局那一条按规则不截图，截图取自视频像素本身，不含播放器控件。";
     return;
   }
-  let t = "记录截图：已保存 " + n + " / " + vidShotTotal() + " 张（该次操作的干员详情面板整帧画面）";
+  let t = "记录截图：已保存 " + n + " / " + vidShotTotal() + " 张（定位到面板的取「干员详情面板」整帧，未定位到的取变化时刻整帧）";
   if (vid.skillN) t += " \u00b7 其中技能开启 " + vid.skillN + " 条（面板出现但读数不变，判据见右栏说明）";
   if (vid.panelN) t += " \u00b7 面板帧定位成功 " + vid.panelN + " 条";
   if (vid.panelMiss) t += " \u00b7 未找到面板帧、退回变化时刻整帧 " + vid.panelMiss + " 条";
@@ -9494,7 +9494,7 @@ function vidOpImgOp(name) {
   if (!k || !state.opByName) return null;
   try { return state.opByName.get(k) || null; } catch (e) { return null; }
 }
-function vidOpImgFill(wrap, name) {
+function vidOpImgFill(wrap, name, hasPanel) {
   if (!wrap) return;
   const k = String(name == null ? "" : name).trim();
   const op = vidOpImgOp(k);
@@ -9508,7 +9508,9 @@ function vidOpImgFill(wrap, name) {
     }
     wrap.textContent = "干员图片：" + (k
       ? "「" + k + "」不在干员数据里，请检查名字写法（截图左上角 Lv 等级上方）"
-      : "填写姓名后自动对应干员图片（姓名读自上方截图左上角 Lv 等级上方）");
+      : (hasPanel === false
+        ? "本张截图里没有干员详情面板（该时刻画面没有姓名文字），请手动填写干员名"
+        : "填写姓名后自动对应干员图片（姓名读自上方截图左上角 Lv 等级上方）"));
     return;
   }
   const im = document.createElement("img");
@@ -9544,7 +9546,7 @@ function vidEvList() {
   if (!vid.events.length) {
     const em = document.createElement("div");
     em.className = "vid-ev-none";
-    em.textContent = "尚无记录。载入视频并点「开始解读」后，每次放置 / 撤离干员、以及每次技能开启（左侧干员详情面板出现但剩余可放置角色读数不变）都会在这里按发生顺序逐条列出：每条截图的左上角序号按截图先后编号（第 1 张、第 2 张……），右侧按类型放大标出该步操作（放置干员 / 撤离干员 / 技能开启）。";
+    em.textContent = "尚无记录。载入视频并点「开始解读」后，每次放置 / 撤离干员、以及每次技能开启（左侧干员详情面板出现但剩余可放置角色读数不变）都会在这里按发生顺序逐条列出：每条截图的左上角序号按截图先后编号（第 1 张、第 2 张……），右侧按类型放大标出该步操作（放置干员 / 干员离场 / 技能开启）。";
     box.appendChild(em);
     return;
   }
@@ -9576,7 +9578,10 @@ function vidEvList() {
       const im = document.createElement("img");
       im.className = "vid-ev-shot";
       im.src = e.shot;
-      im.alt = "干员详情面板画面（含干员名，取自本视频 " + vidFmt(e.shotT == null ? e.t : e.shotT) + " 帧）";
+      im.alt = (e.panelHit
+        ? "干员详情面板画面（含干员名，取自本视频 "
+        : "变化时刻整帧画面（该时刻游戏未打开干员详情面板，画面里没有干员姓名文字，取自本视频 ")
+        + vidFmt(e.shotT == null ? e.t : e.shotT) + " 帧）";
       im.title = "点一下跳到该时刻并暂停 · 双击放大 / 再双击收回";
       im.addEventListener("click", () => { vidTlJump(e.shotT == null ? e.t : e.shotT); });
       im.addEventListener("dblclick", () => {
@@ -9616,7 +9621,7 @@ function vidEvList() {
       media.appendChild(ph);
     }
     if (!e.open && !e.close) {
-      /* 干员图片：按填写的姓名对应（截图已把姓名拍在里面，姓名位于画面左上角 Lv 等级上方） */
+      /* 干员图片：按填写的姓名对应（姓名取自截图里的干员详情面板，位于画面左上角 Lv 等级上方；未取到面板的截图本身不含姓名） */
       const iwrap = document.createElement("div");
       iwrap.className = "vid-ev-opimg-wrap";
       iwrap.setAttribute("data-role", "opimg");
@@ -9628,8 +9633,12 @@ function vidEvList() {
       const auto = !!(saved && e.ocrN && saved === e.ocrN);   /* 名字由截图自动读出 */
       const isSum = !!saved && vidIsSumName(saved);           /* 召唤物记录：名称照填，但不需要干员照片 */
       const why = saved ? "" : (e.ocrWhy === "noops" ? "（干员数据未加载）"
-        : e.ocrWhy === "nopanel" ? "（未取到干员面板帧）"
-        : e.ocrWhy === "nohit" ? "（该帧未认出姓名）"
+        : e.ocrWhy === "nopanel" ? (e.dir === "up"
+          ? "（未取到面板帧：该时刻画面里没有干员姓名文字；可能是被击倒 / 阵亡、结算过场，或主动撤离但未打开详情面板，本站据实留空）"
+          : "（未取到面板帧：画面里没有干员姓名文字）")
+        : e.ocrWhy === "nohit" ? (e.dir === "up" && e.panelHit
+          ? "（该帧未认出姓名：画面里有干员详情面板，应为玩家主动撤离）"
+          : "（该帧未认出姓名）")
         : e.ocrWhy === "dup" ? "（与上一条同名同状态，向后仍未认出不同姓名）"
         : e.ocrWhy === "err" ? "（读取画面失败）"
         : vid.running ? "（识别中…，稍候）"
@@ -9643,14 +9652,14 @@ function vidEvList() {
       oin.placeholder = "选 / 输入干员名或召唤物名（自动识别，可改）";
       oin.setAttribute("list", "vid-op-list");
       oin.setAttribute("aria-label", "第 " + (i + 1) + " 条记录（" + vidFmt(e.t) + "）的干员名");
-      vidOpImgFill(iwrap, saved);
+      vidOpImgFill(iwrap, saved, !!e.panelHit);
       oin.addEventListener("change", () => {
         const v2 = vidOpSet(e, oin.value);
         e.ocrN = "";                       /* 用户改过就不再标「自动识别」 */
         oin.value = v2;
         ost.textContent = "干员：" + (v2 || "未确认");
         ost.classList.toggle("none", !v2);
-        vidOpImgFill(iwrap, v2);          /* 姓名一变，就地换成对应干员图片 */
+        vidOpImgFill(iwrap, v2, !!e.panelHit);          /* 姓名一变，就地换成对应干员图片 */
       });
       orow.appendChild(ost);
       orow.appendChild(oin);
@@ -9673,7 +9682,7 @@ function vidEvList() {
     const dr = document.createElement("span");
     dr.className = "vid-ev-d " + (e.skill ? "skill" : (e.dir === "down" ? "down" : "up"));
     dr.textContent = e.open ? "\u2191 开局" : (e.close ? "\u2193 结束对局"
-      : (e.skill ? "\u25c6 技能开启" : (e.dir === "down" ? "\u2193 放置干员" : "\u2191 撤离干员")));
+      : (e.skill ? "\u25c6 技能开启" : (e.dir === "down" ? "\u2193 放置干员" : "\u2191 干员离场")));
     hd.appendChild(seq); hd.appendChild(tm); hd.appendChild(dr);
     if (!e.open && !e.close) {
       const jb = document.createElement("button");
@@ -9708,7 +9717,10 @@ function vidEvList() {
           : ((e.roFrom == null || e.roTo == null)
             ? "读数 " + e.from + " \u2192 " + e.to + "（读数条）"
             : "剩余可放置角色 " + e.roFrom + " \u2192 " + e.roTo
-              + (e.dir === "down" ? "（减少 = 有一名干员被放置上场）" : "（增加 = 有一名干员被撤离回栏位）")
+              + (e.dir === "down" ? "（减少 = 有一名干员被放置上场）"
+                : (e.panelHit
+                  ? "（增加 = 一名干员离场：该时刻画面里有干员详情面板，应为玩家主动撤离）"
+                  : "（增加 = 一名干员离场：该时刻画面里没有干员详情面板，可能是被击倒 / 阵亡、结算过场，或主动撤离但未打开详情面板，本站据实留空）"))
               + (e.roJump ? " · 读数一次变动 " + e.roD + "，已按 ±1 标记" : ""))));
     right.appendChild(dp);
     it.appendChild(left); it.appendChild(right);
@@ -9741,7 +9753,7 @@ function vidRenderEvents() {
       : "")
     + "读数变化：" + vid.events.map((e) =>
     vidFmt(e.t) + (e.open ? " ↑开局" : (e.close ? " ↓结束对局"
-      : (e.dir === "down" ? " ↓放置干员" : " ↑撤离干员")))
+      : (e.dir === "down" ? " ↓放置干员" : " ↑干员离场")))
     + (e.kills && e.kills.str ? "（击敌数 " + e.kills.str + "）" : "（击敌数不可读）")).join(" · ");
 }
 /* ---- 并行取帧池：为同一视频准备多个 <video> 元素并行 seek，逐帧像素口径与主播放器完全一致 ---- */
@@ -9888,11 +9900,11 @@ async function vidRun() {
       const dtx = vidDropText();
       vidMsg("采样完成：共 " + vid.frames.length + " 帧（间隔 " + vid.step + " 秒，用时 "
         + ((performance.now() - t0) / 1000).toFixed(1) + " 秒）。"
-        + (evN ? "检测到放置 / 撤离事件 " + evN + " 次（右下角「剩余可放置角色」读数）：减少 = 放置、增加 = 撤离。"
+        + (evN ? "检测到放置 / 撤离事件 " + evN + " 次（右下角「剩余可放置角色」读数）：减少 = 放置、增加 = 干员离场（撤离或被击倒）。"
           : (vid.roNote ? vid.roNote + "。" : "读数条无变化事件。"))
         + (kn ? "击敌数读数 " + kn + " 条（总数 " + (vid.killsTotal || "—") + "）。" : "")
         + (vid.skillN ? "技能开启 " + vid.skillN + " 次（左侧干员详情面板出现、剩余可放置角色读数不变；同一次面板开启只记一条）。" : "")
-        + (evN ? "记录截图 " + sn + "/" + vidShotTotal() + " 张（干员详情面板整帧画面）。"
+        + (evN ? "记录截图 " + sn + "/" + vidShotTotal() + " 张（定位到面板的取「干员详情面板」整帧，未定位到的取变化时刻整帧）。"
           + (vid.panelN ? "面板帧定位成功 " + vid.panelN + " 条。" : "")
           + (vid.panelMiss ? "未找到面板帧、退回变化时刻整帧 " + vid.panelMiss + " 条。" : "") : "")
         + (vid.roAuto === "auto" ? "读数区域已按本视频画面自动定位到右下角读数行（剩余可放置角色 y"
