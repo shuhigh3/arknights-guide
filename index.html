@@ -7000,6 +7000,14 @@ const VREG_AUTO_WIN = { x: 0.58, y: 0.50, w: 0.42, h: 0.46 };   /* 找读数行�
 const VREG_AUTO_H = 0.060;          /* 自动区域高度：与默认同高，字形过滤阈值口径不变 */
 const VREG_AUTO_SAMPLES = 14;       /* 采样帧数（命中足够多时提前收敛） */
 const VREG_AUTO_MIN_HITS = 6;       /* 判定「找到读数行」的最少命中帧数 */
+/* 暗档取样（低码率 / 小字素材）：读数行会被压到 100~140 灰阶，常态档 105/110 取不到字形。
+   只在常态档 0 命中时才启用；档位按整片定（vid.roLv），逐帧不换档。 */
+const VID_RO_INK2 = { a0: 70, span: 85 };   /* 暗档起墨点：整体更低 */
+const VID_RO_MINX2 = 0.20;                  /* 暗档下「读数行贴右侧」门槛（自动区域右端可离数字较远） */
+const VREG_AUTO_LV2 = { minX: 0.56, digX: 0.845, maxH: 0.055, minRow: 5 };  /* 暗档自动定位：放宽右端 + 只认小字行 */
+/* 暗档专用闸门：读数行所在区域被「亮块」压住（如开机前「行动 / OPERATION START」横幅）时，
+   取墨会把亮块当成数字 → 该帧一律不读数。只在暗档生效：常态档素材读数位本就是亮底 HUD。 */
+const VID_RO_BRIGHT = { t: 150, max: 0.10 };  /* t：亮像素灰阶阈值；max：区域亮像素占比上限 */
 /* 部署栏几何（与识别区域解耦）：只用于逐帧「占用格数 / 档位序列」采样（与读数对齐用） */
 const VID_CELL_REG = { x: 0.000, y: 0.700, w: 1.000, h: 0.300 };
 const KTPL = {
@@ -7026,7 +7034,7 @@ const vid = {
   roOk: false, roNote: "", roSeq: [], roFix: 0, roLock: null, jumpN: 0,
   openAt: -1, roTplN: 5,
   tlDrag: false, tlT: 0, refT: 0,
-  calTouched: false, roAuto: ""
+  calTouched: false, roAuto: "", roLv: 1
 };
 
 function vidMsg(txt, kind) {
@@ -7104,7 +7112,7 @@ function vidLoad() {
   ($("#vid-frames") || {}).textContent = "0";
   vidSetBar(0);
   vid.tlDrag = false; vidTlPaint();
-  vid.calTouched = false; vid.roAuto = "";    /* 换视频：恢复「读数区域自动定位」 */
+  vid.calTouched = false; vid.roAuto = ""; vid.roLv = 1;    /* 换视频：恢复「读数区域自动定位」与档位 */
   const st = $("#vid-stage");
   if (st) st.classList.add("is-empty");
   try { v.pause(); } catch (e) {}
@@ -7342,37 +7350,51 @@ function vidBindCal() {
   cal.addEventListener("pointerup", end);
   cal.addEventListener("pointercancel", end);
 }
-/* 读数区域自动定位：采样若干帧 → 找读数行 → 中位投票 → 落到该行（读数行找不到就返回 false、保留现区域）。 */
-async function vidAutoRegion(v) {
-  vid.roAuto = "";
+/* 读数区域自动定位：采样若干帧 → 找读数行 → 中位投票 → 落到该行（读数行找不到就返回 false、保留现区域）。
+   两遍取样：第 1 遍＝常态档（口径与既有版本逐字等价）；第 1 遍 0 命中时再走第 2 遍暗档（低码率 / 小字素材）。
+   档位按「整片」定：命中后写入 vid.roLv，整片所有帧统一用该档取墨（逐帧不换档，避免同片读数被翻错）。
+   move=false 时只定档、不动区域（区域被手动校准过时用）。 */
+async function vidAutoRegion(v, move) {
+  const mov = move !== false;
+  if (mov) vid.roAuto = "";
   const vw = (v && v.videoWidth) || vid.vw || 0, vh = (v && v.videoHeight) || vid.vh || 0;
   const dur = (v && isFinite(v.duration) && v.duration > 0) ? v.duration : (vid.dur || 0);
-  if (!(vw > 24 && vh > 24) || !(dur > 3)) { vid.roAuto = "miss"; return false; }
+  if (!(vw > 24 && vh > 24) || !(dur > 3)) { vid.roLv = 1; if (mov) vid.roAuto = "miss"; return false; }
   const win = VREG_AUTO_WIN;
   const dw = Math.min(560, Math.max(180, Math.round(win.w * vw)));
   const a0 = Math.max(1.5, dur * 0.05), a1 = Math.max(a0 + 1, dur - 1.2);
-  const hits = [];
-  let seekFail = 0;
-  for (let i = 0; i < VREG_AUTO_SAMPLES; i++) {
-    const t = a0 + (a1 - a0) * i / (VREG_AUTO_SAMPLES - 1);
-    const okSeek = await vidSeek(v, t);
-    if (!okSeek) { if (++seekFail >= 4) break; continue; }
-    let o = null, r = null;
-    try { const g = vidGray(v, win, dw); o = vidRoInk(g); r = vidRoRow(o); } catch (e) { continue; }
-    if (!r || r.n < 5 || !r.last) continue;
-    const b = r.last;
-    const ar = b.w / b.h;
-    /* 命中「读数行」的硬条件：数字贴右缘、字形近方形、行落在下半屏、行宽足够（"：数字"整句） */
-    if (!(win.x + (b.x1 / o.w) * win.w >= 0.93 && ar >= 0.55 && ar <= 1.55 && b.h >= 4)) continue;
-    let ya = 1e9, yb = -1, xa = 1e9, xb = -1;
-    r.nar.forEach((c) => { if (c.y0 < ya) ya = c.y0; if (c.y1 > yb) yb = c.y1; if (c.x0 < xa) xa = c.x0; if (c.x1 > xb) xb = c.x1; });
-    const y0 = win.y + (ya / o.h) * win.h, y1 = win.y + (yb / o.h) * win.h;
-    const x0 = win.x + (xa / o.w) * win.w, x1 = win.x + (xb / o.w) * win.w;
-    if (!(y0 > 0.50 && y1 < 0.97 && (x1 - x0) >= 0.06)) continue;
-    hits.push({ y0: y0, y1: y1, x0: x0 });
-    if (hits.length >= VREG_AUTO_MIN_HITS + 3 && i >= VREG_AUTO_SAMPLES - 4) break;
+  const PASSES = [
+    { lv: 1, opt: null, digX: 0.93 },                                   /* 常态档：与既有版本逐字等价 */
+    { lv: 2, opt: { minX: VREG_AUTO_LV2.minX, maxHRel: VREG_AUTO_LV2.maxH, minRow: VREG_AUTO_LV2.minRow }, digX: VREG_AUTO_LV2.digX }
+  ];
+  let hits = null;
+  for (const P of PASSES) {
+    hits = [];
+    let seekFail = 0;
+    for (let i = 0; i < VREG_AUTO_SAMPLES; i++) {
+      const t = a0 + (a1 - a0) * i / (VREG_AUTO_SAMPLES - 1);
+      const okSeek = await vidSeek(v, t);
+      if (!okSeek) { if (++seekFail >= 4) break; continue; }
+      let o = null, r = null;
+      try { const g = vidGray(v, win, dw); o = vidRoInk(g, P.lv); r = vidRoRow(o, P.opt); } catch (e) { continue; }
+      if (!r || r.n < (P.opt ? P.opt.minRow : 5) || !r.last) continue;
+      const b = r.last;
+      const ar = b.w / b.h;
+      /* 命中「读数行」的硬条件：数字贴右缘、字形近方形、行落在下半屏、行宽足够（"：数字"整句） */
+      if (!(win.x + (b.x1 / o.w) * win.w >= P.digX && ar >= 0.55 && ar <= 1.55 && b.h >= 4)) continue;
+      let ya = 1e9, yb = -1, xa = 1e9, xb = -1;
+      r.nar.forEach((c) => { if (c.y0 < ya) ya = c.y0; if (c.y1 > yb) yb = c.y1; if (c.x0 < xa) xa = c.x0; if (c.x1 > xb) xb = c.x1; });
+      const y0 = win.y + (ya / o.h) * win.h, y1 = win.y + (yb / o.h) * win.h;
+      const x0 = win.x + (xa / o.w) * win.w, x1 = win.x + (xb / o.w) * win.w;
+      if (!(y0 > 0.50 && y1 < 0.97 && (x1 - x0) >= 0.06)) continue;
+      hits.push({ y0: y0, y1: y1, x0: x0 });
+      if (hits.length >= VREG_AUTO_MIN_HITS + 3 && i >= VREG_AUTO_SAMPLES - 4) break;
+    }
+    if (hits.length >= VREG_AUTO_MIN_HITS) { vid.roLv = P.lv; break; }
+    hits = null;
   }
-  if (hits.length < VREG_AUTO_MIN_HITS) { vid.roAuto = "miss"; return false; }
+  if (!hits || hits.length < VREG_AUTO_MIN_HITS) { vid.roLv = 1; if (mov) vid.roAuto = "miss"; return false; }
+  if (!mov) return true;                       /* 只定档：区域保持手动校准值不动 */
   const med = (a) => { const b = a.slice().sort((p, q) => p - q); return b[b.length >> 1]; };
   const y0 = med(hits.map((h) => h.y0)), y1 = med(hits.map((h) => h.y1)), x0 = med(hits.map((h) => h.x0));
   const yc = (y0 + y1) / 2, H = VREG_AUTO_H;
@@ -7384,7 +7406,6 @@ async function vidAutoRegion(v) {
   vidRegPaint();
   return true;
 }
-
 /* ---- 逐帧采样：把每一帧的两块区域取成灰度签名，留给后续判定 ---- */
 function vidSeek(v, t) {
   return new Promise((res) => {
@@ -7848,8 +7869,9 @@ let RO_TPL = {"4": ["00000000ccdd700000000000ccdd70000000024466ad700000000499006
 const VID_RO_REL = { x: 0.00, y: 0.00, w: 1.00, h: 1.00 };   /* 相对识别区域：区域本身即读数条（默认区域＝读数文字行） */
 const VID_RO_GAP = 0.095;                                     /* 锁定后同字判定：同字≈0.00~0.05，异字≥0.10 */
 const RO_FAIL_TEXT = "读数不可用：未能识别右下角「剩余可放置角色」读数（本机不再用干员栏位格数兜底），本次不输出任何记录";
-function vidRoInk(g) {                     /* 区域内读数带灰度（与 KTPL 同标度：0..255） */
+function vidRoInk(g, lv) {                 /* 区域内读数带灰度（与 KTPL 同标度：0..255）；lv=2 为暗档取样 */
   const w = g.w, h = g.h, px = g.px;
+  const b0 = lv === 2 ? VID_RO_INK2.a0 : 105, bs = lv === 2 ? VID_RO_INK2.span : 110;
   const xa = Math.max(0, Math.min(w - 8, Math.round(w * VID_RO_REL.x)));
   const xb = Math.max(xa + 6, Math.min(w, Math.round(w * (VID_RO_REL.x + VID_RO_REL.w))));
   const yb = Math.max(6, Math.min(h, Math.round(h * (VID_RO_REL.y + VID_RO_REL.h))));
@@ -7858,7 +7880,7 @@ function vidRoInk(g) {                     /* 区域内读数带灰度（与 KTP
   for (let y = 0; y < dh; y++) {
     const so = y * w + xa;
     for (let x = 0; x < dw; x++) {
-      const t = (px[so + x] - 105) / 110;
+      const t = (px[so + x] - b0) / bs;
       a[y * dw + x] = t <= 0 ? 0 : (t >= 1 ? 255 : Math.round(t * 255));
     }
   }
@@ -7868,10 +7890,13 @@ function vidRoBox(c, maxH) {               /* 字形过滤：排除卡片 / 大�
   return c.h >= 4 && c.h <= maxH && c.w >= 2 && c.w <= maxH
       && c.w / c.h <= 1.8 && c.n / (c.w * c.h) >= 0.14;
 }
-function vidRoRow(o) {                     /* 读数行 = 子区内「一串窄字形」且整体靠右的行；行尾字形即数字 */
+function vidRoRow(o, opt) {                /* 读数行 = 子区内「一串窄字形」且整体靠右的行；行尾字形即数字 */
   const maxH = Math.max(10, Math.round(o.h * 0.60));
   const gl = kComps(o).filter((c) => vidRoBox(c, maxH));
   if (gl.length < 3) return null;
+  const minXr = (opt && opt.minX > 0 ? opt.minX : 0.72) * o.w;        /* 读数条贴右侧（暗档放宽） */
+  const maxRowH = (opt && opt.maxHRel > 0) ? opt.maxHRel * o.h : 0;   /* 暗档：只认小字行，排除费用等大字 */
+  const minRow = (opt && opt.minRow > 0) ? opt.minRow : 3;
   const keys = [], seen = {};
   gl.forEach((c) => {
     const k = Math.round((c.y0 + c.y1) / 2 / 3) * 3;
@@ -7881,9 +7906,13 @@ function vidRoRow(o) {                     /* 读数行 = 子区内「一串窄�
   keys.forEach((k) => {
     const row = gl.filter((c) => Math.abs((c.y0 + c.y1) / 2 - k) <= 5).sort((a, b) => a.x0 - b.x0);
     const nar = row.filter((c) => c.w <= 1.25 * c.h);        /* 窄字形＝文字笔画，排除大块 UI */
-    if (nar.length < 3) return;
+    if (nar.length < minRow) return;
+    if (maxRowH > 0) {                                       /* 行高上限：读数文字比费用数字矮一半 */
+      const hs = nar.map((c) => c.h).sort((a, b) => a - b);
+      if (hs[hs.length >> 1] > maxRowH) return;
+    }
     const last = nar[nar.length - 1];
-    if (last.x1 < 0.72 * o.w) return;                        /* 读数条贴右侧 */
+    if (last.x1 < minXr) return;
     let gs = 0;
     for (let i = 1; i < nar.length; i++) gs += nar[i].x0 - nar[i - 1].x1 - 1;
     const gap = gs / (nar.length - 1);
@@ -7950,15 +7979,25 @@ function vidRoNorm(ino, box) {               /* 字形框按高度归一重采�
   }
   return { w: nw, h: NH, a: a };
 }
-function vidRoFrame(g) {                   /* 单帧 → {box,f,h,n,x1}；不可读返回 null */
+function vidRoBrightOK(g) {                /* 暗档专用：区域亮像素(≥t)占比 ≤ max 才允许读数，否则视为亮块压住读数位 */
+  if (!g || !g.px) return true;
+  const N = (g.w || 0) * (g.h || 0);
+  if (!(N > 0)) return true;
+  const T = VID_RO_BRIGHT.t; let bc = 0;
+  for (let k = 0; k < N; k++) if (g.px[k] >= T) bc++;
+  return bc / N <= VID_RO_BRIGHT.max;
+}
+function vidRoFrame(g) {                   /* 单帧 → {box,f,h,n,x1,lv}；不可读返回 null；档位由整片定档 vid.roLv 决定 */
   if (!g || !(g.w > 24 && g.h > 12)) return null;
-  const o = vidRoInk(g);
-  const r = vidRoRow(o);
+  const lv = vid.roLv === 2 ? 2 : 1;
+  if (lv === 2 && !vidRoBrightOK(g)) return null;      /* 暗档：亮块压住读数位 → 本帧不读数（不产假段） */
+  const o = vidRoInk(g, lv);
+  const r = vidRoRow(o, lv === 2 ? { minX: VID_RO_MINX2 } : null);
   if (!r) return null;
   const b = vidRoInkRun(o, r, r.last.x1, 10);
   if (!b) return null;
   const z = vidRoNorm(o, b);
-  return { box: b, f: kNorm(z, { x0: 0, y0: 0, w: z.w, h: z.h }), h: b.h, n: r.n, x1: b.x0 + b.w - 1 };
+  return { box: b, f: kNorm(z, { x0: 0, y0: 0, w: z.w, h: z.h }), h: b.h, n: r.n, x1: b.x0 + b.w - 1, lv: lv };
 }
 function vidRoLock(det) {                  /* 逐帧检测格 → 全片中位格（整片锁定，消抖） */
   const bx = [], by = [], bw = [], bh = [];
@@ -8040,7 +8079,8 @@ function vidRoExtract(frames) {
     if (!fr) continue;
     if (!lock) { fr.ro = det[i]; continue; }
     if (!fr.slots) { fr.ro = null; continue; }
-    const o = vidRoInk(fr.slots);
+    if (vid.roLv === 2 && !vidRoBrightOK(fr.slots)) { fr.ro = null; continue; }   /* 亮块帧不给补读数 */
+    const o = vidRoInk(fr.slots, vid.roLv);
     if (!vidRoFit(o, lock)) { fr.ro = null; continue; }
     fr.ro = { box: lock, f: kNorm(o, lock), h: lock.h, n: det[i] ? det[i].n : 0, x1: lock.x0 + lock.w - 1 };
   }
@@ -9842,7 +9882,9 @@ async function vidRun() {
   vidRenderEvents(); vidShotInfo(); vidTlPaint();
   try { await vidRefAuto(); } catch (e) {}
   if (!vid.calTouched) {                      /* 读数区域自动定位：落到本视频右下角读数行（校准过则不动） */
-    try { await vidAutoRegion(v); } catch (e) { vid.roAuto = "miss"; }
+    try { await vidAutoRegion(v); } catch (e) { vid.roAuto = "miss"; vid.roLv = 1; }
+  } else {                                    /* 手动校准过：区域不动，只按本片画面定「取墨档位」 */
+    try { await vidAutoRegion(v, false); } catch (e) { vid.roLv = 1; }
   }
   const stepEl = $("#vid-step");
   vid.step = parseFloat(stepEl && stepEl.value) || vid.step || 0.3;
@@ -9907,8 +9949,8 @@ async function vidRun() {
         + (evN ? "记录截图 " + sn + "/" + vidShotTotal() + " 张（定位到面板的取「干员详情面板」整帧，未定位到的取变化时刻整帧）。"
           + (vid.panelN ? "面板帧定位成功 " + vid.panelN + " 条。" : "")
           + (vid.panelMiss ? "未找到面板帧、退回变化时刻整帧 " + vid.panelMiss + " 条。" : "") : "")
-        + (vid.roAuto === "auto" ? "读数区域已按本视频画面自动定位到右下角读数行（剩余可放置角色 y"
-          + Math.round(vid.regions.slots.y * 100) + "H；如需微调可点「校准区域」手动拖框）。" : "")
+        + (vid.roAuto === "auto" ? "读数区域已按本视频画面自动定位到右下角读数行（读数行位于画面高度 "
+          + Math.round(vid.regions.slots.y * 100) + "%；如需微调可点「校准区域」手动拖框）。" : "")
         + (dtx ? dtx + "。" : ""), "ok");
     }
   } finally {
@@ -9984,7 +10026,7 @@ function videoInit() {
   on("#vid-cal-btn", "click", () => vidCalToggle());
   on("#vid-reset", "click", () => {
     vid.regions = JSON.parse(JSON.stringify(VREG_DEFAULT));
-    vid.calTouched = false;                    /* 恢复默认同时恢复「按视频自动定位」 */
+    vid.calTouched = false; vid.roLv = 1;      /* 恢复默认同时恢复「按视频自动定位」 */
     vidRegSave(); vidRegPaint();
     vidMsg("已恢复默认区域（下次解读会再按视频画面自动定位读数区域）。", "ok");
   });
