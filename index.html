@@ -7030,7 +7030,7 @@ const vid = {
   events: [], dev: [], sens: 1, stable: 5, minStep: 0, cellsMax: 0,
   reads: [], killsTotal: "", readOk: 0, readFail: 0,
   shotN: 0, shotFail: 0, sumN: 0, sumNoShot: 0, dropN: 0, winA: -1, winB: -1, notesTouched: false,
-  panelN: 0, panelMiss: 0, opN: 0, ocrDup: 0,
+  panelN: 0, panelMiss: 0, opN: 0, ocrDup: 0, ocr2N: 0, ocr2Try: 0,
   roOk: false, roNote: "", roSeq: [], roFix: 0, roLock: null, jumpN: 0,
   openAt: -1, roTplN: 5,
   tlDrag: false, tlT: 0, refT: 0,
@@ -8555,6 +8555,9 @@ const VID_OCR_MINASP_L = 0.5;   /* 放宽取带：带宽高比下限，允许单
 const VID_OCR_CHUNK = 128;      /* 精灵图分块：每块候选数（控住单张画布面积） */
 const VID_OCR_THR2 = 100;       /* 补充口径：低阈值（仅在主口径读不出时启用，见 vidOcrFrame） */
 const VID_OCR_FLOOR2 = 70;      /* 补充口径：灰度背景底（低于它按背景处理） */
+const VID_OCR_CROPZ = 3;           /* 第二把尺子：送站内 PP-OCRv4 的姓名行裁片放大倍数 */
+const VID_OCR_ENG_WAIT = 60000;    /* 第二把尺子：收尾复核等站内 OCR 引擎就绪的上限（ms）；运行中传 0，只做「已就绪才即时复核」 */
+const VID_OCR2_MAX = 10;           /* 第二把尺子：单轮解读最多复核多少条记录，避免拖慢解读 */
 const VID_DEDUP_FWD = 6.0;      /* 同名同状态去重：最多向后继续识别的秒数（另受「下一条变化点」与视频末尾限制） */
 const VID_OCR_FONTS = [
   'SimHei, "Heiti SC", "黑体", "Noto Sans CJK SC", sans-serif',
@@ -8846,6 +8849,127 @@ function vidOcrFrame(src, region) {
   }
   return r1 || r2;
 }
+/* ---- 姓名识别第二把尺子：站内 PP-OCRv4 复核 ----
+   左上角姓名行本身就是一行清晰文字：模板匹配（字形相关打分）读不出时，把同一块裁片交给页面内置的
+   PP-OCRv4（与封面识别同一引擎、同一名池）再读一遍。两点保证依旧绝不猜名：
+   ①引擎只在「整行文字被名池完整覆盖」时才返回名字（cvOcrPick 既有规则）；
+   ②本函数再要求「恰好一个、且与名册名逐字相同」，否则一律交回模板结论，由调用方如实标注。 */
+function vidOcrCrop(src, region) {
+  const vw = src && (src.videoWidth || src.naturalWidth) || 0;
+  const vh = src && (src.videoHeight || src.naturalHeight) || 0;
+  if (!vw || !vh) return null;
+  const reg = region || VID_OCR_REG;
+  let sx = Math.round(reg.x * vw), sy = Math.round(reg.y * vh);
+  let sw = Math.round(reg.w * vw), sh = Math.round(reg.h * vh);
+  sx = Math.min(Math.max(0, sx), Math.max(0, vw - 2));
+  sy = Math.min(Math.max(0, sy), Math.max(0, vh - 2));
+  sw = Math.min(Math.max(2, sw), vw - sx);
+  sh = Math.min(Math.max(2, sh), vh - sy);
+  const z = Math.max(1, VID_OCR_CROPZ);
+  const c = document.createElement("canvas");
+  c.width = sw * z; c.height = sh * z;
+  const cx = c.getContext("2d");
+  if (!cx) return null;
+  cx.imageSmoothingEnabled = true;
+  cx.drawImage(src, sx, sy, sw, sh, 0, 0, sw * z, sh * z);
+  return c;
+}
+/* 引擎是否可用：未就绪时按需等一次（上限 waitMs，缺省 VID_OCR_ENG_WAIT；waitMs<=0 = 只看「现在就绪没」）；
+   等不到返回 false，不影响模板已有结论。运行中传 0 不阻塞解读，收尾复核才用满额等待。 */
+async function vidOcrEngine(waitMs) {
+  if (CV_OCR_W.ready || (CV_OCR.det && CV_OCR.rec)) return true;
+  if (!CV_OCR.on) return false;
+  const w = (waitMs == null) ? VID_OCR_ENG_WAIT : waitMs;
+  if (!(w > 0)) return false;
+  try {
+    await Promise.race([cvOcrEnsure(false), new Promise(function (r) { setTimeout(r, w); })]);
+  } catch (e) {}
+  return !!(CV_OCR_W.ready || (CV_OCR.det && CV_OCR.rec));
+}
+/* 名册名逐字校验（去空白）：只接受与名池中某个名字完全一致的读数，否则返回空串 */
+function vidOcrNameExact(nm) {
+  const k = String(nm == null ? "" : nm).replace(/\s/g, "");
+  if (!k) return "";
+  const pool = cvOcrPool();
+  for (const p of pool) if (String(p).replace(/\s/g, "") === k) return String(p);
+  return "";
+}
+/* 第二把尺子：读不出返回 ""（不猜名）；读到多个名册名时同样返回 ""，交回模板结论 */
+async function vidOcrCoverName(src, waitMs) {
+  if (typeof cvOcrCover !== "function") return "";
+  if (!(await vidOcrEngine(waitMs))) return "";
+  const regs = [VID_OCR_REG].concat(VID_OCR_FALLBACKS);
+  for (const reg of regs) {
+    let url = "";
+    try { const c = vidOcrCrop(src, reg); if (!c) continue; url = c.toDataURL("image/png"); } catch (e) { continue; }
+    let r = null;
+    try { r = await cvOcrCover(url); } catch (e) { r = null; }
+    if (!r || r.state !== "ok") continue;
+    const uniq = [];
+    for (const raw of (r.names || [])) {
+      const n = vidOcrNameExact(raw);
+      if (n && uniq.indexOf(n) < 0) uniq.push(n);
+    }
+    if (uniq.length === 1) return uniq[0];
+    if (uniq.length > 1) return "";
+  }
+  return "";
+}
+/* 收尾复核：解读结果已呈现后，对「模板没读出姓名」的记录，用站内 PP-OCRv4 再读一遍。
+   引擎首次加载（onnxruntime-web + 模型）在拉流远端视频时要几十秒，运行中等不起，故放到收尾等一次（上限 60s）；
+   逐条 seek 到该条截图那一帧复核，读出即填、即刷新记录列表；仍读不出保持留空，绝不猜名。 */
+async function vidOcrReviewNames() {
+  if (!CV_OCR.on || typeof cvOcrCover !== "function") return 0;
+  if (typeof vidOpNames !== "function" || !vidOpNames().length) return 0;   /* 名册未就绪：无法逐字校验，不猜名 */
+  const es = vid.events || [];
+  if (!es.length) return 0;
+  const v = $("#vid-player");
+  if (!v || !(vid.dur > 0) || !(v.videoWidth > 0)) return 0;
+  const miss = [];
+  for (const e of es) {
+    if (e.open || e.close) continue;                 /* 开局 / 结束两条本就不截图不读名 */
+    if (e.ocrN || vidOpGet(e)) continue;             /* 模板已读出、或用户已手填：不动 */
+    miss.push(e);
+  }
+  const n = Math.min(miss.length, VID_OCR2_MAX);
+  if (!n) return 0;
+  const warm = !!(CV_OCR_W.ready || (CV_OCR.det && CV_OCR.rec));
+  if (!warm) vidMsg("正在用站内 OCR 复核 " + n + " 条未读出的干员姓名（引擎首次加载可能要数十秒，上方解读结果已可用）…", "warn");
+  if (!(await vidOcrEngine())) {
+    vidMsg("站内 OCR 引擎本轮未能就绪，未读出的干员姓名仍如实留空（可点选或手填）。", "warn");
+    return 0;
+  }
+  let tKeep = 0;
+  try { tKeep = v.currentTime || 0; } catch (e0) {}
+  let got = 0;
+  for (let i = 0; i < n; i++) {
+    if (vid.running) break;                          /* 又发起了一轮解读：让位，不抢视频 */
+    const e = miss[i];
+    const t = (e.shotT != null) ? e.shotT : e.t;
+    let nm = "";
+    try { await vidSeek(v, t); nm = await vidOcrCoverName(v, 0); } catch (err) { nm = ""; }
+    if (!nm) continue;                               /* 读不出：维持原样，不猜名 */
+    const gi = es.indexOf(e);
+    const prevE = gi > 0 ? es[gi - 1] : null;
+    const prevName = prevE ? (vidOpGet(prevE) || prevE.ocrN || "") : "";
+    if (!e.skill && prevE && !prevE.skill && prevName && prevName === nm && prevE.dir === e.dir) {
+      e.ocrWhy = "dup"; vid.ocrDup++;                /* 与上一条同名同状态：不重复填同名，如实标注 */
+    } else if (!e.ocrN) {
+      e.ocrN = vidOpSet(e, nm); e.ocrT = t; e.ocrTier = "ocr";
+      vid.ocrN++;
+      if (vid.ocrMiss > 0) vid.ocrMiss--;
+      if (vid.ocr2N != null) vid.ocr2N++;
+      got++;
+    }
+    try { vidRenderEvents(); } catch (err2) {}        /* 每条读出即时刷新，名字陆续补上 */
+  }
+  try { if (!vid.running) await vidSeek(v, tKeep); } catch (err3) {}
+  try { vidShotInfo(); } catch (err4) {}
+  try { vidRenderEvents(); } catch (err5) {}
+  if (got) vidMsg("站内 OCR 复核完成：新读出 " + got + " 条干员姓名已填入并显示对应图片；其余 " + (n - got) + " 条仍如实留空，可点选或手填。", "ok");
+  else if (!warm) vidMsg("站内 OCR 复核完成：仍未能读出未确认的姓名，保持留空（可点选或手填）。", "warn");
+  return got;
+}
 /* 灰度帧（vidGray 的产物）→ 某条带的「亮行数」：一行为亮 = 该行内亮像素 ≥2 个；帧不可用返回 -1 */
 function vidPanelRows(g, band) {
   if (!g || !(g.w > 8 && g.h > 8) || !g.px || g.px.length < g.w * g.h) return -1;
@@ -9000,6 +9124,7 @@ function vidShotInfo() {
   if (vid.ocrMiss) t += " \u00b7 未能自动识别、留待手填 " + vid.ocrMiss + " 条";
   if (vid.ocrDup) t += " \u00b7 与上一条同名同状态、向后仍未认出不同姓名 " + vid.ocrDup + " 条";
   if (vid.ocrNoOps) t += " \u00b7 干员数据未加载、暂无法自动识别 " + vid.ocrNoOps + " 条";
+  if (vid.ocr2N) t += " \u00b7 其中模板未读出、由站内 OCR 复核认出 " + vid.ocr2N + " 条";
   if (vid.sumN) t += " \u00b7 召唤物记录 " + vid.sumN + " 条（名称照读照填，无需干员照片）";
   const dtx = vidDropText();
   if (dtx) t += " · " + dtx;
@@ -9007,7 +9132,7 @@ function vidShotInfo() {
   nt.textContent = t + "。";
 }
 async function vidCaptureShots(v) {
-  vid.shotFail = 0; vid.panelN = 0; vid.panelMiss = 0; vid.ocrN = 0; vid.ocrMiss = 0; vid.ocrNoOps = 0; vid.ocrDup = 0;
+  vid.shotFail = 0; vid.panelN = 0; vid.panelMiss = 0; vid.ocrN = 0; vid.ocrMiss = 0; vid.ocrNoOps = 0; vid.ocrDup = 0; vid.ocr2N = 0; vid.ocr2Try = 0;
   const es = vid.events.filter((e) => !e.shot && !e.open && !e.close);   /* 开局 / 结束两条不截图 */
   if (!es.length) { vidShotInfo(); return 0; }
   const box = vidShotBox();
@@ -9034,7 +9159,7 @@ async function vidCaptureShots(v) {
       if (gotShot) { e.shot = u; e.shotT = st; e.shotW = box.w; e.shotH = box.h; n++; }
       else { e.shot = ""; }        /* 取不到截图先不计失败：往下继续识别，认出是召唤物则本就无需照片 */
       /* 同一帧顺带读出左上角干员名，自动填到右侧姓名框：用户已填过就不动，读不出留空不猜。 */
-      e.ocrN = ""; e.ocrWhy = ""; e.ocrT = st;
+      e.ocrN = ""; e.ocrWhy = ""; e.ocrT = st; e.ocrTier = "";
       try {
         if (!vidOpGet(e)) {
           /* 识别要一整套候选姓名（森空岛干员表）才成立：表还没加载成功时如实标注原因，不当作「读不出」。 */
@@ -9052,7 +9177,16 @@ async function vidCaptureShots(v) {
                 if (r && r.ok && r.name) { e.ocrT = t2; break; }
               }
             }
+            /* 模板整套读不出时，把本条截图那一帧的姓名行裁片交给站内 PP-OCRv4 复核一遍：
+               只接受与名册名逐字相同的读数；读不出仍如实留空，不猜名。单轮解读有次数上限。 */
+            if (!(r && r.ok && r.name) && (vid.ocr2Try || 0) < VID_OCR2_MAX) {
+              vid.ocr2Try = (vid.ocr2Try || 0) + 1;
+              let nm2 = "";
+              try { await vidSeek(v, st); nm2 = await vidOcrCoverName(v, 0); } catch (err5) { nm2 = ""; }
+              if (nm2) r = { ok: true, name: nm2, score: null, margin: null, y: -1, h: -1, n: 0, tier: "ocr", via: "ocr", rival: "" };
+            }
             if (r && r.ok && r.name) {
+              if (r.via === "ocr") { vid.ocr2N++; e.ocrTier = "ocr"; }   /* 由第二把尺子读出 */
               /* 同名同状态去重：本条读出的姓名与「放置 / 撤离」状态若跟相邻的上一条完全相同，就继续往后找第一条不同的记录（技能条目的时刻与截图本来就是它自己那次面板开启里最完整的一帧）。 */
               const gi = (vid.events || []).indexOf(e);
               const prevE = gi > 0 ? vid.events[gi - 1] : null;
@@ -9657,7 +9791,7 @@ function vidEvList() {
     } else {
       const ph = document.createElement("div");
       ph.className = "vid-ev-noimg";
-      ph.textContent = (e.isSum || vidIsSumName(vidOpGet(e))) ? "召唤物记录（名称读出即可，无需照片）" : "未取得截图";
+      ph.textContent = (e.isSum || vidIsSumName(e.ocrN || vidOpGet(e))) ? "召唤物记录（名称读出即可，无需照片）" : "未取得截图";
       media.appendChild(ph);
     }
     if (!e.open && !e.close) {
@@ -9669,7 +9803,7 @@ function vidEvList() {
       orow.className = "vid-ev-op";
       const ost = document.createElement("div");
       ost.className = "vid-ev-op-n";
-      const saved = vidOpGet(e);
+      const saved = vidOpGet(e) || e.ocrN || "";   /* 显示不依赖存储回读：本机存储不可用时也能显示已读出的名字 */
       const auto = !!(saved && e.ocrN && saved === e.ocrN);   /* 名字由截图自动读出 */
       const isSum = !!saved && vidIsSumName(saved);           /* 召唤物记录：名称照填，但不需要干员照片 */
       const why = saved ? "" : (e.ocrWhy === "noops" ? "（干员数据未加载）"
@@ -9683,7 +9817,8 @@ function vidEvList() {
         : e.ocrWhy === "err" ? "（读取画面失败）"
         : vid.running ? "（识别中…，稍候）"
         : (e.shot ? "（未自动识别，可点选或手输）" : "（未取到截图画面，未能识别）"));
-      ost.textContent = (isSum ? "召唤物：" : "干员：") + (saved || "未确认") + (auto ? "（自动识别）" : why);
+      ost.textContent = (isSum ? "召唤物：" : "干员：") + (saved || "未确认")
+        + (auto ? (e.ocrTier === "ocr" ? "（自动识别 · 站内 OCR 复核）" : "（自动识别）") : why);
       if (!saved) ost.classList.add("none");
       const oin = document.createElement("input");
       oin.className = "vid-ev-op-in";
@@ -9875,6 +10010,10 @@ async function vidRun() {
   if (vid.running) return;
   if (!vid.pixelSafe) { vidMsg("当前直链不允许跨域，浏览器禁止读取画面像素；请换成允许跨域的直链。", "err"); return; }
   vid.running = true; vid.frames = []; vid.events = []; vid.dev = []; vidSetBar(0); vidButtons(); vid.shotN = 0; vid.shotFail = 0; vid.sumN = 0; vid.sumNoShot = 0; vid.panelN = 0; vid.panelMiss = 0; vid.ocrNoOps = 0; vid.ocrDup = 0;
+  vid.ocr2N = 0; vid.ocr2Try = 0;            /* 第二把尺子（站内 OCR 复核）的计数与次数口径 */
+  if (CV_OCR.on && typeof cvOcrEnsure === "function" && !(CV_OCR_W.ready || (CV_OCR.det && CV_OCR.rec))) {
+    try { Promise.resolve(cvOcrEnsure(false)).catch(function () {}); } catch (e) {}   /* 后台预热，不阻塞解读 */
+  }
   vid.dropN = 0; vid.openN = 0; vid.openT = -1;
   vid.closeN = 0; vid.closeT = -1; vid.errN = 0; vid.errList = [];
   vid.winA = -1; vid.winB = -1; vid.notesTouched = false;
@@ -9946,6 +10085,7 @@ async function vidRun() {
           : (vid.roNote ? vid.roNote + "。" : "读数条无变化事件。"))
         + (kn ? "击敌数读数 " + kn + " 条（总数 " + (vid.killsTotal || "—") + "）。" : "")
         + (vid.skillN ? "技能开启 " + vid.skillN + " 次（左侧干员详情面板出现、剩余可放置角色读数不变；同一次面板开启只记一条）。" : "")
+        + (vid.ocr2N ? "模板未读出的记录由站内 OCR 复核认出 " + vid.ocr2N + " 条。" : "")
         + (evN ? "记录截图 " + sn + "/" + vidShotTotal() + " 张（定位到面板的取「干员详情面板」整帧，未定位到的取变化时刻整帧）。"
           + (vid.panelN ? "面板帧定位成功 " + vid.panelN + " 条。" : "")
           + (vid.panelMiss ? "未找到面板帧、退回变化时刻整帧 " + vid.panelMiss + " 条。" : "") : "")
@@ -9956,7 +10096,12 @@ async function vidRun() {
   } finally {
     vidPoolDrop();
     vid.running = false; vidButtons(); vidTlPaint();
+    /* 运行标志复位后再刷一次记录列表：截图趟次末尾那次刷新发生在 running 仍为 true 时，
+       未读出姓名且无失败原因的记录会一直停在「识别中…，稍候」，这里补一次收尾刷新。 */
+    try { if (vid.events && vid.events.length) vidRenderEvents(); } catch (e) {}
   }
+  /* 收尾复核：上面已把解读结果渲染出来，这里再等 OCR 引擎就绪、把模板没读出的姓名补上 */
+  try { await vidOcrReviewNames(); } catch (e) {}
 }
 /* ---- 从「可参考的攻略视频」列表一键解读：跳转 + 关联 + 自动解析 ---- */
 let vidParseFail = "";
